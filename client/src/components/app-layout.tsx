@@ -11,7 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LayoutDashboard, Users, MessageCircle, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, MessageCircle, Settings, LogOut, RefreshCw } from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { UserProfile } from "@shared/schema";
 import logoSrc from "@assets/vertigogo-logo.svg";
 
@@ -98,6 +99,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       </DropdownMenuItem>
                     </Link>
                   )}
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={async () => {
+                      await apiRequest("POST", "/api/profile/reset-role");
+                      queryClient.invalidateQueries({ queryKey: ["/api/profile"] });
+                    }}
+                    data-testid="menu-switch-role"
+                  >
+                    <RefreshCw className="h-4 w-4 mr-2" />
+                    Byt roll
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     className="cursor-pointer text-destructive"

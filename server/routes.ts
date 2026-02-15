@@ -196,6 +196,20 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/profile/reset-role", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const profile = await storage.updateProfile(userId, { onboardingComplete: false });
+      if (!profile) {
+        return res.status(404).json({ message: "Profile not found" });
+      }
+      res.json({ message: "Role reset. You can now choose a new role." });
+    } catch (error) {
+      console.error("Error resetting role:", error);
+      res.status(500).json({ message: "Failed to reset role" });
+    }
+  });
+
   app.get("/api/agencies", async (_req, res) => {
     try {
       const agencies = await storage.getAllAgencies();
