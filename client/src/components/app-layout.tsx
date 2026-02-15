@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { LayoutDashboard, Users, MessageCircle, Settings, LogOut } from "lucide-react";
 import type { UserProfile } from "@shared/schema";
+import logoSrc from "@assets/vertigogo-logo.svg";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();
@@ -49,7 +50,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-8">
               <Link href="/">
                 <div className="flex items-center gap-2 cursor-pointer" data-testid="link-logo">
-                  <span className="font-serif font-bold text-lg">Vertigogo</span>
+                  <img src={logoSrc} alt="Vertigogo" className="h-5" />
                 </div>
               </Link>
               <nav className="hidden md:flex items-center gap-1">

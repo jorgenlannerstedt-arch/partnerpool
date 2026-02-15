@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Shield, Users, FileText, MessageCircle, ArrowRight, CheckCircle, Lock, Zap, Building2, ChevronRight } from "lucide-react";
+import logoSrc from "@assets/vertigogo-logo.svg";
 
 const steps = [
   {
@@ -38,7 +39,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4 h-16">
             <div className="flex items-center gap-2.5">
-              <span className="text-xl font-serif font-bold tracking-tight" data-testid="text-logo">Vertigogo</span>
+              <img src={logoSrc} alt="Vertigogo" className="h-6" data-testid="text-logo" />
             </div>
             <div className="hidden md:flex items-center gap-8">
               <a href="#how-it-works" className="text-sm text-muted-foreground transition-colors hover:text-foreground" data-testid="link-how-it-works">Hur det fungerar</a>
@@ -305,7 +306,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2.5">
-              <span className="font-serif font-bold">Vertigogo</span>
+              <img src={logoSrc} alt="Vertigogo" className="h-5" />
             </div>
             <div className="flex items-center gap-6">
               <a href="https://www.vertigolaw.se" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Vertigo Law</a>

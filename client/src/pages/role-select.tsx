@@ -4,6 +4,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { User, Building2, ArrowRight } from "lucide-react";
+import logoSrc from "@assets/vertigogo-logo.svg";
 
 export default function RoleSelectPage() {
   const [selected, setSelected] = useState<"client" | "agency" | null>(null);
@@ -27,7 +28,7 @@ export default function RoleSelectPage() {
       <div className="max-w-2xl w-full space-y-8">
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center gap-2 mb-6">
-            <span className="text-2xl font-serif font-bold">Vertigogo</span>
+            <img src={logoSrc} alt="Vertigogo" className="h-7" />
           </div>
           <h1 className="text-3xl font-bold font-serif">Välkommen! Hur vill du använda Vertigogo?</h1>
           <p className="text-muted-foreground">Välj din roll för att komma igång. Det hjälper oss att anpassa din upplevelse.</p>
