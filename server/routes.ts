@@ -6,11 +6,11 @@ import fs from "fs";
 import { z } from "zod";
 import { storage } from "./storage";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 
-const openai = new OpenAI({
-  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
-  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+const anthropic = new Anthropic({
+  apiKey: process.env.AI_INTEGRATIONS_ANTHROPIC_API_KEY,
+  baseURL: process.env.AI_INTEGRATIONS_ANTHROPIC_BASE_URL,
 });
 
 const uploadDir = path.join(process.cwd(), "uploads");
@@ -244,42 +244,40 @@ export async function registerRoutes(
           const pdfData = await pdfParse(pdfBuffer);
           const pdfText = pdfData.text.slice(0, 8000);
 
-          const completion = await openai.chat.completions.create({
-            model: "gpt-5-mini",
+          const message = await anthropic.messages.create({
+            model: "claude-sonnet-4-5",
+            max_tokens: 1024,
+            system: `Du är en juridisk dokumentanalytiker för Vertogogo, en juridisk tjänsteplattform.
+Din uppgift är att:
+1. Läsa den tillhandahållna dokumenttexten
+2. ANONYMISERA all personlig information (namn, adresser, telefonnummer, e-postadresser, personnummer, bankuppgifter)
+3. Skapa en professionell, anonymiserad ärendesammanfattning som advokatbyråer kan granska
+
+Sammanfattningen ska innehålla:
+- Typ av juridiskt ärende
+- Viktiga fakta i ärendet (utan personliga identifierare)
+- Relevanta rättsområden
+- Vilken typ av juridisk hjälp som behövs
+
+Ersätt personlig information med generiska termer som [Klient], [Motpart], [Adress], etc.
+Skriv sammanfattningen på svenska i en tydlig, professionell ton. Håll den koncis men informativ (200-400 ord).
+VIKTIGT: Resultatet FÅR INTE innehålla några riktiga namn, adresser, telefonnummer, e-postadresser eller personnummer från originaldokumentet.`,
             messages: [
               {
-                role: "system",
-                content: `You are a legal document analyst for Vertogogo, a legal services platform. 
-Your task is to:
-1. Read the document text provided
-2. REDACT all personal information (names, addresses, phone numbers, email addresses, personal IDs, bank details)
-3. Create a professional, anonymized case summary that law firms can review
-
-The summary should include:
-- Type of legal matter
-- Key facts of the case (without personal identifiers)
-- Relevant legal areas
-- What kind of legal help is needed
-
-Replace personal information with generic terms like [Client], [Opposing Party], [Address], etc.
-Write the summary in a clear, professional tone. Keep it concise but informative (200-400 words).
-IMPORTANT: The output MUST NOT contain any real names, addresses, phone numbers, emails, or ID numbers from the original document.`,
-              },
-              {
                 role: "user",
-                content: `Please analyze this legal document and create a fully redacted, anonymized case summary:\n\n${pdfText}`,
+                content: `Vänligen analysera detta juridiska dokument och skapa en fullständigt anonymiserad ärendesammanfattning:\n\n${pdfText}`,
               },
             ],
-            max_completion_tokens: 1024,
           });
 
-          aiSummary = completion.choices[0]?.message?.content || null;
+          const textContent = message.content[0];
+          aiSummary = textContent.type === "text" ? textContent.text : null;
 
           fs.unlinkSync(req.file.path);
           pdfFilename = null;
         } catch (aiError) {
           console.error("AI analysis error:", aiError);
-          aiSummary = "Case summary is being generated. Please check back shortly.";
+          aiSummary = "Ärendesammanfattningen genereras. Vänligen kontrollera igen om en stund.";
           if (req.file?.path && fs.existsSync(req.file.path)) {
             fs.unlinkSync(req.file.path);
           }

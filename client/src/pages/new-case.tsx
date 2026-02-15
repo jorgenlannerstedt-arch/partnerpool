@@ -36,11 +36,11 @@ export default function NewCasePage() {
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["/api/cases"] });
-      toast({ title: "Case created", description: "Your case has been submitted and is being analyzed." });
+      toast({ title: "Ärende skapat", description: "Ditt ärende har skickats in och analyseras." });
       navigate(`/cases/${data.id}`);
     },
     onError: (err: Error) => {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Fel", description: err.message, variant: "destructive" });
     },
   });
 
@@ -51,7 +51,7 @@ export default function NewCasePage() {
     if (droppedFile?.type === "application/pdf") {
       setFile(droppedFile);
     } else {
-      toast({ title: "Invalid file", description: "Please upload a PDF file.", variant: "destructive" });
+      toast({ title: "Ogiltig fil", description: "Vänligen ladda upp en PDF-fil.", variant: "destructive" });
     }
   };
 
@@ -64,17 +64,17 @@ export default function NewCasePage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold font-serif" data-testid="text-new-case-title">New Case</h1>
-          <p className="text-muted-foreground text-sm">Upload a document and our AI will create an anonymized case summary.</p>
+          <h1 className="text-2xl font-bold font-serif" data-testid="text-new-case-title">Nytt ärende</h1>
+          <p className="text-muted-foreground text-sm">Ladda upp ett dokument och vår AI skapar en anonymiserad ärendesammanfattning.</p>
         </div>
       </div>
 
       <Card className="p-6 space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="title">Case Title</Label>
+          <Label htmlFor="title">Ärendetitel</Label>
           <Input
             id="title"
-            placeholder="e.g., Employment Dispute, Property Claim"
+            placeholder="t.ex. Arbetsrättstvist, Fastighetstvist"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             data-testid="input-case-title"
@@ -82,10 +82,10 @@ export default function NewCasePage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="description">Additional Details (optional)</Label>
+          <Label htmlFor="description">Ytterligare detaljer (valfritt)</Label>
           <Textarea
             id="description"
-            placeholder="Any additional context about your case..."
+            placeholder="Eventuell extra information om ditt ärende..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             rows={3}
@@ -94,7 +94,7 @@ export default function NewCasePage() {
         </div>
 
         <div className="space-y-2">
-          <Label>Upload Document (PDF)</Label>
+          <Label>Ladda upp dokument (PDF)</Label>
           <div
             className={`border-2 border-dashed rounded-md p-8 text-center transition-colors cursor-pointer ${
               dragOver
@@ -131,10 +131,10 @@ export default function NewCasePage() {
               <div className="space-y-2">
                 <Upload className="h-10 w-10 text-muted-foreground mx-auto" />
                 <p className="text-sm text-muted-foreground">
-                  Drag and drop a PDF here, or click to browse
+                  Dra och släpp en PDF här, eller klicka för att bläddra
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Personal information will be automatically redacted
+                  Personlig information anonymiseras automatiskt
                 </p>
               </div>
             )}
@@ -144,7 +144,7 @@ export default function NewCasePage() {
         <div className="flex items-center gap-2 p-3 rounded-md bg-primary/5">
           <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
           <p className="text-sm text-muted-foreground">
-            Our AI will analyze your document, redact personal information, and generate an anonymized case description for law firms to review.
+            Vår AI analyserar ditt dokument, anonymiserar personlig information och skapar en ärendebeskrivning som advokatbyråer kan granska.
           </p>
         </div>
 
@@ -158,12 +158,12 @@ export default function NewCasePage() {
           {uploadMutation.isPending ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              Analyzing Document...
+              Analyserar dokument...
             </>
           ) : (
             <>
               <Sparkles className="h-4 w-4 mr-2" />
-              Submit Case
+              Skicka in ärende
             </>
           )}
         </Button>

@@ -37,9 +37,9 @@ export default function CaseDetailPage() {
   if (!caseData) {
     return (
       <div className="max-w-3xl mx-auto text-center py-12">
-        <p className="text-muted-foreground">Case not found.</p>
+        <p className="text-muted-foreground">Ärendet hittades inte.</p>
         <Link href="/">
-          <Button variant="outline" className="mt-4">Go Back</Button>
+          <Button variant="outline" className="mt-4">Gå tillbaka</Button>
         </Link>
       </div>
     );
@@ -57,7 +57,7 @@ export default function CaseDetailPage() {
           <h1 className="text-2xl font-bold font-serif truncate" data-testid="text-case-title">{caseData.title}</h1>
           <p className="text-sm text-muted-foreground flex items-center gap-2">
             <Clock className="h-3.5 w-3.5" />
-            Created {caseData.createdAt ? new Date(caseData.createdAt).toLocaleDateString() : ""}
+            Skapad {caseData.createdAt ? new Date(caseData.createdAt).toLocaleDateString("sv-SE") : ""}
           </p>
         </div>
         <Badge variant="secondary">{caseData.status}</Badge>
@@ -67,7 +67,7 @@ export default function CaseDetailPage() {
         <Card className="p-6 space-y-3">
           <div className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-primary" />
-            <h2 className="font-semibold">AI Case Summary</h2>
+            <h2 className="font-semibold">AI-sammanfattning</h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap" data-testid="text-ai-summary">
             {caseData.aiSummary}
@@ -77,7 +77,7 @@ export default function CaseDetailPage() {
 
       {caseData.description && (
         <Card className="p-6 space-y-3">
-          <h2 className="font-semibold">Additional Details</h2>
+          <h2 className="font-semibold">Ytterligare detaljer</h2>
           <p className="text-sm text-muted-foreground leading-relaxed" data-testid="text-case-description">{caseData.description}</p>
         </Card>
       )}
@@ -85,7 +85,7 @@ export default function CaseDetailPage() {
       <div className="space-y-3">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <Building2 className="h-5 w-5" />
-          Responses from Law Firms
+          Svar från advokatbyråer
           {inquiries && inquiries.length > 0 && (
             <Badge variant="secondary">{inquiries.length}</Badge>
           )}
@@ -109,7 +109,7 @@ export default function CaseDetailPage() {
                   <div className="flex items-center justify-between gap-4">
                     <div className="flex items-center gap-2">
                       <Building2 className="h-4 w-4 text-primary" />
-                      <span className="font-semibold">{inq.agency?.name || "Law Firm"}</span>
+                      <span className="font-semibold">{inq.agency?.name || "Advokatbyrå"}</span>
                     </div>
                     <Badge variant="secondary" className="text-xs">{inq.status}</Badge>
                   </div>
@@ -118,12 +118,12 @@ export default function CaseDetailPage() {
                     <Link href={`/messages?agency=${inq.agencyId}&case=${inq.caseId}`}>
                       <Button variant="outline" size="sm" data-testid={`button-message-agency-${inq.id}`}>
                         <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
-                        Message
+                        Meddelande
                       </Button>
                     </Link>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {inq.createdAt ? new Date(inq.createdAt).toLocaleDateString() : ""}
+                    {inq.createdAt ? new Date(inq.createdAt).toLocaleDateString("sv-SE") : ""}
                   </p>
                 </div>
               </Card>
@@ -132,7 +132,7 @@ export default function CaseDetailPage() {
         ) : (
           <Card className="p-8 text-center">
             <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">No responses yet. Law firms are reviewing your case.</p>
+            <p className="text-sm text-muted-foreground">Inga svar ännu. Advokatbyråer granskar ditt ärende.</p>
           </Card>
         )}
       </div>

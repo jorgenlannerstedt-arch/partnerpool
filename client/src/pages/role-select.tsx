@@ -30,8 +30,8 @@ export default function RoleSelectPage() {
             <Scale className="h-8 w-8 text-primary" />
             <span className="text-2xl font-bold">Vertogogo</span>
           </div>
-          <h1 className="text-3xl font-bold font-serif">Welcome! How will you use Vertogogo?</h1>
-          <p className="text-muted-foreground">Choose your role to get started. This helps us personalize your experience.</p>
+          <h1 className="text-3xl font-bold font-serif">Välkommen! Hur vill du använda Vertogogo?</h1>
+          <p className="text-muted-foreground">Välj din roll för att komma igång. Det hjälper oss att anpassa din upplevelse.</p>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
@@ -45,10 +45,10 @@ export default function RoleSelectPage() {
                 <User className="h-8 w-8 text-primary" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold">I'm a Client</h3>
-                <p className="text-sm text-muted-foreground">I need legal help and want to find the right law firm for my case.</p>
+                <h3 className="text-lg font-semibold">Jag är klient</h3>
+                <p className="text-sm text-muted-foreground">Jag behöver juridisk hjälp och vill hitta rätt advokatbyrå för mitt ärende.</p>
               </div>
-              <div className="text-xs text-primary font-medium">Always free</div>
+              <div className="text-xs text-primary font-medium">Alltid gratis</div>
             </div>
           </Card>
 
@@ -62,10 +62,10 @@ export default function RoleSelectPage() {
                 <Building2 className="h-8 w-8 text-primary" />
               </div>
               <div className="space-y-2">
-                <h3 className="text-lg font-semibold">I'm a Law Firm</h3>
-                <p className="text-sm text-muted-foreground">I want to receive qualified case leads and grow my practice.</p>
+                <h3 className="text-lg font-semibold">Jag är advokatbyrå</h3>
+                <p className="text-sm text-muted-foreground">Jag vill ta emot kvalificerade ärenden och utveckla min verksamhet.</p>
               </div>
-              <div className="text-xs text-muted-foreground font-medium">995 SEK/month</div>
+              <div className="text-xs text-muted-foreground font-medium">995 SEK/månad</div>
             </div>
           </Card>
         </div>
@@ -77,7 +77,7 @@ export default function RoleSelectPage() {
             onClick={handleContinue}
             data-testid="button-continue-role"
           >
-            {mutation.isPending ? "Setting up..." : "Continue"}
+            {mutation.isPending ? "Konfigurerar..." : "Fortsätt"}
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>

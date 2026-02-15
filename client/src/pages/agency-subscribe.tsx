@@ -7,12 +7,12 @@ import { ArrowLeft, CheckCircle, CreditCard, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 
 const features = [
-  "Access to all client case summaries",
-  "AI-generated anonymized case descriptions",
-  "Direct messaging with potential clients",
-  "Featured placement in Partner Pool",
-  "Priority case notifications",
-  "Dedicated support",
+  "Tillgång till alla klientärendens sammanfattningar",
+  "AI-genererade anonymiserade ärendebeskrivningar",
+  "Direktmeddelanden med potentiella klienter",
+  "Framhävd placering i partnergruppen",
+  "Prioriterade ärendenotifikationer",
+  "Dedikerad support",
 ];
 
 export default function AgencySubscribePage() {
@@ -28,7 +28,7 @@ export default function AgencySubscribePage() {
       return data;
     },
     onError: (err: Error) => {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Fel", description: err.message, variant: "destructive" });
     },
   });
 
@@ -40,7 +40,7 @@ export default function AgencySubscribePage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
-        <h1 className="text-2xl font-bold font-serif" data-testid="text-subscribe-title">Subscribe</h1>
+        <h1 className="text-2xl font-bold font-serif" data-testid="text-subscribe-title">Prenumerera</h1>
       </div>
 
       <Card className="p-6 space-y-6">
@@ -49,9 +49,9 @@ export default function AgencySubscribePage() {
           <h2 className="text-2xl font-bold font-serif">Vertogogo Professional</h2>
           <div className="flex items-baseline justify-center gap-1">
             <span className="text-4xl font-bold">995</span>
-            <span className="text-muted-foreground">SEK/month</span>
+            <span className="text-muted-foreground">SEK/månad</span>
           </div>
-          <p className="text-sm text-muted-foreground">Cancel anytime</p>
+          <p className="text-sm text-muted-foreground">Avsluta när som helst</p>
         </div>
 
         <div className="space-y-3">
@@ -71,17 +71,17 @@ export default function AgencySubscribePage() {
           data-testid="button-start-subscription"
         >
           {subscribeMutation.isPending ? (
-            <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Processing...</>
+            <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Bearbetar...</>
           ) : (
             <>
               <CreditCard className="h-4 w-4 mr-2" />
-              Start Subscription
+              Starta prenumeration
             </>
           )}
         </Button>
 
         <p className="text-xs text-center text-muted-foreground">
-          Secure payment processed by Stripe. Your subscription can be cancelled at any time.
+          Säker betalning via Stripe. Ditt abonnemang kan avslutas när som helst.
         </p>
       </Card>
     </div>

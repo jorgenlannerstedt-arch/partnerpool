@@ -28,15 +28,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     : "U";
 
   const clientNavItems = [
-    { href: "/", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/", label: "Panel", icon: LayoutDashboard },
     { href: "/partners", label: "Partners", icon: Users },
-    { href: "/messages", label: "Messages", icon: MessageCircle },
+    { href: "/messages", label: "Meddelanden", icon: MessageCircle },
   ];
 
   const agencyNavItems = [
-    { href: "/", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/messages", label: "Messages", icon: MessageCircle },
-    { href: "/agency/profile", label: "Profile", icon: Settings },
+    { href: "/", label: "Panel", icon: LayoutDashboard },
+    { href: "/messages", label: "Meddelanden", icon: MessageCircle },
+    { href: "/agency/profile", label: "Profil", icon: Settings },
   ];
 
   const navItems = isAgency ? agencyNavItems : clientNavItems;
@@ -93,7 +93,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <Link href="/agency/profile">
                       <DropdownMenuItem className="cursor-pointer" data-testid="menu-settings">
                         <Settings className="h-4 w-4 mr-2" />
-                        Profile Settings
+                        Profilinställningar
                       </DropdownMenuItem>
                     </Link>
                   )}
@@ -104,7 +104,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     data-testid="menu-logout"
                   >
                     <LogOut className="h-4 w-4 mr-2" />
-                    Log Out
+                    Logga ut
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

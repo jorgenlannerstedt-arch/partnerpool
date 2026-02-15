@@ -89,14 +89,14 @@ export default function PartnerPoolPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold font-serif" data-testid="text-partner-pool-title">Vertigo Law Partners</h1>
-        <p className="text-muted-foreground text-sm">Browse our network of qualified law firms</p>
+        <p className="text-muted-foreground text-sm">Bläddra i vårt nätverk av kvalificerade advokatbyråer</p>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-[200px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search by name, city, or specialty..."
+            placeholder="Sök efter namn, stad eller specialisering..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9"
@@ -105,10 +105,10 @@ export default function PartnerPoolPage() {
         </div>
         <Select value={specialtyFilter} onValueChange={setSpecialtyFilter}>
           <SelectTrigger className="w-[180px]" data-testid="select-specialty">
-            <SelectValue placeholder="Specialty" />
+            <SelectValue placeholder="Specialisering" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Specialties</SelectItem>
+            <SelectItem value="all">Alla specialiseringar</SelectItem>
             {allSpecialties.map((s) => (
               <SelectItem key={s} value={s}>{s}</SelectItem>
             ))}
@@ -116,10 +116,10 @@ export default function PartnerPoolPage() {
         </Select>
         <Select value={cityFilter} onValueChange={setCityFilter}>
           <SelectTrigger className="w-[150px]" data-testid="select-city">
-            <SelectValue placeholder="City" />
+            <SelectValue placeholder="Stad" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Cities</SelectItem>
+            <SelectItem value="all">Alla städer</SelectItem>
             {allCities.map((c) => (
               <SelectItem key={c} value={c}>{c}</SelectItem>
             ))}
@@ -128,14 +128,14 @@ export default function PartnerPoolPage() {
         <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
           <SelectTrigger className="w-[180px]" data-testid="select-sort">
             <ArrowUpDown className="h-3.5 w-3.5 mr-1.5" />
-            <SelectValue placeholder="Sort by" />
+            <SelectValue placeholder="Sortera efter" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="name-asc">Name A-Z</SelectItem>
-            <SelectItem value="name-desc">Name Z-A</SelectItem>
-            <SelectItem value="employees-desc">Most Employees</SelectItem>
-            <SelectItem value="employees-asc">Fewest Employees</SelectItem>
-            <SelectItem value="city">City</SelectItem>
+            <SelectItem value="name-asc">Namn A-Ö</SelectItem>
+            <SelectItem value="name-desc">Namn Ö-A</SelectItem>
+            <SelectItem value="employees-desc">Flest anställda</SelectItem>
+            <SelectItem value="employees-asc">Färst anställda</SelectItem>
+            <SelectItem value="city">Stad</SelectItem>
           </SelectContent>
         </Select>
         <div className="flex rounded-md border overflow-visible">
@@ -217,12 +217,12 @@ export default function PartnerPoolPage() {
                   <div className="flex items-center gap-4 text-xs text-muted-foreground pt-1 border-t">
                     <span className="flex items-center gap-1">
                       <Users className="h-3 w-3" />
-                      {agency.employeeCount || 1} employees
+                      {agency.employeeCount || 1} anställda
                     </span>
                     {agency.website && (
                       <span className="flex items-center gap-1">
                         <Globe className="h-3 w-3" />
-                        Website
+                        Webbplats
                       </span>
                     )}
                   </div>
@@ -234,12 +234,12 @@ export default function PartnerPoolPage() {
       ) : (
         <Card className="p-8 text-center">
           <Building2 className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">No law firms found matching your criteria.</p>
+          <p className="text-sm text-muted-foreground">Inga advokatbyråer matchade dina kriterier.</p>
         </Card>
       )}
 
       <p className="text-xs text-muted-foreground text-center">
-        Showing {filtered.length} of {agencies?.length || 0} law firms
+        Visar {filtered.length} av {agencies?.length || 0} advokatbyråer
       </p>
     </div>
   );

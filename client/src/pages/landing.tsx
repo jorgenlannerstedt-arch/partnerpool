@@ -6,25 +6,25 @@ import { Scale, Shield, Users, FileText, MessageCircle, ArrowRight, CheckCircle 
 const features = [
   {
     icon: FileText,
-    title: "AI Case Analysis",
-    desc: "Upload your legal documents and our AI generates a clear, anonymized case description for law firms to review.",
+    title: "AI-analys av ärenden",
+    desc: "Ladda upp dina juridiska dokument och vår AI skapar en tydlig, anonymiserad ärendebeskrivning som advokatbyråer kan granska.",
   },
   {
     icon: Users,
-    title: "Vetted Partner Pool",
-    desc: "Browse qualified law firms with detailed profiles, specialties, and locations. Find the right match for your case.",
+    title: "Granskade partnerbyråer",
+    desc: "Bläddra bland kvalificerade advokatbyråer med detaljerade profiler, specialiseringar och platser. Hitta rätt match för ditt ärende.",
   },
   {
     icon: MessageCircle,
-    title: "Secure Messaging",
-    desc: "Communicate directly with interested law firms through our encrypted in-app messaging system.",
+    title: "Säker meddelandehantering",
+    desc: "Kommunicera direkt med intresserade advokatbyråer genom vårt krypterade meddelandesystem i appen.",
   },
 ];
 
 const stats = [
-  { value: "500+", label: "Law Partners" },
-  { value: "12k+", label: "Cases Matched" },
-  { value: "98%", label: "Client Satisfaction" },
+  { value: "500+", label: "Juridiska partners" },
+  { value: "12k+", label: "Matchade ärenden" },
+  { value: "98%", label: "Nöjda klienter" },
 ];
 
 export default function LandingPage() {
@@ -38,17 +38,17 @@ export default function LandingPage() {
               <span className="text-xl font-bold tracking-tight">Vertogogo</span>
             </div>
             <div className="hidden md:flex items-center gap-6">
-              <a href="#features" className="text-sm text-muted-foreground transition-colors" data-testid="link-features">Features</a>
-              <a href="#how-it-works" className="text-sm text-muted-foreground transition-colors" data-testid="link-how-it-works">How It Works</a>
-              <a href="#for-agencies" className="text-sm text-muted-foreground transition-colors" data-testid="link-for-agencies">For Agencies</a>
+              <a href="#features" className="text-sm text-muted-foreground transition-colors" data-testid="link-features">Funktioner</a>
+              <a href="#how-it-works" className="text-sm text-muted-foreground transition-colors" data-testid="link-how-it-works">Hur det fungerar</a>
+              <a href="#for-agencies" className="text-sm text-muted-foreground transition-colors" data-testid="link-for-agencies">För byråer</a>
             </div>
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <a href="/api/login">
-                <Button variant="outline" data-testid="button-login">Log In</Button>
+                <Button variant="outline" data-testid="button-login">Logga in</Button>
               </a>
               <a href="/api/login">
-                <Button data-testid="button-get-started">Get Started</Button>
+                <Button data-testid="button-get-started">Kom igång</Button>
               </a>
             </div>
           </div>
@@ -62,42 +62,42 @@ export default function LandingPage() {
               <div className="space-y-4">
                 <div className="inline-flex items-center gap-2 rounded-md bg-primary/10 px-3 py-1 text-sm text-primary">
                   <Shield className="h-3.5 w-3.5" />
-                  <span>Free for clients</span>
+                  <span>Gratis för klienter</span>
                 </div>
                 <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight font-serif leading-tight">
-                  Find the Right<br />
-                  <span className="text-primary">Legal Partner</span><br />
-                  for Your Case
+                  Hitta rätt<br />
+                  <span className="text-primary">juridisk partner</span><br />
+                  för ditt ärende
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-lg leading-relaxed">
-                  Vertogogo connects you with qualified law firms through AI-powered case matching. Upload your documents, get matched, and communicate securely.
+                  Vertogogo kopplar dig samman med kvalificerade advokatbyråer genom AI-driven ärendematchning. Ladda upp dina dokument, bli matchad och kommunicera säkert.
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 <a href="/api/login">
                   <Button size="lg" data-testid="button-hero-cta">
-                    Start Free
+                    Starta gratis
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </a>
                 <a href="#how-it-works">
                   <Button size="lg" variant="outline" data-testid="button-hero-learn">
-                    Learn More
+                    Läs mer
                   </Button>
                 </a>
               </div>
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5">
                   <CheckCircle className="h-4 w-4 text-primary" />
-                  No credit card required
+                  Inget kreditkort krävs
                 </span>
                 <span className="flex items-center gap-1.5">
                   <CheckCircle className="h-4 w-4 text-primary" />
-                  AI-powered matching
+                  AI-driven matchning
                 </span>
                 <span className="flex items-center gap-1.5">
                   <CheckCircle className="h-4 w-4 text-primary" />
-                  Secure & confidential
+                  Säkert och konfidentiellt
                 </span>
               </div>
             </div>
@@ -117,7 +117,7 @@ export default function LandingPage() {
                       <Scale className="h-8 w-8" />
                       <div>
                         <p className="font-semibold">Vertigo Law Partners</p>
-                        <p className="text-sm opacity-80">Your trusted partner pool</p>
+                        <p className="text-sm opacity-80">Din betrodda partnergrupp</p>
                       </div>
                     </div>
                   </Card>
@@ -131,9 +131,9 @@ export default function LandingPage() {
       <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-card">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
-            <h2 className="text-3xl sm:text-4xl font-bold font-serif">How Vertogogo Works</h2>
+            <h2 className="text-3xl sm:text-4xl font-bold font-serif">Så fungerar Vertogogo</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              A seamless process from document upload to finding the right legal representation.
+              En smidig process från dokumentuppladdning till att hitta rätt juridisk representation.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
@@ -159,16 +159,16 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-3xl sm:text-4xl font-bold font-serif">For Law Firms</h2>
+              <h2 className="text-3xl sm:text-4xl font-bold font-serif">För advokatbyråer</h2>
               <p className="text-muted-foreground leading-relaxed">
-                Join Vertigo Law Partners and get access to pre-qualified cases from clients looking for legal representation. Our AI-powered matching ensures you only see cases relevant to your expertise.
+                Gå med i Vertigo Law Partners och få tillgång till förkvalificerade ärenden från klienter som söker juridisk representation. Vår AI-drivna matchning säkerställer att du bara ser ärenden som är relevanta för din expertis.
               </p>
               <div className="space-y-3">
                 {[
-                  "Access AI-analyzed case descriptions",
-                  "Filter cases by specialty and location",
-                  "Communicate directly with potential clients",
-                  "Build your firm's online presence",
+                  "Tillgång till AI-analyserade ärendebeskrivningar",
+                  "Filtrera ärenden efter specialisering och plats",
+                  "Kommunicera direkt med potentiella klienter",
+                  "Bygg din byrås närvaro online",
                 ].map((item) => (
                   <div key={item} className="flex items-center gap-3">
                     <CheckCircle className="h-5 w-5 text-primary flex-shrink-0" />
@@ -178,23 +178,23 @@ export default function LandingPage() {
               </div>
               <Card className="p-6">
                 <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">Monthly subscription</p>
+                  <p className="text-sm text-muted-foreground">Månadsabonnemang</p>
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl font-bold">995</span>
-                    <span className="text-muted-foreground">SEK/mo</span>
+                    <span className="text-muted-foreground">SEK/mån</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">Cancel anytime</p>
+                  <p className="text-xs text-muted-foreground">Avsluta när som helst</p>
                 </div>
               </Card>
             </div>
             <div className="flex items-center justify-center">
               <Card className="p-8 max-w-sm w-full space-y-6 text-center">
                 <Scale className="h-16 w-16 text-primary mx-auto" />
-                <h3 className="text-xl font-semibold">Join as a Law Firm</h3>
-                <p className="text-sm text-muted-foreground">Register your agency and start receiving qualified case leads today.</p>
+                <h3 className="text-xl font-semibold">Gå med som advokatbyrå</h3>
+                <p className="text-sm text-muted-foreground">Registrera din byrå och börja ta emot kvalificerade ärenden idag.</p>
                 <a href="/api/login">
                   <Button className="w-full" data-testid="button-agency-signup">
-                    Register Your Firm
+                    Registrera din byrå
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </a>
@@ -211,7 +211,7 @@ export default function LandingPage() {
             <span className="font-semibold">Vertogogo</span>
           </div>
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Vertogogo. All rights reserved.
+            &copy; {new Date().getFullYear()} Vertogogo. Alla rättigheter förbehållna.
           </p>
         </div>
       </footer>

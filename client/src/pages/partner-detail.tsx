@@ -29,9 +29,9 @@ export default function PartnerDetailPage() {
   if (!agency) {
     return (
       <div className="max-w-3xl mx-auto text-center py-12">
-        <p className="text-muted-foreground">Agency not found.</p>
+        <p className="text-muted-foreground">Byrån hittades inte.</p>
         <Link href="/partners">
-          <Button variant="outline" className="mt-4">Back to Partners</Button>
+          <Button variant="outline" className="mt-4">Tillbaka till partners</Button>
         </Link>
       </div>
     );
@@ -72,7 +72,7 @@ export default function PartnerDetailPage() {
 
             {agency.specialties && agency.specialties.length > 0 && (
               <div className="space-y-2">
-                <h3 className="text-sm font-semibold">Specialties</h3>
+                <h3 className="text-sm font-semibold">Specialiseringar</h3>
                 <div className="flex flex-wrap gap-1.5">
                   {agency.specialties.map((s) => (
                     <Badge key={s} variant="secondary">{s}</Badge>
@@ -84,7 +84,7 @@ export default function PartnerDetailPage() {
             <div className="grid sm:grid-cols-2 gap-3 pt-2 border-t">
               <div className="flex items-center gap-2 text-sm">
                 <Users className="h-4 w-4 text-muted-foreground" />
-                <span>{agency.employeeCount || 1} employees</span>
+                <span>{agency.employeeCount || 1} anställda</span>
               </div>
               {agency.email && (
                 <div className="flex items-center gap-2 text-sm">
@@ -102,7 +102,7 @@ export default function PartnerDetailPage() {
                 <div className="flex items-center gap-2 text-sm">
                   <Globe className="h-4 w-4 text-muted-foreground" />
                   <a href={agency.website} target="_blank" rel="noopener noreferrer" className="text-primary">
-                    Visit Website
+                    Besök webbplats
                   </a>
                 </div>
               )}

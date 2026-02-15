@@ -31,11 +31,11 @@ export default function AgencyCaseDetailPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/agency/cases", params.id, "my-inquiry"] });
-      toast({ title: "Inquiry sent", description: "The client will be notified of your interest." });
+      toast({ title: "Intresseanmälan skickad", description: "Klienten kommer att meddelas om ditt intresse." });
       setInquiryMessage("");
     },
     onError: (err: Error) => {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Fel", description: err.message, variant: "destructive" });
     },
   });
 
@@ -55,8 +55,8 @@ export default function AgencyCaseDetailPage() {
   if (!caseData) {
     return (
       <div className="max-w-3xl mx-auto text-center py-12">
-        <p className="text-muted-foreground">Case not found.</p>
-        <Link href="/"><Button variant="outline" className="mt-4">Go Back</Button></Link>
+        <p className="text-muted-foreground">Ärendet hittades inte.</p>
+        <Link href="/"><Button variant="outline" className="mt-4">Gå tillbaka</Button></Link>
       </div>
     );
   }
@@ -72,7 +72,7 @@ export default function AgencyCaseDetailPage() {
         <div className="flex-1 min-w-0">
           <h1 className="text-2xl font-bold font-serif truncate" data-testid="text-agency-case-title">{caseData.title}</h1>
           <p className="text-sm text-muted-foreground">
-            Posted {caseData.createdAt ? new Date(caseData.createdAt).toLocaleDateString() : ""}
+            Publicerad {caseData.createdAt ? new Date(caseData.createdAt).toLocaleDateString("sv-SE") : ""}
           </p>
         </div>
         <Badge variant="secondary">{caseData.status}</Badge>
@@ -82,7 +82,7 @@ export default function AgencyCaseDetailPage() {
         <Card className="p-6 space-y-3">
           <div className="flex items-center gap-2">
             <FileText className="h-5 w-5 text-primary" />
-            <h2 className="font-semibold">Case Summary</h2>
+            <h2 className="font-semibold">Ärendesammanfattning</h2>
           </div>
           <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap" data-testid="text-agency-ai-summary">
             {caseData.aiSummary}
@@ -94,26 +94,26 @@ export default function AgencyCaseDetailPage() {
         <Card className="p-6 space-y-3 border-primary/30 bg-primary/5">
           <div className="flex items-center gap-2">
             <CheckCircle className="h-5 w-5 text-primary" />
-            <h2 className="font-semibold">Your Inquiry</h2>
+            <h2 className="font-semibold">Din intresseanmälan</h2>
           </div>
           <p className="text-sm text-muted-foreground">{myInquiry.message}</p>
           <Badge variant="secondary">{myInquiry.status}</Badge>
           <Link href={`/messages?client=${caseData.clientId}&case=${caseData.id}`}>
             <Button variant="outline" size="sm" className="mt-2" data-testid="button-message-client">
-              Message Client
+              Meddela klient
             </Button>
           </Link>
         </Card>
       ) : (
         <Card className="p-6 space-y-4">
-          <h2 className="font-semibold">Express Interest</h2>
+          <h2 className="font-semibold">Visa intresse</h2>
           <p className="text-sm text-muted-foreground">
-            Send a message to the client explaining how your firm can help with this case.
+            Skicka ett meddelande till klienten och förklara hur din byrå kan hjälpa till med detta ärende.
           </p>
           <Textarea
             value={inquiryMessage}
             onChange={(e) => setInquiryMessage(e.target.value)}
-            placeholder="Explain your expertise relevant to this case and how you would approach it..."
+            placeholder="Beskriv din expertis inom detta område och hur du skulle hantera ärendet..."
             rows={4}
             data-testid="input-inquiry-message"
           />
@@ -123,9 +123,9 @@ export default function AgencyCaseDetailPage() {
             data-testid="button-send-inquiry"
           >
             {sendInquiryMutation.isPending ? (
-              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Sending...</>
+              <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Skickar...</>
             ) : (
-              <><Send className="h-4 w-4 mr-2" /> Send Inquiry</>
+              <><Send className="h-4 w-4 mr-2" /> Skicka intresseanmälan</>
             )}
           </Button>
         </Card>

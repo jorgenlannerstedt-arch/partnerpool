@@ -37,10 +37,10 @@ export default function AgencyDashboard() {
     return (
       <div className="max-w-xl mx-auto text-center py-12 space-y-4">
         <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto" />
-        <h2 className="text-xl font-semibold">Complete Your Profile</h2>
-        <p className="text-muted-foreground">Set up your agency profile to start receiving case leads.</p>
+        <h2 className="text-xl font-semibold">Fyll i din profil</h2>
+        <p className="text-muted-foreground">Konfigurera din byråprofil för att börja ta emot ärenden.</p>
         <Link href="/agency/profile">
-          <Button data-testid="button-setup-profile">Set Up Profile</Button>
+          <Button data-testid="button-setup-profile">Konfigurera profil</Button>
         </Link>
       </div>
     );
@@ -50,15 +50,15 @@ export default function AgencyDashboard() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold font-serif" data-testid="text-agency-dashboard-title">Agency Dashboard</h1>
-          <p className="text-muted-foreground text-sm">Welcome back, {profile.name}</p>
+          <h1 className="text-2xl font-bold font-serif" data-testid="text-agency-dashboard-title">Byråpanel</h1>
+          <p className="text-muted-foreground text-sm">Välkommen tillbaka, {profile.name}</p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant={profile.subscriptionActive ? "default" : "secondary"}>
             {profile.subscriptionActive ? (
-              <><CheckCircle className="h-3 w-3 mr-1" /> Active Subscription</>
+              <><CheckCircle className="h-3 w-3 mr-1" /> Aktivt abonnemang</>
             ) : (
-              <><AlertCircle className="h-3 w-3 mr-1" /> No Subscription</>
+              <><AlertCircle className="h-3 w-3 mr-1" /> Inget abonnemang</>
             )}
           </Badge>
         </div>
@@ -70,12 +70,12 @@ export default function AgencyDashboard() {
             <div className="flex items-center gap-3">
               <CreditCard className="h-5 w-5 text-primary" />
               <div>
-                <p className="font-semibold text-sm">Subscribe to access cases</p>
-                <p className="text-xs text-muted-foreground">995 SEK/month - Get full access to client cases and messaging</p>
+                <p className="font-semibold text-sm">Prenumerera för att se ärenden</p>
+                <p className="text-xs text-muted-foreground">995 SEK/månad - Full tillgång till klientärenden och meddelanden</p>
               </div>
             </div>
             <Link href="/agency/subscribe">
-              <Button size="sm" data-testid="button-subscribe">Subscribe Now</Button>
+              <Button size="sm" data-testid="button-subscribe">Prenumerera nu</Button>
             </Link>
           </div>
         </Card>
@@ -85,7 +85,7 @@ export default function AgencyDashboard() {
         <Card className="p-4">
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Available Cases</p>
+              <p className="text-sm text-muted-foreground">Tillgängliga ärenden</p>
               <p className="text-2xl font-bold" data-testid="text-available-cases">
                 {casesLoading ? "..." : availableCases?.length || 0}
               </p>
@@ -97,9 +97,9 @@ export default function AgencyDashboard() {
           <Card className="p-4 hover-elevate cursor-pointer">
             <div className="flex items-center justify-between gap-4">
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Messages</p>
+                <p className="text-sm text-muted-foreground">Meddelanden</p>
                 <p className="text-2xl font-bold" data-testid="text-agency-messages">
-                  {unreadCount?.count || 0} unread
+                  {unreadCount?.count || 0} olästa
                 </p>
               </div>
               <MessageCircle className="h-8 w-8 text-muted-foreground" />
@@ -110,8 +110,8 @@ export default function AgencyDashboard() {
           <Card className="p-4 hover-elevate cursor-pointer">
             <div className="flex items-center justify-between gap-4">
               <div className="space-y-1">
-                <p className="text-sm text-muted-foreground">Profile</p>
-                <p className="text-2xl font-bold text-primary" data-testid="text-edit-profile">Edit</p>
+                <p className="text-sm text-muted-foreground">Profil</p>
+                <p className="text-2xl font-bold text-primary" data-testid="text-edit-profile">Redigera</p>
               </div>
               <Settings className="h-8 w-8 text-primary" />
             </div>
@@ -120,7 +120,7 @@ export default function AgencyDashboard() {
       </div>
 
       <div className="space-y-3">
-        <h2 className="text-lg font-semibold">Recent Cases</h2>
+        <h2 className="text-lg font-semibold">Senaste ärenden</h2>
         {casesLoading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
@@ -135,9 +135,9 @@ export default function AgencyDashboard() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="space-y-1 flex-1 min-w-0">
                       <h3 className="font-semibold truncate">{c.title}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{c.aiSummary || "Case summary pending..."}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{c.aiSummary || "Ärendesammanfattning väntar..."}</p>
                       <p className="text-xs text-muted-foreground">
-                        {c.createdAt ? new Date(c.createdAt).toLocaleDateString() : ""}
+                        {c.createdAt ? new Date(c.createdAt).toLocaleDateString("sv-SE") : ""}
                       </p>
                     </div>
                     <Badge variant="secondary">{c.status}</Badge>
@@ -150,7 +150,7 @@ export default function AgencyDashboard() {
           <Card className="p-8 text-center">
             <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">
-              {profile.subscriptionActive ? "No cases available at the moment." : "Subscribe to see available cases."}
+              {profile.subscriptionActive ? "Inga ärenden tillgängliga just nu." : "Prenumerera för att se tillgängliga ärenden."}
             </p>
           </Card>
         )}

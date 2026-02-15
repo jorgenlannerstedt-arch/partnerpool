@@ -52,7 +52,7 @@ export default function MessagesPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/messages/threads"] });
     },
     onError: () => {
-      toast({ title: "Error", description: "Failed to send message", variant: "destructive" });
+      toast({ title: "Fel", description: "Kunde inte skicka meddelandet", variant: "destructive" });
     },
   });
 
@@ -83,13 +83,13 @@ export default function MessagesPage() {
             <ArrowLeft className="h-4 w-4" />
           </Button>
         </Link>
-        <h1 className="text-2xl font-bold font-serif" data-testid="text-messages-title">Messages</h1>
+        <h1 className="text-2xl font-bold font-serif" data-testid="text-messages-title">Meddelanden</h1>
       </div>
 
       <div className="grid md:grid-cols-[300px_1fr] gap-4 h-[calc(100%-3rem)]">
         <Card className="flex flex-col overflow-hidden">
           <div className="p-3 border-b">
-            <h2 className="text-sm font-semibold">Conversations</h2>
+            <h2 className="text-sm font-semibold">Konversationer</h2>
           </div>
           <ScrollArea className="flex-1">
             {threadsLoading ? (
@@ -137,7 +137,7 @@ export default function MessagesPage() {
             ) : (
               <div className="p-8 text-center">
                 <MessageCircle className="h-8 w-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-xs text-muted-foreground">No conversations yet</p>
+                <p className="text-xs text-muted-foreground">Inga konversationer ännu</p>
               </div>
             )}
           </ScrollArea>
@@ -148,7 +148,7 @@ export default function MessagesPage() {
             <>
               <div className="p-3 border-b">
                 <h2 className="text-sm font-semibold">
-                  {threads?.find((t) => t.partnerId === selectedThread)?.partnerName || "Conversation"}
+                  {threads?.find((t) => t.partnerId === selectedThread)?.partnerName || "Konversation"}
                 </h2>
               </div>
               <div className="flex-1 overflow-auto p-4 space-y-3" ref={scrollRef}>
@@ -176,7 +176,7 @@ export default function MessagesPage() {
                         >
                           <p className="text-sm">{msg.content}</p>
                           <p className={`text-xs mt-1 ${isMe ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                            {msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : ""}
+                            {msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" }) : ""}
                           </p>
                         </div>
                       </div>
@@ -184,13 +184,13 @@ export default function MessagesPage() {
                   })
                 ) : (
                   <div className="text-center py-8">
-                    <p className="text-sm text-muted-foreground">No messages yet. Start the conversation!</p>
+                    <p className="text-sm text-muted-foreground">Inga meddelanden ännu. Starta konversationen!</p>
                   </div>
                 )}
               </div>
               <div className="p-3 border-t flex items-center gap-2">
                 <Input
-                  placeholder="Type a message..."
+                  placeholder="Skriv ett meddelande..."
                   value={messageText}
                   onChange={(e) => setMessageText(e.target.value)}
                   onKeyDown={handleKeyDown}
@@ -210,7 +210,7 @@ export default function MessagesPage() {
             <div className="flex-1 flex items-center justify-center">
               <div className="text-center space-y-2">
                 <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto" />
-                <p className="text-sm text-muted-foreground">Select a conversation to start messaging</p>
+                <p className="text-sm text-muted-foreground">Välj en konversation för att börja skicka meddelanden</p>
               </div>
             </div>
           )}

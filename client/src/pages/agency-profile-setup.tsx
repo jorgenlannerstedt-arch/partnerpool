@@ -13,10 +13,10 @@ import { Link } from "wouter";
 import type { AgencyProfile } from "@shared/schema";
 
 const SPECIALTY_OPTIONS = [
-  "Corporate Law", "Criminal Law", "Family Law", "Employment Law",
-  "Immigration Law", "Real Estate", "Tax Law", "Intellectual Property",
-  "Environmental Law", "Personal Injury", "Bankruptcy", "Civil Litigation",
-  "Contract Law", "Insurance Law", "Maritime Law",
+  "Affärsjuridik", "Straffrätt", "Familjerätt", "Arbetsrätt",
+  "Migrationsrätt", "Fastighetsrätt", "Skatterätt", "Immaterialrätt",
+  "Miljörätt", "Personskaderätt", "Konkursrätt", "Tvistemål",
+  "Avtalsrätt", "Försäkringsrätt", "Sjörätt",
 ];
 
 export default function AgencyProfileSetupPage() {
@@ -71,10 +71,10 @@ export default function AgencyProfileSetupPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/agency/profile"] });
       queryClient.invalidateQueries({ queryKey: ["/api/profile"] });
-      toast({ title: "Profile saved", description: "Your agency profile has been updated." });
+      toast({ title: "Profil sparad", description: "Din byråprofil har uppdaterats." });
     },
     onError: (err: Error) => {
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Fel", description: err.message, variant: "destructive" });
     },
   });
 
@@ -96,57 +96,57 @@ export default function AgencyProfileSetupPage() {
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold font-serif" data-testid="text-profile-title">Agency Profile</h1>
-          <p className="text-muted-foreground text-sm">Set up your law firm's profile</p>
+          <h1 className="text-2xl font-bold font-serif" data-testid="text-profile-title">Byråprofil</h1>
+          <p className="text-muted-foreground text-sm">Konfigurera din advokatbyrås profil</p>
         </div>
       </div>
 
       <Card className="p-6 space-y-5">
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="name">Firm Name *</Label>
-            <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="e.g., Anderson & Associates" data-testid="input-firm-name" />
+            <Label htmlFor="name">Byrånamn *</Label>
+            <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="t.ex. Andersson & Partners" data-testid="input-firm-name" />
           </div>
           <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="desc">Description</Label>
-            <Textarea id="desc" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Tell clients about your firm..." rows={3} data-testid="input-firm-description" />
+            <Label htmlFor="desc">Beskrivning</Label>
+            <Textarea id="desc" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Berätta om din byrå för klienter..." rows={3} data-testid="input-firm-description" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Business Email</Label>
-            <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="contact@firm.com" data-testid="input-firm-email" />
+            <Label htmlFor="email">E-postadress</Label>
+            <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="kontakt@byra.se" data-testid="input-firm-email" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
+            <Label htmlFor="phone">Telefon</Label>
             <Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+46 8 123 456" data-testid="input-firm-phone" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
-            <Input id="address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Street address" data-testid="input-firm-address" />
+            <Label htmlFor="address">Adress</Label>
+            <Input id="address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Gatuadress" data-testid="input-firm-address" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="city">City</Label>
+            <Label htmlFor="city">Stad</Label>
             <Input id="city" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Stockholm" data-testid="input-firm-city" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="lat">Latitude</Label>
+            <Label htmlFor="lat">Latitud</Label>
             <Input id="lat" type="number" step="any" value={form.latitude} onChange={(e) => setForm({ ...form, latitude: e.target.value })} placeholder="59.3293" data-testid="input-firm-lat" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="lng">Longitude</Label>
+            <Label htmlFor="lng">Longitud</Label>
             <Input id="lng" type="number" step="any" value={form.longitude} onChange={(e) => setForm({ ...form, longitude: e.target.value })} placeholder="18.0686" data-testid="input-firm-lng" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="website">Website</Label>
-            <Input id="website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://www.firm.se" data-testid="input-firm-website" />
+            <Label htmlFor="website">Webbplats</Label>
+            <Input id="website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://www.byra.se" data-testid="input-firm-website" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="employees">Number of Employees</Label>
+            <Label htmlFor="employees">Antal anställda</Label>
             <Input id="employees" type="number" min="1" value={form.employeeCount} onChange={(e) => setForm({ ...form, employeeCount: e.target.value })} data-testid="input-firm-employees" />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label>Specialties</Label>
+          <Label>Specialiseringar</Label>
           <div className="flex flex-wrap gap-1.5">
             {SPECIALTY_OPTIONS.map((s) => (
               <Badge
@@ -170,9 +170,9 @@ export default function AgencyProfileSetupPage() {
           data-testid="button-save-profile"
         >
           {mutation.isPending ? (
-            <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Saving...</>
+            <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Sparar...</>
           ) : (
-            <><Save className="h-4 w-4 mr-2" /> Save Profile</>
+            <><Save className="h-4 w-4 mr-2" /> Spara profil</>
           )}
         </Button>
       </Card>

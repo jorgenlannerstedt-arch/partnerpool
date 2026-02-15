@@ -52,7 +52,7 @@ export function PartnerMap({ agencies }: PartnerMapProps) {
               <strong style="font-size: 14px;">${agency.name}</strong>
               ${agency.city ? `<br/><span style="color: #666; font-size: 12px;">${agency.city}</span>` : ""}
               ${agency.specialties ? `<br/><span style="color: #888; font-size: 11px;">${agency.specialties.slice(0, 2).join(", ")}</span>` : ""}
-              <br/><a href="/partners/${agency.id}" style="color: hsl(221, 83%, 53%); font-size: 12px; text-decoration: none;">View Profile &rarr;</a>
+              <br/><a href="/partners/${agency.id}" style="color: hsl(221, 83%, 53%); font-size: 12px; text-decoration: none;">Visa profil &rarr;</a>
             </div>
           `);
         }
@@ -104,7 +104,7 @@ export function PartnerMap({ agencies }: PartnerMapProps) {
               <strong style="font-size: 14px;">${agency.name}</strong>
               ${agency.city ? `<br/><span style="color: #666; font-size: 12px;">${agency.city}</span>` : ""}
               ${agency.specialties ? `<br/><span style="color: #888; font-size: 11px;">${agency.specialties.slice(0, 2).join(", ")}</span>` : ""}
-              <br/><a href="/partners/${agency.id}" style="color: hsl(221, 83%, 53%); font-size: 12px; text-decoration: none;">View Profile &rarr;</a>
+              <br/><a href="/partners/${agency.id}" style="color: hsl(221, 83%, 53%); font-size: 12px; text-decoration: none;">Visa profil &rarr;</a>
             </div>
           `);
         }
