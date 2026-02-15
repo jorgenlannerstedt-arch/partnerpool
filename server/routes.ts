@@ -60,7 +60,35 @@ function requireRole(role: "client" | "agency") {
 
 const roleSchema = z.object({
   role: z.enum(["client", "agency"]),
+  agencyEmail: z.string().email().optional(),
 });
+
+const BLOCKED_EMAIL_DOMAINS = [
+  "gmail.com", "googlemail.com",
+  "hotmail.com", "hotmail.se", "hotmail.co.uk",
+  "outlook.com", "outlook.se",
+  "live.com", "live.se",
+  "msn.com",
+  "yahoo.com", "yahoo.se", "yahoo.co.uk",
+  "ymail.com",
+  "aol.com",
+  "icloud.com", "me.com", "mac.com",
+  "protonmail.com", "proton.me",
+  "mail.com",
+  "zoho.com",
+  "gmx.com", "gmx.se",
+  "tutanota.com", "tuta.io",
+  "fastmail.com",
+  "hey.com",
+  "pm.me",
+  "mailbox.org",
+];
+
+function isBusinessEmail(email: string): boolean {
+  const domain = email.split("@")[1]?.toLowerCase();
+  if (!domain) return false;
+  return !BLOCKED_EMAIL_DOMAINS.includes(domain);
+}
 
 const messageSchema = z.object({
   receiverId: z.string().min(1),
@@ -140,7 +168,16 @@ export async function registerRoutes(
       if (!parsed.success) {
         return res.status(400).json({ message: "Invalid role" });
       }
-      const { role } = parsed.data;
+      const { role, agencyEmail } = parsed.data;
+
+      if (role === "agency") {
+        if (!agencyEmail) {
+          return res.status(400).json({ message: "Företagets e-postadress krävs för byråregistrering." });
+        }
+        if (!isBusinessEmail(agencyEmail)) {
+          return res.status(400).json({ message: "Vi accepterar bara företagsmailadresser (inte Gmail, Hotmail etc.)." });
+        }
+      }
 
       let profile = await storage.getProfile(userId);
       if (profile) {
@@ -151,6 +188,7 @@ export async function registerRoutes(
       } else {
         profile = await storage.createProfile({ userId, role, onboardingComplete: true });
       }
+
       res.json(profile);
     } catch (error) {
       console.error("Error setting role:", error);

@@ -9,6 +9,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import NotFound from "@/pages/not-found";
 import LandingPage from "@/pages/landing";
+import AgencyRegisterPage from "@/pages/agency-register";
 import RoleSelectPage from "@/pages/role-select";
 import ClientDashboard from "@/pages/client-dashboard";
 import NewCasePage from "@/pages/new-case";
@@ -79,7 +80,12 @@ function AppRouter() {
   }
 
   if (!user) {
-    return <LandingPage />;
+    return (
+      <Switch>
+        <Route path="/register/agency" component={AgencyRegisterPage} />
+        <Route component={LandingPage} />
+      </Switch>
+    );
   }
 
   return <AuthenticatedRouter />;

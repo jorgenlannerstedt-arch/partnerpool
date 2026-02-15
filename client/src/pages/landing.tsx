@@ -226,7 +226,7 @@ export default function LandingPage() {
                     </div>
                   ))}
                 </div>
-                <a href="/api/login">
+                <a href="/register/agency">
                   <Button className="w-full rounded-full" data-testid="button-agency-signup">
                     Registrera din byrå
                     <ArrowRight className="ml-2 h-4 w-4" />
