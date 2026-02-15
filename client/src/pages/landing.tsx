@@ -227,7 +227,7 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <a href="/register/agency">
-                  <Button className="w-full rounded-full" data-testid="button-agency-signup">
+                  <Button className="w-full rounded-full pt-[12px] pb-[12px] mt-[26px] mb-[26px]" data-testid="button-agency-signup">
                     Registrera din byrå
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
