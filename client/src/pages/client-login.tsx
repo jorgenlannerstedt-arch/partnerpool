@@ -20,7 +20,7 @@ export default function ClientLoginPage() {
           <h1 className="text-3xl font-bold font-serif" data-testid="text-client-login-heading">
             Logga in eller skapa konto
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-[17px]">
             Helt gratis. Hitta rätt juridisk partner för ditt ärende.
           </p>
         </div>
