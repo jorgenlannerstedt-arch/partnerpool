@@ -1,7 +1,7 @@
-# Vertogogo - Legal Services Platform
+# Vertigogo - Legal Services Platform
 
 ## Overview
-Vertogogo connects clients needing legal help with law firms. The platform features AI-powered PDF analysis, anonymized case descriptions, partner pool with map visualization, and secure messaging.
+Vertigogo connects clients needing legal help with law firms. The platform features AI-powered PDF analysis, anonymized case descriptions, partner pool with map visualization, and secure messaging.
 
 ## Architecture
 - **Frontend**: React + Vite + TailwindCSS + shadcn/ui components
@@ -13,10 +13,10 @@ Vertogogo connects clients needing legal help with law firms. The platform featu
 - **Maps**: Leaflet (free, no API key)
 
 ## Design System
-- **Design**: Inspired by vertigolaw.se - dark navy premium aesthetic
+- **Design**: Clean, light professional aesthetic
 - **Fonts**: Baskervville (serif headings), Open Sans (body text)
-- **Colors**: Dark navy primary (#2b3457 / HSL 228 28% 25%), blue accent (#0082f3 / HSL 210 90% 49%)
-- **Style**: Pill-shaped buttons (rounded-full), dark header/footer, clean sections
+- **Colors**: Light background (#f3f4f8), neutral dark primary, blue accent (#0082f3 / HSL 210 90% 49%)
+- **Style**: Pill-shaped buttons (rounded-full), white header/footer, light sections
 - **Language**: All UI text in Swedish
 
 ## Key Files
@@ -46,4 +46,5 @@ Vertogogo connects clients needing legal help with law firms. The platform featu
 - Seeded 12 Swedish law firms for partner pool
 - Switched AI from OpenAI to Anthropic Claude (claude-sonnet-4-5)
 - Translated all UI text to Swedish
-- Redesigned to match vertigolaw.se aesthetic: dark navy theme, Baskervville font, pill buttons
+- Redesigned with light #f3f4f8 background, white headers/sections, Baskervville font, pill buttons
+- Renamed app from Vertogogo to Vertigogo

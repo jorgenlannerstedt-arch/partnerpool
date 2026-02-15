@@ -27,9 +27,9 @@ export default function RoleSelectPage() {
       <div className="max-w-2xl w-full space-y-8">
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center gap-2 mb-6">
-            <span className="text-2xl font-serif font-bold">Vertogogo</span>
+            <span className="text-2xl font-serif font-bold">Vertigogo</span>
           </div>
-          <h1 className="text-3xl font-bold font-serif">Välkommen! Hur vill du använda Vertogogo?</h1>
+          <h1 className="text-3xl font-bold font-serif">Välkommen! Hur vill du använda Vertigogo?</h1>
           <p className="text-muted-foreground">Välj din roll för att komma igång. Det hjälper oss att anpassa din upplevelse.</p>
         </div>
 

@@ -46,7 +46,7 @@ export default function AgencySubscribePage() {
       <Card className="p-6 space-y-6">
         <div className="text-center space-y-2">
           <CreditCard className="h-12 w-12 text-primary mx-auto" />
-          <h2 className="text-2xl font-bold font-serif">Vertogogo Professional</h2>
+          <h2 className="text-2xl font-bold font-serif">Vertigogo Professional</h2>
           <div className="flex items-baseline justify-center gap-1">
             <span className="text-4xl font-bold">995</span>
             <span className="text-muted-foreground">SEK/månad</span>

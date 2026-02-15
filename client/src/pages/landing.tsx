@@ -33,26 +33,26 @@ const securityFeatures = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#1a1e33]/95 backdrop-blur-md border-b border-white/10">
+    <div className="min-h-screen bg-[#f3f4f8]">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b" data-testid="nav-bar">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4 h-16">
             <div className="flex items-center gap-2.5">
-              <span className="text-xl font-serif font-bold text-white tracking-tight">Vertogogo</span>
+              <span className="text-xl font-serif font-bold tracking-tight" data-testid="text-logo">Vertigogo</span>
             </div>
             <div className="hidden md:flex items-center gap-8">
-              <a href="#how-it-works" className="text-sm text-white/60 transition-colors" data-testid="link-how-it-works">Hur det fungerar</a>
-              <a href="#features" className="text-sm text-white/60 transition-colors" data-testid="link-features">Funktioner</a>
-              <a href="#for-agencies" className="text-sm text-white/60 transition-colors" data-testid="link-for-agencies">För byråer</a>
-              <a href="#security" className="text-sm text-white/60 transition-colors" data-testid="link-security">Säkerhet</a>
+              <a href="#how-it-works" className="text-sm text-muted-foreground transition-colors hover:text-foreground" data-testid="link-how-it-works">Hur det fungerar</a>
+              <a href="#features" className="text-sm text-muted-foreground transition-colors hover:text-foreground" data-testid="link-features">Funktioner</a>
+              <a href="#for-agencies" className="text-sm text-muted-foreground transition-colors hover:text-foreground" data-testid="link-for-agencies">För byråer</a>
+              <a href="#security" className="text-sm text-muted-foreground transition-colors hover:text-foreground" data-testid="link-security">Säkerhet</a>
             </div>
             <div className="flex items-center gap-3">
               <ThemeToggle />
               <a href="/api/login">
-                <Button variant="outline" className="rounded-full border-white/20 bg-transparent text-white" data-testid="button-login">Logga in</Button>
+                <Button variant="outline" className="rounded-full" data-testid="button-login">Logga in</Button>
               </a>
               <a href="/api/login">
-                <Button className="rounded-full bg-white text-[#1a1e33]" data-testid="button-get-started">
+                <Button className="rounded-full" data-testid="button-get-started">
                   Kom igång
                   <ChevronRight className="ml-1 h-4 w-4" />
                 </Button>
@@ -62,44 +62,43 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      <section className="relative pt-32 pb-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#1a1e33] via-[#232842] to-[#2b3457] overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,152,236,0.08),transparent_70%)]" />
+      <section className="relative pt-32 pb-28 px-4 sm:px-6 lg:px-8 bg-[#f3f4f8] overflow-hidden">
         <div className="max-w-7xl mx-auto relative">
           <div className="max-w-3xl mx-auto text-center space-y-8">
-            <Badge variant="secondary" className="bg-white/10 text-white/80 border-white/10 rounded-full px-4 py-1.5">
+            <Badge variant="secondary" className="rounded-full px-4 py-1.5">
               <Shield className="h-3.5 w-3.5 mr-1.5" />
               Alltid gratis för klienter
             </Badge>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold text-white leading-[1.1] tracking-tight">
-              Hitta rätt juridisk<br />partner för ditt ärende
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold leading-[1.1] tracking-tight" data-testid="text-hero-heading">
+              Hitta rätt juridisk {" "}<br />partner för ditt ärende
             </h1>
-            <p className="text-lg sm:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
-              Vertogogo kopplar dig samman med kvalificerade advokatbyråer genom AI-driven ärendeanalys. Ladda upp, bli matchad, kommunicera säkert.
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Vertigogo kopplar dig samman med kvalificerade advokatbyråer genom AI-driven ärendeanalys. Ladda upp, bli matchad, kommunicera säkert.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
               <a href="/api/login">
-                <Button size="lg" className="rounded-full bg-white text-[#1a1e33] px-8 text-base" data-testid="button-hero-cta">
+                <Button size="lg" className="rounded-full px-8 text-base" data-testid="button-hero-cta">
                   Starta gratis
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </a>
               <a href="#how-it-works">
-                <Button size="lg" variant="outline" className="rounded-full border-white/20 bg-transparent text-white px-8 text-base" data-testid="button-hero-learn">
+                <Button size="lg" variant="outline" className="rounded-full px-8 text-base" data-testid="button-hero-learn">
                   Läs mer
                 </Button>
               </a>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-sm text-white/50">
+            <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-white/40" />
+                <CheckCircle className="h-4 w-4" />
                 Inget kreditkort krävs
               </span>
               <span className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-white/40" />
+                <CheckCircle className="h-4 w-4" />
                 AI-driven matchning
               </span>
               <span className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4 text-white/40" />
+                <CheckCircle className="h-4 w-4" />
                 Säkert och konfidentiellt
               </span>
             </div>
@@ -107,7 +106,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-8 bg-background">
+      <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
             <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">Hur det fungerar</p>
@@ -135,14 +134,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#f3f4f8] dark:bg-[#1a1e33]">
+      <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#f3f4f8]">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-6">
-              <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">Vertogogo-plattformen</p>
+              <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">Vertigogo-plattformen</p>
               <h2 className="text-3xl sm:text-4xl font-serif font-bold">En komplett lösning för att hitta juridisk hjälp</h2>
               <p className="text-muted-foreground leading-relaxed">
-                Vertogogo analyserar dina dokument med AI, skapar anonymiserade ärendebeskrivningar och kopplar dig med rätt advokatbyrå. Allt i en säker, lättanvänd plattform.
+                Vertigogo analyserar dina dokument med AI, skapar anonymiserade ärendebeskrivningar och kopplar dig med rätt advokatbyrå. Allt i en säker, lättanvänd plattform.
               </p>
               <div className="space-y-4 pt-2">
                 {[
@@ -200,7 +199,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="for-agencies" className="py-24 px-4 sm:px-6 lg:px-8 bg-background">
+      <section id="for-agencies" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1 flex items-center justify-center">
@@ -209,7 +208,7 @@ export default function LandingPage() {
                   <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
                     <Building2 className="h-8 w-8 text-primary" />
                   </div>
-                  <h3 className="text-xl font-serif font-semibold">Vertogogo Professional</h3>
+                  <h3 className="text-xl font-serif font-semibold">Vertigogo Professional</h3>
                   <div className="flex items-baseline justify-center gap-1">
                     <span className="text-4xl font-bold">995</span>
                     <span className="text-muted-foreground">SEK/mån</span>
@@ -242,7 +241,7 @@ export default function LandingPage() {
               <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">För advokatbyråer</p>
               <h2 className="text-3xl sm:text-4xl font-serif font-bold">Öka lönsamheten med nya klienter till din byrå</h2>
               <p className="text-muted-foreground leading-relaxed">
-                Sluta leta efter rätt klienter. Via Vertogogo filtrerar vi fram de skarpa casen och slussar dem vidare till er lokala verksamhet. Som partner får ni exklusiv tillgång till försäkringsfinansierade ärenden som är redo för hantering.
+                Sluta leta efter rätt klienter. Via Vertigogo filtrerar vi fram de skarpa casen och slussar dem vidare till er lokala verksamhet. Som partner får ni exklusiv tillgång till försäkringsfinansierade ärenden som är redo för hantering.
               </p>
               <div className="space-y-3 pt-2">
                 {[
@@ -262,30 +261,30 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="security" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#1a1e33] dark:bg-[#0f1220]">
+      <section id="security" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#f3f4f8]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
-            <p className="text-sm font-medium text-white/50 tracking-widest uppercase">Säkerhet</p>
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white">Vi tar din säkerhet på allvar</h2>
-            <p className="text-white/50 max-w-2xl mx-auto">
+            <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">Säkerhet</p>
+            <h2 className="text-3xl sm:text-4xl font-serif font-bold">Vi tar din säkerhet på allvar</h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
               Säkerhet i världsklass för din juridiska data, skyddad med avancerad kryptering och full GDPR-efterlevnad.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {securityFeatures.map((feature) => (
-              <div key={feature.title} className="text-center space-y-4 p-6">
-                <div className="w-14 h-14 mx-auto rounded-full bg-white/5 flex items-center justify-center">
-                  <feature.icon className="h-7 w-7 text-white/70" />
+              <Card key={feature.title} className="text-center space-y-4 p-6">
+                <div className="w-14 h-14 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                  <feature.icon className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="font-semibold text-white">{feature.title}</h3>
-                <p className="text-sm text-white/50 leading-relaxed">{feature.desc}</p>
-              </div>
+                <h3 className="font-semibold">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
+              </Card>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-background">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <h2 className="text-3xl sm:text-4xl font-serif font-bold">Redo att hitta rätt juridisk hjälp?</h2>
           <p className="text-muted-foreground text-lg">
@@ -302,17 +301,17 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <footer className="border-t py-10 px-4 sm:px-6 lg:px-8 bg-[#1a1e33] dark:bg-[#0f1220] border-white/10">
+      <footer className="border-t py-10 px-4 sm:px-6 lg:px-8 bg-white" data-testid="footer">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2.5">
-              <span className="font-serif font-bold text-white">Vertogogo</span>
+              <span className="font-serif font-bold">Vertigogo</span>
             </div>
             <div className="flex items-center gap-6">
-              <a href="https://www.vertigolaw.se" target="_blank" rel="noopener noreferrer" className="text-sm text-white/40 transition-colors">Vertigo Law</a>
-              <a href="https://www.vertigointel.se" target="_blank" rel="noopener noreferrer" className="text-sm text-white/40 transition-colors">Vertigo Intel</a>
+              <a href="https://www.vertigolaw.se" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Vertigo Law</a>
+              <a href="https://www.vertigointel.se" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Vertigo Intel</a>
             </div>
-            <p className="text-sm text-white/40">
+            <p className="text-sm text-muted-foreground">
               &copy; {new Date().getFullYear()} Vertigo Intel AB. Alla rättigheter förbehållna.
             </p>
           </div>

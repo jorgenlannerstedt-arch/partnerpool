@@ -247,7 +247,7 @@ export async function registerRoutes(
           const message = await anthropic.messages.create({
             model: "claude-sonnet-4-5",
             max_tokens: 1024,
-            system: `Du är en juridisk dokumentanalytiker för Vertogogo, en juridisk tjänsteplattform.
+            system: `Du är en juridisk dokumentanalytiker för Vertigogo, en juridisk tjänsteplattform.
 Din uppgift är att:
 1. Läsa den tillhandahållna dokumenttexten
 2. ANONYMISERA all personlig information (namn, adresser, telefonnummer, e-postadresser, personnummer, bankuppgifter)
@@ -471,7 +471,7 @@ VIKTIGT: Resultatet FÅR INTE innehålla några riktiga namn, adresser, telefonn
             price_data: {
               currency: "sek",
               product_data: {
-                name: "Vertogogo Professional",
+                name: "Vertigogo Professional",
                 description: "Full access to client cases and messaging",
               },
               recurring: { interval: "month" },
