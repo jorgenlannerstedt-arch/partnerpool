@@ -1,16 +1,572 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import { z } from "zod";
 import { storage } from "./storage";
+import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
+import OpenAI from "openai";
+
+const openai = new OpenAI({
+  apiKey: process.env.AI_INTEGRATIONS_OPENAI_API_KEY,
+  baseURL: process.env.AI_INTEGRATIONS_OPENAI_BASE_URL,
+});
+
+const uploadDir = path.join(process.cwd(), "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+const upload = multer({
+  dest: uploadDir,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype === "application/pdf") cb(null, true);
+    else cb(new Error("Only PDF files are allowed"));
+  },
+});
+
+function requireRole(role: "client" | "agency") {
+  return async (req: any, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user.claims.sub;
+      const profile = await storage.getProfile(userId);
+      if (!profile || profile.role !== role) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      req.userProfile = profile;
+      next();
+    } catch {
+      res.status(500).json({ message: "Authorization error" });
+    }
+  };
+}
+
+const roleSchema = z.object({
+  role: z.enum(["client", "agency"]),
+});
+
+const messageSchema = z.object({
+  receiverId: z.string().min(1),
+  content: z.string().min(1).max(5000),
+  caseId: z.number().nullable().optional(),
+});
+
+const inquirySchema = z.object({
+  message: z.string().min(1).max(5000),
+});
+
+const agencyProfileSchema = z.object({
+  name: z.string().min(1).max(200),
+  description: z.string().max(2000).nullable().optional(),
+  address: z.string().max(500).nullable().optional(),
+  city: z.string().max(100).nullable().optional(),
+  latitude: z.number().min(-90).max(90).nullable().optional(),
+  longitude: z.number().min(-180).max(180).nullable().optional(),
+  phone: z.string().max(50).nullable().optional(),
+  email: z.string().email().nullable().optional().or(z.literal("")),
+  website: z.string().max(500).nullable().optional(),
+  specialties: z.array(z.string()).nullable().optional(),
+  employeeCount: z.number().int().min(1).max(100000).optional(),
+});
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // put application routes here
-  // prefix all routes with /api
+  await setupAuth(app);
+  registerAuthRoutes(app);
 
-  // use storage to perform CRUD operations on the storage interface
-  // e.g. storage.insertUser(user) or storage.getUserByUsername(username)
+  app.get("/api/profile", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const profile = await storage.getProfile(userId);
+      res.json(profile || null);
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+      res.status(500).json({ message: "Failed to fetch profile" });
+    }
+  });
+
+  app.post("/api/profile/role", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const parsed = roleSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: "Invalid role" });
+      }
+      const { role } = parsed.data;
+
+      let profile = await storage.getProfile(userId);
+      if (profile) {
+        if (profile.onboardingComplete) {
+          return res.status(400).json({ message: "Role already set" });
+        }
+        profile = await storage.updateProfile(userId, { role, onboardingComplete: true })!;
+      } else {
+        profile = await storage.createProfile({ userId, role, onboardingComplete: true });
+      }
+      res.json(profile);
+    } catch (error) {
+      console.error("Error setting role:", error);
+      res.status(500).json({ message: "Failed to set role" });
+    }
+  });
+
+  app.get("/api/agencies", async (_req, res) => {
+    try {
+      const agencies = await storage.getAllAgencies();
+      res.json(agencies);
+    } catch (error) {
+      console.error("Error fetching agencies:", error);
+      res.status(500).json({ message: "Failed to fetch agencies" });
+    }
+  });
+
+  app.get("/api/agencies/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const agency = await storage.getAgencyProfileById(id);
+      if (!agency) return res.status(404).json({ message: "Agency not found" });
+      res.json(agency);
+    } catch (error) {
+      console.error("Error fetching agency:", error);
+      res.status(500).json({ message: "Failed to fetch agency" });
+    }
+  });
+
+  app.get("/api/agency/profile", isAuthenticated, requireRole("agency"), async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const profile = await storage.getAgencyProfile(userId);
+      res.json(profile || null);
+    } catch (error) {
+      console.error("Error fetching agency profile:", error);
+      res.status(500).json({ message: "Failed to fetch agency profile" });
+    }
+  });
+
+  app.post("/api/agency/profile", isAuthenticated, requireRole("agency"), async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const parsed = agencyProfileSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: "Invalid profile data", errors: parsed.error.flatten() });
+      }
+      const data = { ...parsed.data, userId };
+      const profile = await storage.upsertAgencyProfile(data as any);
+
+      let userProfile = await storage.getProfile(userId);
+      if (userProfile && !userProfile.onboardingComplete) {
+        await storage.updateProfile(userId, { onboardingComplete: true });
+      }
+
+      res.json(profile);
+    } catch (error) {
+      console.error("Error saving agency profile:", error);
+      res.status(500).json({ message: "Failed to save agency profile" });
+    }
+  });
+
+  app.get("/api/cases", isAuthenticated, requireRole("client"), async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const clientCases = await storage.getCasesByClient(userId);
+      res.json(clientCases);
+    } catch (error) {
+      console.error("Error fetching cases:", error);
+      res.status(500).json({ message: "Failed to fetch cases" });
+    }
+  });
+
+  app.get("/api/cases/:id", isAuthenticated, async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const c = await storage.getCaseById(id);
+      if (!c) return res.status(404).json({ message: "Case not found" });
+
+      const userId = req.user.claims.sub;
+      const profile = await storage.getProfile(userId);
+      if (profile?.role === "client" && c.clientId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      res.json(c);
+    } catch (error) {
+      console.error("Error fetching case:", error);
+      res.status(500).json({ message: "Failed to fetch case" });
+    }
+  });
+
+  app.get("/api/cases/:id/inquiries", isAuthenticated, async (req: any, res) => {
+    try {
+      const caseId = parseInt(req.params.id);
+      if (isNaN(caseId)) return res.status(400).json({ message: "Invalid ID" });
+
+      const c = await storage.getCaseById(caseId);
+      if (!c) return res.status(404).json({ message: "Case not found" });
+
+      const userId = req.user.claims.sub;
+      if (c.clientId !== userId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const inquiries = await storage.getInquiriesByCase(caseId);
+      res.json(inquiries);
+    } catch (error) {
+      console.error("Error fetching inquiries:", error);
+      res.status(500).json({ message: "Failed to fetch inquiries" });
+    }
+  });
+
+  app.post("/api/cases", isAuthenticated, requireRole("client"), upload.single("pdf"), async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const title = req.body.title?.trim();
+      const description = req.body.description?.trim() || null;
+
+      if (!title || title.length > 200) {
+        return res.status(400).json({ message: "Title is required and must be under 200 characters" });
+      }
+
+      let aiSummary = null;
+      let pdfFilename = null;
+
+      if (req.file) {
+        pdfFilename = req.file.filename;
+
+        try {
+          const pdfParse = (await import("pdf-parse")).default;
+          const pdfBuffer = fs.readFileSync(req.file.path);
+          const pdfData = await pdfParse(pdfBuffer);
+          const pdfText = pdfData.text.slice(0, 8000);
+
+          const completion = await openai.chat.completions.create({
+            model: "gpt-5-mini",
+            messages: [
+              {
+                role: "system",
+                content: `You are a legal document analyst for Vertogogo, a legal services platform. 
+Your task is to:
+1. Read the document text provided
+2. REDACT all personal information (names, addresses, phone numbers, email addresses, personal IDs, bank details)
+3. Create a professional, anonymized case summary that law firms can review
+
+The summary should include:
+- Type of legal matter
+- Key facts of the case (without personal identifiers)
+- Relevant legal areas
+- What kind of legal help is needed
+
+Replace personal information with generic terms like [Client], [Opposing Party], [Address], etc.
+Write the summary in a clear, professional tone. Keep it concise but informative (200-400 words).
+IMPORTANT: The output MUST NOT contain any real names, addresses, phone numbers, emails, or ID numbers from the original document.`,
+              },
+              {
+                role: "user",
+                content: `Please analyze this legal document and create a fully redacted, anonymized case summary:\n\n${pdfText}`,
+              },
+            ],
+            max_completion_tokens: 1024,
+          });
+
+          aiSummary = completion.choices[0]?.message?.content || null;
+
+          fs.unlinkSync(req.file.path);
+          pdfFilename = null;
+        } catch (aiError) {
+          console.error("AI analysis error:", aiError);
+          aiSummary = "Case summary is being generated. Please check back shortly.";
+          if (req.file?.path && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+          }
+        }
+      }
+
+      const newCase = await storage.createCase({
+        clientId: userId,
+        title,
+        description,
+        aiSummary,
+        pdfFilename,
+        status: "open",
+      });
+
+      res.status(201).json(newCase);
+    } catch (error) {
+      console.error("Error creating case:", error);
+      res.status(500).json({ message: "Failed to create case" });
+    }
+  });
+
+  app.get("/api/agency/cases", isAuthenticated, requireRole("agency"), async (req: any, res) => {
+    try {
+      const openCases = await storage.getOpenCases();
+      res.json(openCases);
+    } catch (error) {
+      console.error("Error fetching agency cases:", error);
+      res.status(500).json({ message: "Failed to fetch cases" });
+    }
+  });
+
+  app.get("/api/agency/cases/:id", isAuthenticated, requireRole("agency"), async (req: any, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const c = await storage.getCaseById(id);
+      if (!c) return res.status(404).json({ message: "Case not found" });
+      res.json(c);
+    } catch (error) {
+      console.error("Error fetching case:", error);
+      res.status(500).json({ message: "Failed to fetch case" });
+    }
+  });
+
+  app.get("/api/agency/cases/:id/my-inquiry", isAuthenticated, requireRole("agency"), async (req: any, res) => {
+    try {
+      const caseId = parseInt(req.params.id);
+      if (isNaN(caseId)) return res.status(400).json({ message: "Invalid ID" });
+      const userId = req.user.claims.sub;
+      const inquiry = await storage.getInquiryByCaseAndAgency(caseId, userId);
+      res.json(inquiry || null);
+    } catch (error) {
+      console.error("Error fetching inquiry:", error);
+      res.status(500).json({ message: "Failed to fetch inquiry" });
+    }
+  });
+
+  app.post("/api/agency/cases/:id/inquire", isAuthenticated, requireRole("agency"), async (req: any, res) => {
+    try {
+      const caseId = parseInt(req.params.id);
+      if (isNaN(caseId)) return res.status(400).json({ message: "Invalid ID" });
+      const agencyId = req.user.claims.sub;
+
+      const parsed = inquirySchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: "Message is required" });
+      }
+
+      const existing = await storage.getInquiryByCaseAndAgency(caseId, agencyId);
+      if (existing) {
+        return res.status(400).json({ message: "You have already sent an inquiry for this case" });
+      }
+
+      const inquiry = await storage.createInquiry({
+        caseId,
+        agencyId,
+        message: parsed.data.message,
+        status: "pending",
+      });
+
+      const caseData = await storage.getCaseById(caseId);
+      if (caseData) {
+        await storage.createMessage({
+          senderId: agencyId,
+          receiverId: caseData.clientId,
+          caseId,
+          content: parsed.data.message,
+          read: false,
+        });
+      }
+
+      res.status(201).json(inquiry);
+    } catch (error) {
+      console.error("Error creating inquiry:", error);
+      res.status(500).json({ message: "Failed to send inquiry" });
+    }
+  });
+
+  app.get("/api/messages/threads", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const threads = await storage.getMessageThreads(userId);
+      res.json(threads);
+    } catch (error) {
+      console.error("Error fetching threads:", error);
+      res.status(500).json({ message: "Failed to fetch message threads" });
+    }
+  });
+
+  app.get("/api/messages/unread-count", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const count = await storage.getUnreadCount(userId);
+      res.json({ count });
+    } catch (error) {
+      console.error("Error fetching unread count:", error);
+      res.status(500).json({ message: "Failed to fetch unread count" });
+    }
+  });
+
+  app.get("/api/messages/:partnerId", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const partnerId = req.params.partnerId;
+      if (!partnerId) return res.status(400).json({ message: "Partner ID required" });
+      const messages = await storage.getMessagesBetween(userId, partnerId);
+      res.json(messages);
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      res.status(500).json({ message: "Failed to fetch messages" });
+    }
+  });
+
+  app.post("/api/messages", isAuthenticated, async (req: any, res) => {
+    try {
+      const senderId = req.user.claims.sub;
+      const parsed = messageSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: "Receiver and content are required" });
+      }
+
+      if (parsed.data.receiverId === senderId) {
+        return res.status(400).json({ message: "Cannot message yourself" });
+      }
+
+      const message = await storage.createMessage({
+        senderId,
+        receiverId: parsed.data.receiverId,
+        caseId: parsed.data.caseId || null,
+        content: parsed.data.content,
+        read: false,
+      });
+
+      res.status(201).json(message);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
+  app.post("/api/agency/create-checkout", isAuthenticated, requireRole("agency"), async (req: any, res) => {
+    try {
+      const stripeKey = process.env.STRIPE_SECRET_KEY;
+      if (!stripeKey) {
+        return res.status(503).json({ message: "Payment system is being configured. Please try again later." });
+      }
+
+      const Stripe = (await import("stripe")).default;
+      const stripe = new Stripe(stripeKey);
+
+      const userId = req.user.claims.sub;
+      const agencyProfile = await storage.getAgencyProfile(userId);
+
+      let customerId = agencyProfile?.stripeCustomerId;
+      if (!customerId) {
+        const customer = await stripe.customers.create({
+          metadata: { userId },
+        });
+        customerId = customer.id;
+      }
+
+      const host = req.headers.host;
+      const protocol = req.headers["x-forwarded-proto"] || "https";
+
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        mode: "subscription",
+        line_items: [
+          {
+            price_data: {
+              currency: "sek",
+              product_data: {
+                name: "Vertogogo Professional",
+                description: "Full access to client cases and messaging",
+              },
+              recurring: { interval: "month" },
+              unit_amount: 99500,
+            },
+            quantity: 1,
+          },
+        ],
+        success_url: `${protocol}://${host}/agency/subscribe/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${protocol}://${host}/agency/subscribe`,
+        metadata: { userId },
+      });
+
+      res.json({ url: session.url });
+    } catch (error) {
+      console.error("Stripe checkout error:", error);
+      res.status(500).json({ message: "Failed to create checkout session" });
+    }
+  });
+
+  app.post("/api/webhooks/stripe", async (req, res) => {
+    try {
+      const stripeKey = process.env.STRIPE_SECRET_KEY;
+      const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+      if (!stripeKey || !webhookSecret) {
+        return res.status(503).send("Webhook not configured");
+      }
+
+      const Stripe = (await import("stripe")).default;
+      const stripe = new Stripe(stripeKey);
+
+      const sig = req.headers["stripe-signature"] as string;
+      if (!sig) {
+        return res.status(400).send("Missing stripe-signature header");
+      }
+
+      const rawBody = (req as any).rawBody;
+      if (!rawBody) {
+        return res.status(400).send("Missing raw body");
+      }
+
+      const event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret);
+
+      if (event.type === "checkout.session.completed") {
+        const session = event.data.object;
+        const userId = session.metadata?.userId;
+        if (userId) {
+          const agencyProfile = await storage.getAgencyProfile(userId);
+          if (agencyProfile) {
+            await storage.upsertAgencyProfile({
+              ...agencyProfile,
+              stripeCustomerId: session.customer as string,
+              stripeSubscriptionId: session.subscription as string,
+              subscriptionActive: true,
+            });
+          }
+        }
+      }
+
+      if (event.type === "customer.subscription.deleted") {
+        const subscription = event.data.object;
+        const customerId = subscription.customer;
+        const agencies = await storage.getAllAgencies();
+        const agency = agencies.find((a) => a.stripeCustomerId === customerId);
+        if (agency) {
+          await storage.upsertAgencyProfile({
+            ...agency,
+            subscriptionActive: false,
+            stripeSubscriptionId: null,
+          });
+        }
+      }
+
+      res.json({ received: true });
+    } catch (error) {
+      console.error("Stripe webhook error:", error);
+      res.status(400).json({ message: "Webhook verification failed" });
+    }
+  });
+
+  app.get("/api/agency/subscription-status", isAuthenticated, requireRole("agency"), async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const agencyProfile = await storage.getAgencyProfile(userId);
+      res.json({
+        active: agencyProfile?.subscriptionActive || false,
+        subscriptionId: agencyProfile?.stripeSubscriptionId || null,
+      });
+    } catch (error) {
+      console.error("Error fetching subscription status:", error);
+      res.status(500).json({ message: "Failed to fetch subscription status" });
+    }
+  });
 
   return httpServer;
 }
