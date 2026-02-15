@@ -62,7 +62,6 @@ export default function LandingPage() {
           </div>
         </div>
       </nav>
-
       <section className="relative pt-32 pb-28 px-4 sm:px-6 lg:px-8 bg-[#f3f4f8] overflow-hidden">
         <div className="max-w-7xl mx-auto relative">
           <div className="max-w-3xl mx-auto text-center space-y-8">
@@ -73,7 +72,7 @@ export default function LandingPage() {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold leading-[1.35] tracking-tight" data-testid="text-hero-heading">
               Hitta rätt juridisk {" "}<br />partner för ditt ärende
             </h1>
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="sm:text-xl text-muted-foreground max-w-2xl mx-auto text-[17px]">
               Vertigogo kopplar dig samman med kvalificerade advokatbyråer genom AI-driven ärendeanalys. Ladda upp, bli matchad, kommunicera säkert.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
@@ -106,7 +105,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
@@ -134,7 +132,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#f3f4f8]">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -199,7 +196,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       <section id="for-agencies" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -261,7 +257,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       <section id="security" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#f3f4f8]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
@@ -284,7 +279,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-3xl mx-auto text-center space-y-8">
           <h2 className="text-3xl sm:text-4xl font-serif font-bold">Redo att hitta rätt juridisk hjälp?</h2>
@@ -301,7 +295,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       <footer className="border-t py-10 px-4 sm:px-6 lg:px-8 bg-white" data-testid="footer">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-wrap items-center justify-between gap-4">
