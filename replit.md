@@ -8,9 +8,16 @@ Vertogogo connects clients needing legal help with law firms. The platform featu
 - **Backend**: Express.js with TypeScript
 - **Database**: PostgreSQL (Neon-backed via Replit)
 - **Auth**: Replit Auth (Google/Apple/email login)
-- **AI**: OpenAI via Replit AI Integrations (gpt-5-mini)
+- **AI**: Anthropic Claude (claude-sonnet-4-5) via Replit AI Integrations
 - **Payments**: Stripe (995 SEK/month for agencies)
 - **Maps**: Leaflet (free, no API key)
+
+## Design System
+- **Design**: Inspired by vertigolaw.se - dark navy premium aesthetic
+- **Fonts**: Baskervville (serif headings), Open Sans (body text)
+- **Colors**: Dark navy primary (#2b3457 / HSL 228 28% 25%), blue accent (#0082f3 / HSL 210 90% 49%)
+- **Style**: Pill-shaped buttons (rounded-full), dark header/footer, clean sections
+- **Language**: All UI text in Swedish
 
 ## Key Files
 - `shared/schema.ts` - Database schema and types
@@ -37,3 +44,6 @@ Vertogogo connects clients needing legal help with law firms. The platform featu
 ## Recent Changes
 - 2026-02-15: Initial build - all core features implemented
 - Seeded 12 Swedish law firms for partner pool
+- Switched AI from OpenAI to Anthropic Claude (claude-sonnet-4-5)
+- Translated all UI text to Swedish
+- Redesigned to match vertigolaw.se aesthetic: dark navy theme, Baskervville font, pill buttons

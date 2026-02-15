@@ -1,153 +1,133 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Scale, Shield, Users, FileText, MessageCircle, ArrowRight, CheckCircle } from "lucide-react";
+import { Shield, Users, FileText, MessageCircle, ArrowRight, CheckCircle, Lock, Zap, Building2, ChevronRight } from "lucide-react";
 
-const features = [
+const steps = [
   {
+    num: "1",
+    title: "Dokument laddas upp och analyseras",
+    desc: "Ladda upp dina juridiska dokument. Vår AI extraherar automatiskt nyckelfakta och anonymiserar all personlig information.",
     icon: FileText,
-    title: "AI-analys av ärenden",
-    desc: "Ladda upp dina juridiska dokument och vår AI skapar en tydlig, anonymiserad ärendebeskrivning som advokatbyråer kan granska.",
   },
   {
+    num: "2",
+    title: "Matchas med rätt byrå",
+    desc: "Bläddra bland kvalificerade advokatbyråer eller låt vår matchning hitta rätt specialisering för ditt ärende.",
     icon: Users,
-    title: "Granskade partnerbyråer",
-    desc: "Bläddra bland kvalificerade advokatbyråer med detaljerade profiler, specialiseringar och platser. Hitta rätt match för ditt ärende.",
   },
   {
+    num: "3",
+    title: "Kommunicera säkert",
+    desc: "Kommunicera direkt med intresserade advokatbyråer genom vårt krypterade meddelandesystem.",
     icon: MessageCircle,
-    title: "Säker meddelandehantering",
-    desc: "Kommunicera direkt med intresserade advokatbyråer genom vårt krypterade meddelandesystem i appen.",
   },
 ];
 
-const stats = [
-  { value: "500+", label: "Juridiska partners" },
-  { value: "12k+", label: "Matchade ärenden" },
-  { value: "98%", label: "Nöjda klienter" },
+const securityFeatures = [
+  { icon: Lock, title: "Ingen datalagring", desc: "Vi sparar inga konversationer eller historik från våra användare" },
+  { icon: Shield, title: "Ingen AI-träning", desc: "Vi tränar aldrig våra AI-modeller på användardata eller innehåll" },
+  { icon: Zap, title: "HTTPS-kryptering", desc: "All kommunikation är säkert krypterad med modern TLS" },
 ];
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-background">
-      <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/80 border-b">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#1a1e33]/95 backdrop-blur-md border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4 h-16">
-            <div className="flex items-center gap-2">
-              <Scale className="h-6 w-6 text-primary" />
-              <span className="text-xl font-bold tracking-tight">Vertogogo</span>
+            <div className="flex items-center gap-2.5">
+              <span className="text-xl font-serif font-bold text-white tracking-tight">Vertogogo</span>
             </div>
-            <div className="hidden md:flex items-center gap-6">
-              <a href="#features" className="text-sm text-muted-foreground transition-colors" data-testid="link-features">Funktioner</a>
-              <a href="#how-it-works" className="text-sm text-muted-foreground transition-colors" data-testid="link-how-it-works">Hur det fungerar</a>
-              <a href="#for-agencies" className="text-sm text-muted-foreground transition-colors" data-testid="link-for-agencies">För byråer</a>
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#how-it-works" className="text-sm text-white/60 transition-colors" data-testid="link-how-it-works">Hur det fungerar</a>
+              <a href="#features" className="text-sm text-white/60 transition-colors" data-testid="link-features">Funktioner</a>
+              <a href="#for-agencies" className="text-sm text-white/60 transition-colors" data-testid="link-for-agencies">För byråer</a>
+              <a href="#security" className="text-sm text-white/60 transition-colors" data-testid="link-security">Säkerhet</a>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <ThemeToggle />
               <a href="/api/login">
-                <Button variant="outline" data-testid="button-login">Logga in</Button>
+                <Button variant="outline" className="rounded-full border-white/20 bg-transparent text-white" data-testid="button-login">Logga in</Button>
               </a>
               <a href="/api/login">
-                <Button data-testid="button-get-started">Kom igång</Button>
+                <Button className="rounded-full bg-white text-[#1a1e33]" data-testid="button-get-started">
+                  Kom igång
+                  <ChevronRight className="ml-1 h-4 w-4" />
+                </Button>
               </a>
             </div>
           </div>
         </div>
       </nav>
 
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="space-y-4">
-                <div className="inline-flex items-center gap-2 rounded-md bg-primary/10 px-3 py-1 text-sm text-primary">
-                  <Shield className="h-3.5 w-3.5" />
-                  <span>Gratis för klienter</span>
-                </div>
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight font-serif leading-tight">
-                  Hitta rätt<br />
-                  <span className="text-primary">juridisk partner</span><br />
-                  för ditt ärende
-                </h1>
-                <p className="text-lg text-muted-foreground max-w-lg leading-relaxed">
-                  Vertogogo kopplar dig samman med kvalificerade advokatbyråer genom AI-driven ärendematchning. Ladda upp dina dokument, bli matchad och kommunicera säkert.
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-3">
-                <a href="/api/login">
-                  <Button size="lg" data-testid="button-hero-cta">
-                    Starta gratis
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </a>
-                <a href="#how-it-works">
-                  <Button size="lg" variant="outline" data-testid="button-hero-learn">
-                    Läs mer
-                  </Button>
-                </a>
-              </div>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  Inget kreditkort krävs
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  AI-driven matchning
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle className="h-4 w-4 text-primary" />
-                  Säkert och konfidentiellt
-                </span>
-              </div>
+      <section className="relative pt-32 pb-28 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#1a1e33] via-[#232842] to-[#2b3457] overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(56,152,236,0.08),transparent_70%)]" />
+        <div className="max-w-7xl mx-auto relative">
+          <div className="max-w-3xl mx-auto text-center space-y-8">
+            <Badge variant="secondary" className="bg-white/10 text-white/80 border-white/10 rounded-full px-4 py-1.5">
+              <Shield className="h-3.5 w-3.5 mr-1.5" />
+              Alltid gratis för klienter
+            </Badge>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold text-white leading-[1.1] tracking-tight">
+              Hitta rätt juridisk<br />partner för ditt ärende
+            </h1>
+            <p className="text-lg sm:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed">
+              Vertogogo kopplar dig samman med kvalificerade advokatbyråer genom AI-driven ärendeanalys. Ladda upp, bli matchad, kommunicera säkert.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+              <a href="/api/login">
+                <Button size="lg" className="rounded-full bg-white text-[#1a1e33] px-8 text-base" data-testid="button-hero-cta">
+                  Starta gratis
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </a>
+              <a href="#how-it-works">
+                <Button size="lg" variant="outline" className="rounded-full border-white/20 bg-transparent text-white px-8 text-base" data-testid="button-hero-learn">
+                  Läs mer
+                </Button>
+              </a>
             </div>
-            <div className="relative hidden lg:block">
-              <div className="relative rounded-md overflow-hidden bg-gradient-to-br from-primary/20 via-primary/10 to-background p-8 aspect-square flex items-center justify-center">
-                <div className="space-y-4 w-full max-w-sm">
-                  {stats.map((stat) => (
-                    <Card key={stat.label} className="p-4 hover-elevate">
-                      <div className="flex items-center justify-between gap-4">
-                        <span className="text-sm text-muted-foreground">{stat.label}</span>
-                        <span className="text-2xl font-bold text-primary">{stat.value}</span>
-                      </div>
-                    </Card>
-                  ))}
-                  <Card className="p-4 bg-primary text-primary-foreground">
-                    <div className="flex items-center gap-3">
-                      <Scale className="h-8 w-8" />
-                      <div>
-                        <p className="font-semibold">Vertigo Law Partners</p>
-                        <p className="text-sm opacity-80">Din betrodda partnergrupp</p>
-                      </div>
-                    </div>
-                  </Card>
-                </div>
-              </div>
+            <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-sm text-white/50">
+              <span className="flex items-center gap-1.5">
+                <CheckCircle className="h-4 w-4 text-white/40" />
+                Inget kreditkort krävs
+              </span>
+              <span className="flex items-center gap-1.5">
+                <CheckCircle className="h-4 w-4 text-white/40" />
+                AI-driven matchning
+              </span>
+              <span className="flex items-center gap-1.5">
+                <CheckCircle className="h-4 w-4 text-white/40" />
+                Säkert och konfidentiellt
+              </span>
             </div>
           </div>
         </div>
       </section>
 
-      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-card">
+      <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-8 bg-background">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
-            <h2 className="text-3xl sm:text-4xl font-bold font-serif">Så fungerar Vertogogo</h2>
+            <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">Hur det fungerar</p>
+            <h2 className="text-3xl sm:text-4xl font-serif font-bold">Från dokument till juridisk hjälp</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               En smidig process från dokumentuppladdning till att hitta rätt juridisk representation.
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {features.map((feature, i) => (
-              <Card key={feature.title} className="p-6 hover-elevate">
-                <div className="space-y-4">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-md bg-primary/10">
-                    <feature.icon className="h-6 w-6 text-primary" />
+          <div className="grid md:grid-cols-3 gap-8">
+            {steps.map((step) => (
+              <Card key={step.num} className="p-8 hover-elevate group">
+                <div className="space-y-5">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
+                      {step.num}
+                    </div>
+                    <step.icon className="h-6 w-6 text-muted-foreground" />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold">{i + 1}</span>
-                    <h3 className="text-lg font-semibold">{feature.title}</h3>
-                  </div>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{feature.desc}</p>
+                  <h3 className="text-lg font-semibold">{step.title}</h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{step.desc}</p>
                 </div>
               </Card>
             ))}
@@ -155,15 +135,116 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="for-agencies" className="py-20 px-4 sm:px-6 lg:px-8">
+      <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#f3f4f8] dark:bg-[#1a1e33]">
         <div className="max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-6">
-              <h2 className="text-3xl sm:text-4xl font-bold font-serif">För advokatbyråer</h2>
+              <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">Vertogogo-plattformen</p>
+              <h2 className="text-3xl sm:text-4xl font-serif font-bold">En komplett lösning för att hitta juridisk hjälp</h2>
               <p className="text-muted-foreground leading-relaxed">
-                Gå med i Vertigo Law Partners och få tillgång till förkvalificerade ärenden från klienter som söker juridisk representation. Vår AI-drivna matchning säkerställer att du bara ser ärenden som är relevanta för din expertis.
+                Vertogogo analyserar dina dokument med AI, skapar anonymiserade ärendebeskrivningar och kopplar dig med rätt advokatbyrå. Allt i en säker, lättanvänd plattform.
               </p>
-              <div className="space-y-3">
+              <div className="space-y-4 pt-2">
+                {[
+                  "Automatisk anonymisering av personuppgifter",
+                  "AI-genererade ärendesammanfattningar",
+                  "Sök bland kvalificerade partnerbyråer",
+                  "Krypterad meddelandehantering",
+                  "Helt gratis för privatpersoner",
+                ].map((item) => (
+                  <div key={item} className="flex items-center gap-3">
+                    <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle className="h-3.5 w-3.5 text-primary" />
+                    </div>
+                    <span className="text-sm">{item}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="space-y-4">
+              <Card className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <FileText className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <h4 className="font-semibold">AI-analys av ärenden</h4>
+                    <p className="text-sm text-muted-foreground">Ladda upp dina dokument och vår AI skapar en tydlig, anonymiserad ärendebeskrivning som advokatbyråer kan granska.</p>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Users className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <h4 className="font-semibold">Granskade partnerbyråer</h4>
+                    <p className="text-sm text-muted-foreground">Bläddra bland kvalificerade advokatbyråer med detaljerade profiler, specialiseringar och platser på karta.</p>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <MessageCircle className="h-6 w-6 text-primary" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <h4 className="font-semibold">Säker meddelandehantering</h4>
+                    <p className="text-sm text-muted-foreground">Kommunicera direkt med intresserade advokatbyråer genom vårt krypterade meddelandesystem i appen.</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="for-agencies" className="py-24 px-4 sm:px-6 lg:px-8 bg-background">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div className="order-2 lg:order-1 flex items-center justify-center">
+              <Card className="p-8 max-w-sm w-full space-y-6">
+                <div className="text-center space-y-4">
+                  <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                    <Building2 className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-serif font-semibold">Vertogogo Professional</h3>
+                  <div className="flex items-baseline justify-center gap-1">
+                    <span className="text-4xl font-bold">995</span>
+                    <span className="text-muted-foreground">SEK/mån</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Avsluta när som helst</p>
+                </div>
+                <div className="space-y-3 pt-2 border-t">
+                  {[
+                    "AI-analyserade ärendebeskrivningar",
+                    "Filtrera ärenden efter specialisering",
+                    "Direktmeddelanden med klienter",
+                    "Synlighet i partnerportalen",
+                    "Prioriterade ärendenotifikationer",
+                  ].map((item) => (
+                    <div key={item} className="flex items-center gap-3">
+                      <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span className="text-sm">{item}</span>
+                    </div>
+                  ))}
+                </div>
+                <a href="/api/login">
+                  <Button className="w-full rounded-full" data-testid="button-agency-signup">
+                    Registrera din byrå
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </a>
+              </Card>
+            </div>
+            <div className="order-1 lg:order-2 space-y-6">
+              <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">För advokatbyråer</p>
+              <h2 className="text-3xl sm:text-4xl font-serif font-bold">Öka lönsamheten med nya klienter till din byrå</h2>
+              <p className="text-muted-foreground leading-relaxed">
+                Sluta leta efter rätt klienter. Via Vertogogo filtrerar vi fram de skarpa casen och slussar dem vidare till er lokala verksamhet. Som partner får ni exklusiv tillgång till försäkringsfinansierade ärenden som är redo för hantering.
+              </p>
+              <div className="space-y-3 pt-2">
                 {[
                   "Tillgång till AI-analyserade ärendebeskrivningar",
                   "Filtrera ärenden efter specialisering och plats",
@@ -176,43 +257,65 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              <Card className="p-6">
-                <div className="space-y-2">
-                  <p className="text-sm text-muted-foreground">Månadsabonnemang</p>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-bold">995</span>
-                    <span className="text-muted-foreground">SEK/mån</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground">Avsluta när som helst</p>
-                </div>
-              </Card>
-            </div>
-            <div className="flex items-center justify-center">
-              <Card className="p-8 max-w-sm w-full space-y-6 text-center">
-                <Scale className="h-16 w-16 text-primary mx-auto" />
-                <h3 className="text-xl font-semibold">Gå med som advokatbyrå</h3>
-                <p className="text-sm text-muted-foreground">Registrera din byrå och börja ta emot kvalificerade ärenden idag.</p>
-                <a href="/api/login">
-                  <Button className="w-full" data-testid="button-agency-signup">
-                    Registrera din byrå
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </a>
-              </Card>
             </div>
           </div>
         </div>
       </section>
 
-      <footer className="border-t py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Scale className="h-5 w-5 text-primary" />
-            <span className="font-semibold">Vertogogo</span>
+      <section id="security" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#1a1e33] dark:bg-[#0f1220]">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16 space-y-4">
+            <p className="text-sm font-medium text-white/50 tracking-widest uppercase">Säkerhet</p>
+            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-white">Vi tar din säkerhet på allvar</h2>
+            <p className="text-white/50 max-w-2xl mx-auto">
+              Säkerhet i världsklass för din juridiska data, skyddad med avancerad kryptering och full GDPR-efterlevnad.
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Vertogogo. Alla rättigheter förbehållna.
+          <div className="grid md:grid-cols-3 gap-8">
+            {securityFeatures.map((feature) => (
+              <div key={feature.title} className="text-center space-y-4 p-6">
+                <div className="w-14 h-14 mx-auto rounded-full bg-white/5 flex items-center justify-center">
+                  <feature.icon className="h-7 w-7 text-white/70" />
+                </div>
+                <h3 className="font-semibold text-white">{feature.title}</h3>
+                <p className="text-sm text-white/50 leading-relaxed">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-background">
+        <div className="max-w-3xl mx-auto text-center space-y-8">
+          <h2 className="text-3xl sm:text-4xl font-serif font-bold">Redo att hitta rätt juridisk hjälp?</h2>
+          <p className="text-muted-foreground text-lg">
+            Skapa ett konto idag och ladda upp ditt första ärende. Det är helt gratis och tar bara några minuter.
           </p>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <a href="/api/login">
+              <Button size="lg" className="rounded-full px-8 text-base" data-testid="button-cta-bottom">
+                Kom igång gratis
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t py-10 px-4 sm:px-6 lg:px-8 bg-[#1a1e33] dark:bg-[#0f1220] border-white/10">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-2.5">
+              <span className="font-serif font-bold text-white">Vertogogo</span>
+            </div>
+            <div className="flex items-center gap-6">
+              <a href="https://www.vertigolaw.se" target="_blank" rel="noopener noreferrer" className="text-sm text-white/40 transition-colors">Vertigo Law</a>
+              <a href="https://www.vertigointel.se" target="_blank" rel="noopener noreferrer" className="text-sm text-white/40 transition-colors">Vertigo Intel</a>
+            </div>
+            <p className="text-sm text-white/40">
+              &copy; {new Date().getFullYear()} Vertigo Intel AB. Alla rättigheter förbehållna.
+            </p>
+          </div>
         </div>
       </footer>
     </div>

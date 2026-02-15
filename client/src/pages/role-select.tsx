@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Scale, User, Building2, ArrowRight } from "lucide-react";
+import { User, Building2, ArrowRight } from "lucide-react";
 
 export default function RoleSelectPage() {
   const [selected, setSelected] = useState<"client" | "agency" | null>(null);
@@ -27,8 +27,7 @@ export default function RoleSelectPage() {
       <div className="max-w-2xl w-full space-y-8">
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center gap-2 mb-6">
-            <Scale className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold">Vertogogo</span>
+            <span className="text-2xl font-serif font-bold">Vertogogo</span>
           </div>
           <h1 className="text-3xl font-bold font-serif">Välkommen! Hur vill du använda Vertogogo?</h1>
           <p className="text-muted-foreground">Välj din roll för att komma igång. Det hjälper oss att anpassa din upplevelse.</p>
@@ -73,6 +72,7 @@ export default function RoleSelectPage() {
         <div className="flex justify-center">
           <Button
             size="lg"
+            className="rounded-full px-8"
             disabled={!selected || mutation.isPending}
             onClick={handleContinue}
             data-testid="button-continue-role"

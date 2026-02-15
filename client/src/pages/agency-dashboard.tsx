@@ -40,7 +40,7 @@ export default function AgencyDashboard() {
         <h2 className="text-xl font-semibold">Fyll i din profil</h2>
         <p className="text-muted-foreground">Konfigurera din byråprofil för att börja ta emot ärenden.</p>
         <Link href="/agency/profile">
-          <Button data-testid="button-setup-profile">Konfigurera profil</Button>
+          <Button className="rounded-full" data-testid="button-setup-profile">Konfigurera profil</Button>
         </Link>
       </div>
     );
@@ -75,7 +75,7 @@ export default function AgencyDashboard() {
               </div>
             </div>
             <Link href="/agency/subscribe">
-              <Button size="sm" data-testid="button-subscribe">Prenumerera nu</Button>
+              <Button size="sm" className="rounded-full" data-testid="button-subscribe">Prenumerera nu</Button>
             </Link>
           </div>
         </Card>

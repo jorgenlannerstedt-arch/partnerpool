@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Scale, LayoutDashboard, Users, MessageCircle, FileText, Settings, LogOut, CreditCard } from "lucide-react";
+import { LayoutDashboard, Users, MessageCircle, Settings, LogOut } from "lucide-react";
 import type { UserProfile } from "@shared/schema";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -43,14 +43,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b backdrop-blur-md bg-background/80">
+      <header className="sticky top-0 z-50 bg-[#1a1e33] border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4 h-14">
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-8">
               <Link href="/">
                 <div className="flex items-center gap-2 cursor-pointer" data-testid="link-logo">
-                  <Scale className="h-5 w-5 text-primary" />
-                  <span className="font-bold text-lg">Vertogogo</span>
+                  <span className="font-serif font-bold text-lg text-white">Vertogogo</span>
                 </div>
               </Link>
               <nav className="hidden md:flex items-center gap-1">
@@ -59,8 +58,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   return (
                     <Link key={item.href} href={item.href}>
                       <Button
-                        variant={isActive ? "secondary" : "ghost"}
+                        variant="ghost"
                         size="sm"
+                        className={`rounded-full text-white/70 ${isActive ? "bg-white/10 text-white" : ""}`}
                         data-testid={`nav-${item.label.toLowerCase()}`}
                       >
                         <item.icon className="h-4 w-4 mr-1.5" />
@@ -79,7 +79,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                   <Button variant="ghost" className="relative h-9 w-9 rounded-full" data-testid="button-user-menu">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={user?.profileImageUrl || undefined} />
-                      <AvatarFallback className="bg-primary/10 text-primary text-xs">{initials}</AvatarFallback>
+                      <AvatarFallback className="bg-white/10 text-white text-xs">{initials}</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
@@ -112,14 +112,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        <div className="md:hidden border-t">
+        <div className="md:hidden border-t border-white/10">
           <div className="max-w-7xl mx-auto px-4">
             <nav className="flex items-center gap-1 overflow-x-auto py-2">
               {navItems.map((item) => {
                 const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
                 return (
                   <Link key={item.href} href={item.href}>
-                    <Button variant={isActive ? "secondary" : "ghost"} size="sm">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={`rounded-full text-white/70 ${isActive ? "bg-white/10 text-white" : ""}`}
+                    >
                       <item.icon className="h-4 w-4 mr-1.5" />
                       {item.label}
                     </Button>

@@ -149,7 +149,7 @@ export default function NewCasePage() {
         </div>
 
         <Button
-          className="w-full"
+          className="w-full rounded-full"
           size="lg"
           disabled={!title || uploadMutation.isPending}
           onClick={() => uploadMutation.mutate()}

@@ -64,7 +64,7 @@ export default function AgencySubscribePage() {
         </div>
 
         <Button
-          className="w-full"
+          className="w-full rounded-full"
           size="lg"
           onClick={() => subscribeMutation.mutate()}
           disabled={subscribeMutation.isPending}

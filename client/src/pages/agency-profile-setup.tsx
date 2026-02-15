@@ -164,7 +164,7 @@ export default function AgencyProfileSetupPage() {
         </div>
 
         <Button
-          className="w-full"
+          className="w-full rounded-full"
           disabled={!form.name || mutation.isPending}
           onClick={() => mutation.mutate()}
           data-testid="button-save-profile"

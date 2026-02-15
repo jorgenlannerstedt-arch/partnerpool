@@ -118,6 +118,7 @@ export default function AgencyCaseDetailPage() {
             data-testid="input-inquiry-message"
           />
           <Button
+            className="rounded-full"
             disabled={!inquiryMessage.trim() || sendInquiryMutation.isPending}
             onClick={() => sendInquiryMutation.mutate(inquiryMessage.trim())}
             data-testid="button-send-inquiry"
