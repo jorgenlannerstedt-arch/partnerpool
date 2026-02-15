@@ -9,7 +9,7 @@ const steps = [
   {
     num: "1",
     title: "Dokument laddas upp och analyseras",
-    desc: "Ladda upp dina juridiska dokument. Vår AI extraherar automatiskt nyckelfakta och anonymiserar all personlig information.",
+    desc: "Ladda upp ditt juridiska dokument från www.vertigogo.se. Vår AI extraherar automatiskt nyckelfakta och anonymiserar all personlig information.",
     icon: FileText,
   },
   {
