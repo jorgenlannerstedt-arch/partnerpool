@@ -69,7 +69,7 @@ export default function LandingPage() {
               <Shield className="h-3.5 w-3.5 mr-1.5" />
               Alltid gratis för klienter
             </Badge>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold leading-[1.65] tracking-tight" data-testid="text-hero-heading">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-bold leading-[1.85] tracking-tight" data-testid="text-hero-heading">
               Hitta rätt juridisk {" "}<br />partner för ditt ärende
             </h1>
             <p className="sm:text-xl text-muted-foreground max-w-2xl mx-auto text-[17px]">
