@@ -1,11 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Building2, MapPin, Users, Globe, Phone, Mail } from "lucide-react";
-import type { AgencyProfile } from "@shared/schema";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { ArrowLeft, Building2, MapPin, Users, Globe, Phone, Mail, Star, Clock, Shield, CreditCard, Languages, MessageCircle, Briefcase, Calendar } from "lucide-react";
+import type { AgencyProfile, AgencyReview } from "@shared/schema";
 
 interface Office {
   city: string;
@@ -14,10 +19,94 @@ interface Office {
   longitude?: number;
 }
 
+function StarRating({ rating, size = "md" }: { rating: number; size?: "sm" | "md" }) {
+  const cls = size === "sm" ? "h-3.5 w-3.5" : "h-5 w-5";
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          className={`${cls} ${star <= Math.round(rating) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"}`}
+        />
+      ))}
+    </div>
+  );
+}
+
+function InteractiveStarRating({ rating, onRate }: { rating: number; onRate: (r: number) => void }) {
+  const [hover, setHover] = useState(0);
+  return (
+    <div className="flex items-center gap-1">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          onMouseEnter={() => setHover(star)}
+          onMouseLeave={() => setHover(0)}
+          onClick={() => onRate(star)}
+          className="p-0.5"
+          data-testid={`button-star-${star}`}
+        >
+          <Star
+            className={`h-6 w-6 transition-colors ${
+              star <= (hover || rating) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"
+            }`}
+          />
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export default function PartnerDetailPage() {
   const params = useParams<{ id: string }>();
+  const { toast } = useToast();
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+
   const { data: agency, isLoading } = useQuery<AgencyProfile>({
     queryKey: ["/api/agencies", params.id],
+  });
+
+  const { data: reviews } = useQuery<AgencyReview[]>({
+    queryKey: ["/api/agencies", params.id, "reviews"],
+    queryFn: async () => {
+      const res = await fetch(`/api/agencies/${params.id}/reviews`);
+      if (!res.ok) throw new Error("Failed to fetch reviews");
+      return res.json();
+    },
+    enabled: !!params.id,
+  });
+
+  const { data: stats } = useQuery<{ avgRating: number; reviewCount: number; caseCount: number }>({
+    queryKey: ["/api/agencies", params.id, "stats"],
+    queryFn: async () => {
+      const res = await fetch(`/api/agencies/${params.id}/stats`);
+      if (!res.ok) throw new Error("Failed to fetch stats");
+      return res.json();
+    },
+    enabled: !!params.id,
+  });
+
+  const reviewMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/reviews", {
+        agencyId: parseInt(params.id!),
+        rating: reviewRating,
+        comment: reviewComment || null,
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/agencies", params.id, "reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/agencies", params.id, "stats"] });
+      toast({ title: "Tack!", description: "Ditt omdöme har sparats." });
+      setReviewRating(0);
+      setReviewComment("");
+    },
+    onError: (err: Error) => {
+      toast({ title: "Fel", description: err.message, variant: "destructive" });
+    },
   });
 
   if (isLoading) {
@@ -45,6 +134,15 @@ export default function PartnerDetailPage() {
   }
 
   const offices = agency.offices as Office[] | null;
+  const yearsActive = agency.foundedYear ? new Date().getFullYear() - agency.foundedYear : null;
+
+  const formatResponseTime = (hours: number | null) => {
+    if (!hours) return null;
+    if (hours < 2) return "Under 2 timmar";
+    if (hours < 24) return `Inom ${hours} timmar`;
+    const days = Math.round(hours / 24);
+    return `Inom ${days} ${days === 1 ? "dag" : "dagar"}`;
+  };
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -55,6 +153,12 @@ export default function PartnerDetailPage() {
           </Button>
         </Link>
         <h1 className="text-2xl font-bold font-serif" data-testid="text-agency-name">{agency.name}</h1>
+        {agency.barAssociationMember && (
+          <Badge variant="secondary" className="text-xs" data-testid="badge-bar-member">
+            <Shield className="h-3 w-3 mr-1 text-blue-500" />
+            Advokatsamfundet
+          </Badge>
+        )}
       </div>
 
       <Card className="p-6">
@@ -75,6 +179,13 @@ export default function PartnerDetailPage() {
                   {agency.address ? `${agency.address}, ${agency.city}` : agency.city}
                 </p>
               )}
+              {stats && stats.reviewCount > 0 && (
+                <div className="flex items-center gap-2 mt-2">
+                  <StarRating rating={stats.avgRating} />
+                  <span className="text-sm font-medium">{stats.avgRating}</span>
+                  <span className="text-sm text-muted-foreground">({stats.reviewCount} omdömen)</span>
+                </div>
+              )}
             </div>
 
             {agency.description && (
@@ -89,6 +200,20 @@ export default function PartnerDetailPage() {
                 <div className="flex flex-wrap gap-1.5">
                   {agency.specialties.map((s) => (
                     <Badge key={s} variant="secondary">{s}</Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {agency.languages && agency.languages.length > 0 && (
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold flex items-center gap-1.5">
+                  <Languages className="h-4 w-4" />
+                  Språk
+                </h3>
+                <div className="flex flex-wrap gap-1.5">
+                  {agency.languages.map((lang) => (
+                    <Badge key={lang} variant="secondary">{lang}</Badge>
                   ))}
                 </div>
               </div>
@@ -117,6 +242,30 @@ export default function PartnerDetailPage() {
                 <Users className="h-4 w-4 text-muted-foreground" />
                 <span>{agency.employeeCount || 1} anställda</span>
               </div>
+              {yearsActive && yearsActive > 0 && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span>Grundat {agency.foundedYear} ({yearsActive} år)</span>
+                </div>
+              )}
+              {agency.responseTimeHours && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span>Svarar: {formatResponseTime(agency.responseTimeHours)}</span>
+                </div>
+              )}
+              {agency.priceRange && (
+                <div className="flex items-center gap-2 text-sm">
+                  <CreditCard className="h-4 w-4 text-muted-foreground" />
+                  <span>Prisintervall: {agency.priceRange}</span>
+                </div>
+              )}
+              {stats && stats.caseCount > 0 && (
+                <div className="flex items-center gap-2 text-sm">
+                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                  <span>{stats.caseCount} ärenden via Vertigogo</span>
+                </div>
+              )}
               {agency.email && (
                 <div className="flex items-center gap-2 text-sm">
                   <Mail className="h-4 w-4 text-muted-foreground" />
@@ -140,6 +289,56 @@ export default function PartnerDetailPage() {
             </div>
           </div>
         </div>
+      </Card>
+
+      <Card className="p-6 space-y-4">
+        <h3 className="text-lg font-semibold font-serif flex items-center gap-2">
+          <MessageCircle className="h-5 w-5" />
+          Omdömen
+          {stats && stats.reviewCount > 0 && (
+            <span className="text-sm font-normal text-muted-foreground">({stats.reviewCount})</span>
+          )}
+        </h3>
+
+        <div className="space-y-4 border-b pb-4">
+          <Label>Lämna ett omdöme</Label>
+          <InteractiveStarRating rating={reviewRating} onRate={setReviewRating} />
+          <Textarea
+            placeholder="Beskriv din upplevelse (valfritt)..."
+            value={reviewComment}
+            onChange={(e) => setReviewComment(e.target.value)}
+            rows={3}
+            data-testid="input-review-comment"
+          />
+          <Button
+            onClick={() => reviewMutation.mutate()}
+            disabled={reviewRating === 0 || reviewMutation.isPending}
+            className="rounded-full"
+            data-testid="button-submit-review"
+          >
+            {reviewMutation.isPending ? "Skickar..." : "Skicka omdöme"}
+          </Button>
+        </div>
+
+        {reviews && reviews.length > 0 ? (
+          <div className="space-y-4">
+            {reviews.map((review) => (
+              <div key={review.id} className="space-y-1" data-testid={`review-${review.id}`}>
+                <div className="flex items-center gap-2">
+                  <StarRating rating={review.rating} size="sm" />
+                  <span className="text-xs text-muted-foreground">
+                    {review.createdAt ? new Date(review.createdAt).toLocaleDateString("sv-SE") : ""}
+                  </span>
+                </div>
+                {review.comment && (
+                  <p className="text-sm text-muted-foreground">{review.comment}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground">Inga omdömen ännu. Bli den första!</p>
+        )}
       </Card>
     </div>
   );

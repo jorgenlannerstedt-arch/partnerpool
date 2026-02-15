@@ -93,6 +93,17 @@ const agencyProfileSchema = z.object({
   employeeCount: z.number().int().min(1).max(100000).optional(),
   offices: z.array(officeSchema).nullable().optional(),
   logoUrl: z.string().nullable().optional(),
+  foundedYear: z.number().int().min(1800).max(2030).nullable().optional(),
+  languages: z.array(z.string()).nullable().optional(),
+  priceRange: z.string().nullable().optional(),
+  barAssociationMember: z.boolean().optional(),
+  responseTimeHours: z.number().int().min(1).max(168).nullable().optional(),
+});
+
+const reviewSchema = z.object({
+  agencyId: z.number().int(),
+  rating: z.number().int().min(1).max(5),
+  comment: z.string().max(1000).nullable().optional(),
 });
 
 export async function registerRoutes(
@@ -458,6 +469,57 @@ VIKTIGT:
     } catch (error) {
       console.error("Error creating inquiry:", error);
       res.status(500).json({ message: "Failed to send inquiry" });
+    }
+  });
+
+  app.get("/api/agencies/:id/reviews", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const reviews = await storage.getReviewsByAgency(id);
+      res.json(reviews);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      res.status(500).json({ message: "Failed to fetch reviews" });
+    }
+  });
+
+  app.get("/api/agencies/:id/stats", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
+      const stats = await storage.getAgencyStats(id);
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching stats:", error);
+      res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
+  app.post("/api/reviews", isAuthenticated, requireRole("client"), async (req: any, res) => {
+    try {
+      const clientId = req.user.claims.sub;
+      const parsed = reviewSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: "Invalid review data", errors: parsed.error.flatten() });
+      }
+
+      const existing = await storage.getReviewByClientAndAgency(clientId, parsed.data.agencyId);
+      if (existing) {
+        return res.status(400).json({ message: "Du har redan lämnat ett omdöme för denna byrå" });
+      }
+
+      const review = await storage.createReview({
+        agencyId: parsed.data.agencyId,
+        clientId,
+        rating: parsed.data.rating,
+        comment: parsed.data.comment || null,
+      });
+
+      res.status(201).json(review);
+    } catch (error) {
+      console.error("Error creating review:", error);
+      res.status(500).json({ message: "Failed to create review" });
     }
   });
 

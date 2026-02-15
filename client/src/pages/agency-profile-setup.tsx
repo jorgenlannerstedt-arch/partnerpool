@@ -8,10 +8,18 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Loader2, Save, X, Plus, Upload, MapPin, Trash2, Building2 } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { ArrowLeft, Loader2, Save, X, Plus, Upload, MapPin, Trash2, Building2, Shield } from "lucide-react";
 import { Link } from "wouter";
 import type { AgencyProfile } from "@shared/schema";
-import { LEGAL_AREAS } from "@shared/schema";
+import { LEGAL_AREAS, PRICE_RANGES, LANGUAGES } from "@shared/schema";
 
 interface Office {
   city: string;
@@ -40,6 +48,11 @@ export default function AgencyProfileSetupPage() {
     specialties: [] as string[],
     logoUrl: "",
     offices: [] as Office[],
+    foundedYear: "",
+    languages: [] as string[],
+    priceRange: "",
+    barAssociationMember: false,
+    responseTimeHours: "",
   });
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -61,6 +74,11 @@ export default function AgencyProfileSetupPage() {
         specialties: existing.specialties || [],
         logoUrl: existing.logoUrl || "",
         offices: (existing.offices as Office[]) || [],
+        foundedYear: existing.foundedYear?.toString() || "",
+        languages: existing.languages || [],
+        priceRange: existing.priceRange || "",
+        barAssociationMember: existing.barAssociationMember || false,
+        responseTimeHours: existing.responseTimeHours?.toString() || "",
       });
       if (existing.logoUrl) {
         setLogoPreview(existing.logoUrl);
@@ -99,6 +117,10 @@ export default function AgencyProfileSetupPage() {
         employeeCount: parseInt(form.employeeCount) || 1,
         logoUrl: form.logoUrl || null,
         offices: form.offices.length > 0 ? form.offices : null,
+        foundedYear: form.foundedYear ? parseInt(form.foundedYear) : null,
+        languages: form.languages.length > 0 ? form.languages : null,
+        priceRange: form.priceRange || null,
+        responseTimeHours: form.responseTimeHours ? parseInt(form.responseTimeHours) : null,
       };
       const res = await apiRequest("POST", "/api/agency/profile", data);
       return res.json();
@@ -119,6 +141,15 @@ export default function AgencyProfileSetupPage() {
       specialties: prev.specialties.includes(specialty)
         ? prev.specialties.filter((s) => s !== specialty)
         : [...prev.specialties, specialty],
+    }));
+  };
+
+  const toggleLanguage = (lang: string) => {
+    setForm((prev) => ({
+      ...prev,
+      languages: prev.languages.includes(lang)
+        ? prev.languages.filter((l) => l !== lang)
+        : [...prev.languages, lang],
     }));
   };
 
@@ -246,6 +277,63 @@ export default function AgencyProfileSetupPage() {
           <div className="space-y-2">
             <Label htmlFor="employees">Antal anställda</Label>
             <Input id="employees" type="number" min="1" value={form.employeeCount} onChange={(e) => setForm({ ...form, employeeCount: e.target.value })} data-testid="input-firm-employees" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="foundedYear">Grundat år</Label>
+            <Input id="foundedYear" type="number" min="1800" max="2030" value={form.foundedYear} onChange={(e) => setForm({ ...form, foundedYear: e.target.value })} placeholder="t.ex. 1995" data-testid="input-firm-founded-year" />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="responseTime">Genomsnittlig svarstid (timmar)</Label>
+            <Input id="responseTime" type="number" min="1" max="168" value={form.responseTimeHours} onChange={(e) => setForm({ ...form, responseTimeHours: e.target.value })} placeholder="t.ex. 4" data-testid="input-firm-response-time" />
+          </div>
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Prisintervall</Label>
+            <Select value={form.priceRange} onValueChange={(v) => setForm({ ...form, priceRange: v })}>
+              <SelectTrigger data-testid="select-price-range">
+                <SelectValue placeholder="Välj prisintervall" />
+              </SelectTrigger>
+              <SelectContent>
+                {PRICE_RANGES.map((p) => (
+                  <SelectItem key={p} value={p}>{p}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label>Medlem i Advokatsamfundet</Label>
+            <div className="flex items-center gap-3 pt-1">
+              <Switch
+                checked={form.barAssociationMember}
+                onCheckedChange={(checked) => setForm({ ...form, barAssociationMember: checked })}
+                data-testid="switch-bar-association"
+              />
+              <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                <Shield className="h-3.5 w-3.5" />
+                {form.barAssociationMember ? "Ja, vi är medlemmar" : "Nej"}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Språk</Label>
+          <p className="text-xs text-muted-foreground">Vilka språk kan ni erbjuda rådgivning på?</p>
+          <div className="flex flex-wrap gap-1.5">
+            {LANGUAGES.map((lang) => (
+              <Badge
+                key={lang}
+                variant={form.languages.includes(lang) ? "default" : "secondary"}
+                className="cursor-pointer toggle-elevate"
+                onClick={() => toggleLanguage(lang)}
+                data-testid={`badge-lang-${lang.toLowerCase()}`}
+              >
+                {form.languages.includes(lang) ? <X className="h-3 w-3 mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
+                {lang}
+              </Badge>
+            ))}
           </div>
         </div>
 

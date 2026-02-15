@@ -4,7 +4,8 @@ import {
   type Case, type InsertCase,
   type CaseInquiry, type InsertCaseInquiry,
   type DirectMessage, type InsertDirectMessage,
-  userProfiles, agencyProfiles, cases, caseInquiries, directMessages,
+  type AgencyReview, type InsertAgencyReview,
+  userProfiles, agencyProfiles, cases, caseInquiries, directMessages, agencyReviews,
 } from "@shared/schema";
 import { users } from "@shared/models/auth";
 import { db } from "./db";
@@ -32,6 +33,10 @@ export interface IStorage {
   createMessage(data: InsertDirectMessage): Promise<DirectMessage>;
   getUnreadCount(userId: string): Promise<number>;
   markMessagesRead(userId: string, senderId: string): Promise<void>;
+  getReviewsByAgency(agencyId: number): Promise<AgencyReview[]>;
+  getReviewByClientAndAgency(clientId: string, agencyId: number): Promise<AgencyReview | undefined>;
+  createReview(data: InsertAgencyReview): Promise<AgencyReview>;
+  getAgencyStats(agencyId: number): Promise<{ avgRating: number; reviewCount: number; caseCount: number }>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -80,6 +85,11 @@ class DatabaseStorage implements IStorage {
           employeeCount: data.employeeCount,
           logoUrl: data.logoUrl,
           offices: data.offices,
+          foundedYear: data.foundedYear,
+          languages: data.languages,
+          priceRange: data.priceRange,
+          barAssociationMember: data.barAssociationMember,
+          responseTimeHours: data.responseTimeHours,
         },
       })
       .returning();
@@ -211,6 +221,37 @@ class DatabaseStorage implements IStorage {
       .where(
         and(eq(directMessages.senderId, senderId), eq(directMessages.receiverId, userId))
       );
+  }
+
+  async getReviewsByAgency(agencyId: number) {
+    return db.select().from(agencyReviews).where(eq(agencyReviews.agencyId, agencyId)).orderBy(desc(agencyReviews.createdAt));
+  }
+
+  async getReviewByClientAndAgency(clientId: string, agencyId: number) {
+    const [review] = await db.select().from(agencyReviews).where(
+      and(eq(agencyReviews.clientId, clientId), eq(agencyReviews.agencyId, agencyId))
+    );
+    return review;
+  }
+
+  async createReview(data: InsertAgencyReview) {
+    const [review] = await db.insert(agencyReviews).values(data).returning();
+    return review;
+  }
+
+  async getAgencyStats(agencyId: number) {
+    const agency = await this.getAgencyProfileById(agencyId);
+    if (!agency) return { avgRating: 0, reviewCount: 0, caseCount: 0 };
+
+    const reviews = await this.getReviewsByAgency(agencyId);
+    const reviewCount = reviews.length;
+    const avgRating = reviewCount > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviewCount : 0;
+
+    const [inquiryCount] = await db.select({ count: sql<number>`count(*)::int` })
+      .from(caseInquiries)
+      .where(eq(caseInquiries.agencyId, agency.userId));
+
+    return { avgRating: Math.round(avgRating * 10) / 10, reviewCount, caseCount: inquiryCount?.count || 0 };
   }
 }
 

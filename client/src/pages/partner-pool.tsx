@@ -12,13 +12,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, MapPin, Users, Building2, Globe, ArrowUpDown, Map as MapIcon, List } from "lucide-react";
+import { Search, MapPin, Users, Building2, Globe, ArrowUpDown, Map as MapIcon, List, Star, Clock, Shield, CreditCard, Languages } from "lucide-react";
 import { Link } from "wouter";
 import type { AgencyProfile } from "@shared/schema";
 import { LEGAL_AREAS } from "@shared/schema";
 import { PartnerMap } from "@/components/partner-map";
 
-type SortOption = "name-asc" | "name-desc" | "employees-asc" | "employees-desc" | "city";
+type SortOption = "name-asc" | "name-desc" | "employees-asc" | "employees-desc" | "city" | "rating";
+
+function StarRating({ rating, size = "sm" }: { rating: number; size?: "sm" | "md" }) {
+  const cls = size === "sm" ? "h-3 w-3" : "h-4 w-4";
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star
+          key={star}
+          className={`${cls} ${star <= Math.round(rating) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"}`}
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function PartnerPoolPage() {
   const [search, setSearch] = useState("");
@@ -29,6 +43,24 @@ export default function PartnerPoolPage() {
 
   const { data: agencies, isLoading } = useQuery<AgencyProfile[]>({
     queryKey: ["/api/agencies"],
+  });
+
+  const { data: allStats } = useQuery<Record<number, { avgRating: number; reviewCount: number; caseCount: number }>>({
+    queryKey: ["/api/agencies/all-stats"],
+    queryFn: async () => {
+      if (!agencies) return {};
+      const stats: Record<number, any> = {};
+      await Promise.all(
+        agencies.map(async (a) => {
+          try {
+            const res = await fetch(`/api/agencies/${a.id}/stats`);
+            if (res.ok) stats[a.id] = await res.json();
+          } catch {}
+        })
+      );
+      return stats;
+    },
+    enabled: !!agencies && agencies.length > 0,
   });
 
   const allCities = useMemo(() => {
@@ -82,10 +114,19 @@ export default function PartnerPoolPage() {
       case "city":
         result.sort((a, b) => (a.city || "").localeCompare(b.city || ""));
         break;
+      case "rating":
+        result.sort((a, b) => (allStats?.[b.id]?.avgRating || 0) - (allStats?.[a.id]?.avgRating || 0));
+        break;
     }
 
     return result;
-  }, [agencies, search, sortBy, specialtyFilter, cityFilter]);
+  }, [agencies, search, sortBy, specialtyFilter, cityFilter, allStats]);
+
+  const formatResponseTime = (hours: number | null) => {
+    if (!hours) return null;
+    if (hours < 24) return `${hours}h`;
+    return `${Math.round(hours / 24)}d`;
+  };
 
   return (
     <div className="space-y-6">
@@ -135,6 +176,7 @@ export default function PartnerPoolPage() {
           <SelectContent>
             <SelectItem value="name-asc">Namn A-Ö</SelectItem>
             <SelectItem value="name-desc">Namn Ö-A</SelectItem>
+            <SelectItem value="rating">Högst betyg</SelectItem>
             <SelectItem value="employees-desc">Flest anställda</SelectItem>
             <SelectItem value="employees-asc">Färst anställda</SelectItem>
             <SelectItem value="city">Stad</SelectItem>
@@ -183,6 +225,8 @@ export default function PartnerPoolPage() {
           {filtered.map((agency) => {
             const offices = agency.offices as Array<{ city: string }> | null;
             const allLocations = [agency.city, ...(offices?.map((o) => o.city) || [])].filter(Boolean);
+            const stats = allStats?.[agency.id];
+            const yearsActive = agency.foundedYear ? new Date().getFullYear() - agency.foundedYear : null;
 
             return (
               <Link key={agency.id} href={`/partners/${agency.id}`}>
@@ -198,7 +242,12 @@ export default function PartnerPoolPage() {
                           )}
                         </div>
                         <div className="min-w-0">
-                          <h3 className="font-semibold truncate text-sm">{agency.name}</h3>
+                          <div className="flex items-center gap-1.5">
+                            <h3 className="font-semibold truncate text-sm">{agency.name}</h3>
+                            {agency.barAssociationMember && (
+                              <Shield className="h-3.5 w-3.5 text-blue-500 flex-shrink-0" data-testid={`icon-bar-member-${agency.id}`} />
+                            )}
+                          </div>
                           {allLocations.length > 0 && (
                             <p className="text-xs text-muted-foreground flex items-center gap-1">
                               <MapPin className="h-3 w-3 flex-shrink-0" />
@@ -208,6 +257,13 @@ export default function PartnerPoolPage() {
                         </div>
                       </div>
                     </div>
+
+                    {stats && stats.reviewCount > 0 && (
+                      <div className="flex items-center gap-2">
+                        <StarRating rating={stats.avgRating} />
+                        <span className="text-xs text-muted-foreground">{stats.avgRating} ({stats.reviewCount})</span>
+                      </div>
+                    )}
 
                     {agency.description && (
                       <p className="text-xs text-muted-foreground line-clamp-2">{agency.description}</p>
@@ -224,15 +280,33 @@ export default function PartnerPoolPage() {
                       </div>
                     )}
 
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground pt-1 border-t">
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground pt-1 border-t">
                       <span className="flex items-center gap-1">
                         <Users className="h-3 w-3" />
                         {agency.employeeCount || 1} anställda
                       </span>
-                      {agency.website && (
+                      {yearsActive && yearsActive > 0 && (
                         <span className="flex items-center gap-1">
-                          <Globe className="h-3 w-3" />
-                          Webbplats
+                          <Building2 className="h-3 w-3" />
+                          {yearsActive} år
+                        </span>
+                      )}
+                      {agency.responseTimeHours && (
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {formatResponseTime(agency.responseTimeHours)}
+                        </span>
+                      )}
+                      {agency.priceRange && (
+                        <span className="flex items-center gap-1">
+                          <CreditCard className="h-3 w-3" />
+                          {agency.priceRange}
+                        </span>
+                      )}
+                      {agency.languages && agency.languages.length > 0 && (
+                        <span className="flex items-center gap-1">
+                          <Languages className="h-3 w-3" />
+                          {agency.languages.length} språk
                         </span>
                       )}
                     </div>

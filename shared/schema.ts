@@ -30,9 +30,23 @@ export const agencyProfiles = pgTable("agency_profiles", {
   employeeCount: integer("employee_count").default(1),
   logoUrl: text("logo_url"),
   offices: jsonb("offices").$type<Array<{ city: string; address: string; latitude?: number; longitude?: number }>>(),
+  foundedYear: integer("founded_year"),
+  languages: text("languages").array(),
+  priceRange: text("price_range"),
+  barAssociationMember: boolean("bar_association_member").default(false),
+  responseTimeHours: integer("response_time_hours"),
   subscriptionActive: boolean("subscription_active").default(false),
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
+});
+
+export const agencyReviews = pgTable("agency_reviews", {
+  id: serial("id").primaryKey(),
+  agencyId: integer("agency_id").notNull(),
+  clientId: varchar("client_id").notNull(),
+  rating: integer("rating").notNull(),
+  comment: text("comment"),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const cases = pgTable("cases", {
@@ -93,6 +107,7 @@ export const insertAgencyProfileSchema = createInsertSchema(agencyProfiles).omit
 export const insertCaseSchema = createInsertSchema(cases).omit({ id: true, createdAt: true });
 export const insertCaseInquirySchema = createInsertSchema(caseInquiries).omit({ id: true, createdAt: true });
 export const insertDirectMessageSchema = createInsertSchema(directMessages).omit({ id: true, createdAt: true });
+export const insertAgencyReviewSchema = createInsertSchema(agencyReviews).omit({ id: true, createdAt: true });
 
 export type UserProfile = typeof userProfiles.$inferSelect;
 export type InsertUserProfile = z.infer<typeof insertUserProfileSchema>;
@@ -104,3 +119,8 @@ export type CaseInquiry = typeof caseInquiries.$inferSelect;
 export type InsertCaseInquiry = z.infer<typeof insertCaseInquirySchema>;
 export type DirectMessage = typeof directMessages.$inferSelect;
 export type InsertDirectMessage = z.infer<typeof insertDirectMessageSchema>;
+export type AgencyReview = typeof agencyReviews.$inferSelect;
+export type InsertAgencyReview = z.infer<typeof insertAgencyReviewSchema>;
+
+export const PRICE_RANGES = ["Budget-vänlig", "Medel", "Premium"] as const;
+export const LANGUAGES = ["Svenska", "Engelska", "Arabiska", "Finska", "Persiska", "Tyska", "Franska", "Spanska", "Polska", "Ryska"] as const;
