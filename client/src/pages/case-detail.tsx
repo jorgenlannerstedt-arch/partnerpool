@@ -4,10 +4,20 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, FileText, Clock, Building2, MessageCircle } from "lucide-react";
+import { ArrowLeft, FileText, Clock, Building2, MessageCircle, ShieldCheck, CircleDollarSign, Scale } from "lucide-react";
 import type { Case, CaseInquiry, AgencyProfile } from "@shared/schema";
 
 type InquiryWithAgency = CaseInquiry & { agency?: AgencyProfile };
+
+const AMOUNT_LABELS: Record<string, string> = {
+  "under-50k": "Under 50 000 SEK",
+  "50k-100k": "50 000 - 100 000 SEK",
+  "100k-250k": "100 000 - 250 000 SEK",
+  "250k-500k": "250 000 - 500 000 SEK",
+  "500k-1m": "500 000 - 1 000 000 SEK",
+  "over-1m": "Över 1 000 000 SEK",
+  "unknown": "Osäker / Vet ej",
+};
 
 export default function CaseDetailPage() {
   const params = useParams<{ id: string }>();
@@ -61,6 +71,29 @@ export default function CaseDetailPage() {
           </p>
         </div>
         <Badge variant="secondary">{caseData.status}</Badge>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        {caseData.legalArea && (
+          <div className="flex items-center gap-1.5">
+            <Scale className="h-4 w-4 text-muted-foreground" />
+            <Badge variant="default" data-testid="badge-legal-area">{caseData.legalArea}</Badge>
+          </div>
+        )}
+        <div className="flex items-center gap-1.5">
+          <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+          <Badge variant={caseData.hasInsurance ? "default" : "secondary"} data-testid="badge-insurance">
+            {caseData.hasInsurance ? "Har rättsskydd" : "Inget rättsskydd"}
+          </Badge>
+        </div>
+        {caseData.estimatedAmount && (
+          <div className="flex items-center gap-1.5">
+            <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
+            <Badge variant="secondary" data-testid="badge-amount">
+              {AMOUNT_LABELS[caseData.estimatedAmount] || caseData.estimatedAmount}
+            </Badge>
+          </div>
+        )}
       </div>
 
       {caseData.aiSummary && (

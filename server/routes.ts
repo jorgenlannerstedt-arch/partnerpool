@@ -5,6 +5,7 @@ import path from "path";
 import fs from "fs";
 import { z } from "zod";
 import { storage } from "./storage";
+import { LEGAL_AREAS } from "@shared/schema";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 import Anthropic from "@anthropic-ai/sdk";
 
@@ -18,12 +19,26 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
 }
 
+const logoDir = path.join(process.cwd(), "uploads", "logos");
+if (!fs.existsSync(logoDir)) {
+  fs.mkdirSync(logoDir, { recursive: true });
+}
+
 const upload = multer({
   dest: uploadDir,
   limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     if (file.mimetype === "application/pdf") cb(null, true);
     else cb(new Error("Only PDF files are allowed"));
+  },
+});
+
+const logoUpload = multer({
+  dest: logoDir,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) cb(null, true);
+    else cb(new Error("Only image files are allowed"));
   },
 });
 
@@ -57,6 +72,13 @@ const inquirySchema = z.object({
   message: z.string().min(1).max(5000),
 });
 
+const officeSchema = z.object({
+  city: z.string().min(1),
+  address: z.string().optional().default(""),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+});
+
 const agencyProfileSchema = z.object({
   name: z.string().min(1).max(200),
   description: z.string().max(2000).nullable().optional(),
@@ -69,6 +91,8 @@ const agencyProfileSchema = z.object({
   website: z.string().max(500).nullable().optional(),
   specialties: z.array(z.string()).nullable().optional(),
   employeeCount: z.number().int().min(1).max(100000).optional(),
+  offices: z.array(officeSchema).nullable().optional(),
+  logoUrl: z.string().nullable().optional(),
 });
 
 export async function registerRoutes(
@@ -77,6 +101,15 @@ export async function registerRoutes(
 ): Promise<Server> {
   await setupAuth(app);
   registerAuthRoutes(app);
+
+  app.use("/uploads/logos", (req, res, next) => {
+    const filePath = path.join(logoDir, path.basename(req.url));
+    if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      res.status(404).send("Not found");
+    }
+  });
 
   app.get("/api/profile", isAuthenticated, async (req: any, res) => {
     try {
@@ -170,6 +203,24 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/agency/logo", isAuthenticated, requireRole("agency"), logoUpload.single("logo"), async (req: any, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      const ext = path.extname(req.file.originalname) || ".png";
+      const newFilename = `${req.file.filename}${ext}`;
+      const newPath = path.join(logoDir, newFilename);
+      fs.renameSync(req.file.path, newPath);
+
+      const logoUrl = `/uploads/logos/${newFilename}`;
+      res.json({ logoUrl });
+    } catch (error) {
+      console.error("Error uploading logo:", error);
+      res.status(500).json({ message: "Failed to upload logo" });
+    }
+  });
+
   app.get("/api/cases", isAuthenticated, requireRole("client"), async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
@@ -227,6 +278,8 @@ export async function registerRoutes(
       const userId = req.user.claims.sub;
       const title = req.body.title?.trim();
       const description = req.body.description?.trim() || null;
+      const hasInsurance = req.body.hasInsurance === "true";
+      const estimatedAmount = req.body.estimatedAmount?.trim() || null;
 
       if (!title || title.length > 200) {
         return res.status(400).json({ message: "Title is required and must be under 200 characters" });
@@ -234,6 +287,7 @@ export async function registerRoutes(
 
       let aiSummary = null;
       let pdfFilename = null;
+      let legalArea = null;
 
       if (req.file) {
         pdfFilename = req.file.filename;
@@ -244,14 +298,17 @@ export async function registerRoutes(
           const pdfData = await pdfParse(pdfBuffer);
           const pdfText = pdfData.text.slice(0, 8000);
 
+          const legalAreasList = LEGAL_AREAS.join(", ");
+
           const message = await anthropic.messages.create({
             model: "claude-sonnet-4-5",
-            max_tokens: 1024,
+            max_tokens: 1500,
             system: `Du är en juridisk dokumentanalytiker för Vertigogo, en juridisk tjänsteplattform.
 Din uppgift är att:
 1. Läsa den tillhandahållna dokumenttexten
 2. ANONYMISERA all personlig information (namn, adresser, telefonnummer, e-postadresser, personnummer, bankuppgifter)
 3. Skapa en professionell, anonymiserad ärendesammanfattning som advokatbyråer kan granska
+4. Klassificera ärendet i EXAKT ETT rättsområde
 
 Sammanfattningen ska innehålla:
 - Typ av juridiskt ärende
@@ -260,8 +317,17 @@ Sammanfattningen ska innehålla:
 - Vilken typ av juridisk hjälp som behövs
 
 Ersätt personlig information med generiska termer som [Klient], [Motpart], [Adress], etc.
-Skriv sammanfattningen på svenska i en tydlig, professionell ton. Håll den koncis men informativ (200-400 ord).
-VIKTIGT: Resultatet FÅR INTE innehålla några riktiga namn, adresser, telefonnummer, e-postadresser eller personnummer från originaldokumentet.`,
+
+Du MÅSTE svara i följande JSON-format (inget annat):
+{
+  "summary": "Den anonymiserade ärendesammanfattningen på svenska (200-400 ord)",
+  "legalArea": "Exakt ett av följande rättsområden: ${legalAreasList}"
+}
+
+VIKTIGT: 
+- Resultatet FÅR INTE innehålla några riktiga namn, adresser, telefonnummer, e-postadresser eller personnummer från originaldokumentet.
+- legalArea MÅSTE vara exakt ett av de angivna alternativen.
+- Svara ENBART med JSON, ingen annan text.`,
             messages: [
               {
                 role: "user",
@@ -271,7 +337,17 @@ VIKTIGT: Resultatet FÅR INTE innehålla några riktiga namn, adresser, telefonn
           });
 
           const textContent = message.content[0];
-          aiSummary = textContent.type === "text" ? textContent.text : null;
+          if (textContent.type === "text") {
+            try {
+              const parsed = JSON.parse(textContent.text);
+              aiSummary = parsed.summary || textContent.text;
+              if (parsed.legalArea && LEGAL_AREAS.includes(parsed.legalArea)) {
+                legalArea = parsed.legalArea;
+              }
+            } catch {
+              aiSummary = textContent.text;
+            }
+          }
 
           fs.unlinkSync(req.file.path);
           pdfFilename = null;
@@ -289,6 +365,9 @@ VIKTIGT: Resultatet FÅR INTE innehålla några riktiga namn, adresser, telefonn
         title,
         description,
         aiSummary,
+        legalArea,
+        hasInsurance,
+        estimatedAmount,
         pdfFilename,
         status: "open",
       });
@@ -302,8 +381,13 @@ VIKTIGT: Resultatet FÅR INTE innehålla några riktiga namn, adresser, telefonn
 
   app.get("/api/agency/cases", isAuthenticated, requireRole("agency"), async (req: any, res) => {
     try {
-      const openCases = await storage.getOpenCases();
-      res.json(openCases);
+      const userId = req.user.claims.sub;
+      const agencyProfile = await storage.getAgencyProfile(userId);
+      if (!agencyProfile || !agencyProfile.specialties || agencyProfile.specialties.length === 0) {
+        return res.json([]);
+      }
+      const matchingCases = await storage.getOpenCasesForAgency(agencyProfile.specialties);
+      res.json(matchingCases);
     } catch (error) {
       console.error("Error fetching agency cases:", error);
       res.status(500).json({ message: "Failed to fetch cases" });

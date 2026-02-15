@@ -7,6 +7,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Building2, MapPin, Users, Globe, Phone, Mail } from "lucide-react";
 import type { AgencyProfile } from "@shared/schema";
 
+interface Office {
+  city: string;
+  address: string;
+  latitude?: number;
+  longitude?: number;
+}
+
 export default function PartnerDetailPage() {
   const params = useParams<{ id: string }>();
   const { data: agency, isLoading } = useQuery<AgencyProfile>({
@@ -37,6 +44,8 @@ export default function PartnerDetailPage() {
     );
   }
 
+  const offices = agency.offices as Office[] | null;
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
@@ -50,8 +59,12 @@ export default function PartnerDetailPage() {
 
       <Card className="p-6">
         <div className="flex flex-col sm:flex-row gap-6">
-          <div className="w-20 h-20 rounded-md bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <Building2 className="h-10 w-10 text-primary" />
+          <div className="w-20 h-20 rounded-md bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
+            {agency.logoUrl ? (
+              <img src={agency.logoUrl} alt={agency.name} className="w-full h-full object-contain" data-testid="img-agency-logo" />
+            ) : (
+              <Building2 className="h-10 w-10 text-muted-foreground" />
+            )}
           </div>
           <div className="space-y-4 flex-1">
             <div>
@@ -76,6 +89,24 @@ export default function PartnerDetailPage() {
                 <div className="flex flex-wrap gap-1.5">
                   {agency.specialties.map((s) => (
                     <Badge key={s} variant="secondary">{s}</Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {offices && offices.length > 0 && (
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold">Kontor</h3>
+                <div className="space-y-1">
+                  <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+                    <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+                    <span className="font-medium">Huvudkontor:</span> {agency.address ? `${agency.address}, ` : ""}{agency.city}
+                  </p>
+                  {offices.map((office, i) => (
+                    <p key={i} className="text-sm text-muted-foreground flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 flex-shrink-0" />
+                      {office.address ? `${office.address}, ` : ""}{office.city}
+                    </p>
                   ))}
                 </div>
               </div>

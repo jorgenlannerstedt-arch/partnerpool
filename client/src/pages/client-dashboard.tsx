@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, FileText, MessageCircle, Users, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import { Plus, FileText, MessageCircle, Users, Clock, CheckCircle, AlertCircle, Scale } from "lucide-react";
 import type { Case } from "@shared/schema";
 
 const statusConfig: Record<string, { color: string; icon: typeof Clock; label: string }> = {
@@ -102,9 +102,17 @@ export default function ClientDashboard() {
                       <div className="space-y-1 flex-1 min-w-0">
                         <h3 className="font-semibold truncate">{c.title}</h3>
                         <p className="text-sm text-muted-foreground line-clamp-2">{c.aiSummary || c.description || "Ingen beskrivning ännu"}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {c.createdAt ? new Date(c.createdAt).toLocaleDateString("sv-SE") : ""}
-                        </p>
+                        <div className="flex flex-wrap items-center gap-2 mt-1">
+                          {c.legalArea && (
+                            <Badge variant="secondary" className="text-xs">
+                              <Scale className="h-3 w-3 mr-1" />
+                              {c.legalArea}
+                            </Badge>
+                          )}
+                          <span className="text-xs text-muted-foreground">
+                            {c.createdAt ? new Date(c.createdAt).toLocaleDateString("sv-SE") : ""}
+                          </span>
+                        </div>
                       </div>
                       <Badge variant="secondary" className={config.color}>
                         <StatusIcon className="h-3 w-3 mr-1" />

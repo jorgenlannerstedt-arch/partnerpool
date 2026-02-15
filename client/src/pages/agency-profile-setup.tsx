@@ -8,16 +8,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Loader2, Save, X, Plus } from "lucide-react";
+import { ArrowLeft, Loader2, Save, X, Plus, Upload, MapPin, Trash2, Building2 } from "lucide-react";
 import { Link } from "wouter";
 import type { AgencyProfile } from "@shared/schema";
+import { LEGAL_AREAS } from "@shared/schema";
 
-const SPECIALTY_OPTIONS = [
-  "Affärsjuridik", "Straffrätt", "Familjerätt", "Arbetsrätt",
-  "Migrationsrätt", "Fastighetsrätt", "Skatterätt", "Immaterialrätt",
-  "Miljörätt", "Personskaderätt", "Konkursrätt", "Tvistemål",
-  "Avtalsrätt", "Försäkringsrätt", "Sjörätt",
-];
+interface Office {
+  city: string;
+  address: string;
+  latitude?: number;
+  longitude?: number;
+}
 
 export default function AgencyProfileSetupPage() {
   const { toast } = useToast();
@@ -37,7 +38,12 @@ export default function AgencyProfileSetupPage() {
     website: "",
     employeeCount: "1",
     specialties: [] as string[],
+    logoUrl: "",
+    offices: [] as Office[],
   });
+
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
   useEffect(() => {
     if (existing) {
@@ -53,9 +59,36 @@ export default function AgencyProfileSetupPage() {
         website: existing.website || "",
         employeeCount: existing.employeeCount?.toString() || "1",
         specialties: existing.specialties || [],
+        logoUrl: existing.logoUrl || "",
+        offices: (existing.offices as Office[]) || [],
       });
+      if (existing.logoUrl) {
+        setLogoPreview(existing.logoUrl);
+      }
     }
   }, [existing]);
+
+  const logoMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("logo", file);
+      const res = await fetch("/api/agency/logo", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error(await res.text());
+      return res.json();
+    },
+    onSuccess: (data: { logoUrl: string }) => {
+      setForm((prev) => ({ ...prev, logoUrl: data.logoUrl }));
+      setLogoPreview(data.logoUrl);
+      toast({ title: "Logotyp uppladdad" });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Fel", description: err.message, variant: "destructive" });
+    },
+  });
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -64,6 +97,8 @@ export default function AgencyProfileSetupPage() {
         latitude: form.latitude ? parseFloat(form.latitude) : null,
         longitude: form.longitude ? parseFloat(form.longitude) : null,
         employeeCount: parseInt(form.employeeCount) || 1,
+        logoUrl: form.logoUrl || null,
+        offices: form.offices.length > 0 ? form.offices : null,
       };
       const res = await apiRequest("POST", "/api/agency/profile", data);
       return res.json();
@@ -87,6 +122,38 @@ export default function AgencyProfileSetupPage() {
     }));
   };
 
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setLogoPreview(reader.result as string);
+      reader.readAsDataURL(file);
+      logoMutation.mutate(file);
+    }
+  };
+
+  const addOffice = () => {
+    setForm((prev) => ({
+      ...prev,
+      offices: [...prev.offices, { city: "", address: "" }],
+    }));
+  };
+
+  const updateOffice = (index: number, field: keyof Office, value: string | number) => {
+    setForm((prev) => ({
+      ...prev,
+      offices: prev.offices.map((o, i) => (i === index ? { ...o, [field]: value } : o)),
+    }));
+  };
+
+  const removeOffice = (index: number) => {
+    setForm((prev) => ({
+      ...prev,
+      offices: prev.offices.filter((_, i) => i !== index),
+    }));
+  };
+
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
@@ -102,6 +169,43 @@ export default function AgencyProfileSetupPage() {
       </div>
 
       <Card className="p-6 space-y-5">
+        <div className="space-y-3">
+          <Label>Logotyp</Label>
+          <div className="flex items-center gap-4">
+            <div className="w-20 h-20 rounded-md border flex items-center justify-center overflow-hidden bg-muted">
+              {logoPreview ? (
+                <img src={logoPreview} alt="Logotyp" className="w-full h-full object-contain" data-testid="img-logo-preview" />
+              ) : (
+                <Building2 className="h-8 w-8 text-muted-foreground" />
+              )}
+            </div>
+            <div>
+              <Button
+                variant="outline"
+                size="sm"
+                className="rounded-full"
+                onClick={() => document.getElementById("logo-input")?.click()}
+                disabled={logoMutation.isPending}
+                data-testid="button-upload-logo"
+              >
+                {logoMutation.isPending ? (
+                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Laddar upp...</>
+                ) : (
+                  <><Upload className="h-4 w-4 mr-2" /> Ladda upp logotyp</>
+                )}
+              </Button>
+              <input
+                id="logo-input"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleLogoChange}
+              />
+              <p className="text-xs text-muted-foreground mt-1">PNG, JPG eller SVG. Max 5 MB.</p>
+            </div>
+          </div>
+        </div>
+
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="space-y-2 sm:col-span-2">
             <Label htmlFor="name">Byrånamn *</Label>
@@ -120,11 +224,11 @@ export default function AgencyProfileSetupPage() {
             <Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+46 8 123 456" data-testid="input-firm-phone" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="address">Adress</Label>
+            <Label htmlFor="address">Huvudkontor - Adress</Label>
             <Input id="address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Gatuadress" data-testid="input-firm-address" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="city">Stad</Label>
+            <Label htmlFor="city">Huvudkontor - Stad</Label>
             <Input id="city" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Stockholm" data-testid="input-firm-city" />
           </div>
           <div className="space-y-2">
@@ -146,15 +250,16 @@ export default function AgencyProfileSetupPage() {
         </div>
 
         <div className="space-y-2">
-          <Label>Specialiseringar</Label>
+          <Label>Specialiseringar *</Label>
+          <p className="text-xs text-muted-foreground">Välj de rättsområden din byrå arbetar med. Ni kommer bara att se ärenden som matchar era specialiseringar.</p>
           <div className="flex flex-wrap gap-1.5">
-            {SPECIALTY_OPTIONS.map((s) => (
+            {LEGAL_AREAS.map((s) => (
               <Badge
                 key={s}
                 variant={form.specialties.includes(s) ? "default" : "secondary"}
                 className="cursor-pointer toggle-elevate"
                 onClick={() => toggleSpecialty(s)}
-                data-testid={`badge-specialty-${s.toLowerCase().replace(/\s+/g, "-")}`}
+                data-testid={`badge-specialty-${s.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "")}`}
               >
                 {form.specialties.includes(s) ? <X className="h-3 w-3 mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
                 {s}
@@ -163,9 +268,54 @@ export default function AgencyProfileSetupPage() {
           </div>
         </div>
 
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <Label>Ytterligare kontor</Label>
+              <p className="text-xs text-muted-foreground">Lägg till fler orter där byrån finns representerad</p>
+            </div>
+            <Button variant="outline" size="sm" className="rounded-full" onClick={addOffice} data-testid="button-add-office">
+              <Plus className="h-4 w-4 mr-1" /> Lägg till kontor
+            </Button>
+          </div>
+          {form.offices.map((office, i) => (
+            <Card key={i} className="p-4">
+              <div className="flex items-start justify-between gap-2 mb-3">
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Kontor {i + 1}</span>
+                </div>
+                <Button variant="ghost" size="icon" onClick={() => removeOffice(i)} data-testid={`button-remove-office-${i}`}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">Stad *</Label>
+                  <Input
+                    value={office.city}
+                    onChange={(e) => updateOffice(i, "city", e.target.value)}
+                    placeholder="Göteborg"
+                    data-testid={`input-office-city-${i}`}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">Adress</Label>
+                  <Input
+                    value={office.address}
+                    onChange={(e) => updateOffice(i, "address", e.target.value)}
+                    placeholder="Gatuadress"
+                    data-testid={`input-office-address-${i}`}
+                  />
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+
         <Button
           className="w-full rounded-full"
-          disabled={!form.name || mutation.isPending}
+          disabled={!form.name || form.specialties.length === 0 || mutation.isPending}
           onClick={() => mutation.mutate()}
           data-testid="button-save-profile"
         >
@@ -175,6 +325,9 @@ export default function AgencyProfileSetupPage() {
             <><Save className="h-4 w-4 mr-2" /> Spara profil</>
           )}
         </Button>
+        {form.specialties.length === 0 && (
+          <p className="text-xs text-destructive text-center">Välj minst en specialisering för att kunna spara.</p>
+        )}
       </Card>
     </div>
   );

@@ -1,7 +1,7 @@
 # Vertigogo - Legal Services Platform
 
 ## Overview
-Vertigogo connects clients needing legal help with law firms. The platform features AI-powered PDF analysis, anonymized case descriptions, partner pool with map visualization, and secure messaging.
+Vertigogo connects clients needing legal help with law firms. The platform features AI-powered PDF analysis, anonymized case descriptions, partner pool with map visualization, and secure messaging. Cases are matched to agencies by legal area specialization.
 
 ## Architecture
 - **Frontend**: React + Vite + TailwindCSS + shadcn/ui components
@@ -20,9 +20,9 @@ Vertigogo connects clients needing legal help with law firms. The platform featu
 - **Language**: All UI text in Swedish
 
 ## Key Files
-- `shared/schema.ts` - Database schema and types
-- `server/routes.ts` - All API endpoints
-- `server/storage.ts` - Database storage layer
+- `shared/schema.ts` - Database schema, types, and LEGAL_AREAS constant
+- `server/routes.ts` - All API endpoints including logo upload
+- `server/storage.ts` - Database storage layer with getOpenCasesForAgency
 - `server/db.ts` - Database connection
 - `client/src/App.tsx` - Main app with routing
 - `client/src/pages/` - All page components
@@ -30,21 +30,35 @@ Vertigogo connects clients needing legal help with law firms. The platform featu
 
 ## User Roles
 - **Client**: Free. Can upload cases, browse partners, message agencies
-- **Agency**: 995 SEK/month via Stripe. Can view cases, send inquiries, message clients
+- **Agency**: 995 SEK/month via Stripe. Can view cases matching specialties, send inquiries, message clients
 
 ## Database Tables
 - `users` - Replit Auth user accounts
 - `sessions` - Auth sessions
 - `user_profiles` - Role selection (client/agency)
-- `agency_profiles` - Law firm profiles with location/specialties
-- `cases` - Client cases with AI summaries
+- `agency_profiles` - Law firm profiles with location/specialties/offices/logoUrl
+- `cases` - Client cases with AI summaries, legalArea, hasInsurance, estimatedAmount
 - `case_inquiries` - Agency responses to cases
 - `direct_messages` - In-app messaging
 
+## Case-Agency Matching
+- AI extracts `legalArea` from uploaded PDF documents (one of the LEGAL_AREAS values)
+- Agencies specify their specializations (from same LEGAL_AREAS list)
+- Agency dashboard only shows cases where case.legalArea matches agency.specialties
+- LEGAL_AREAS defined in shared/schema.ts (17 Swedish legal areas)
+
+## Agency Features
+- Logo upload via POST /api/agency/logo (stored in uploads/logos/)
+- Multiple office locations via JSON `offices` field
+- Primary office (city/address/lat/lng) + additional offices array
+- Specialties are required to save profile
+
 ## Recent Changes
 - 2026-02-15: Initial build - all core features implemented
-- Seeded 12 Swedish law firms for partner pool
-- Switched AI from OpenAI to Anthropic Claude (claude-sonnet-4-5)
-- Translated all UI text to Swedish
+- Seeded 12 Swedish law firms with Swedish specializations and multi-office support
+- AI prompt extracts legalArea for case-agency matching (JSON response format)
+- Added hasInsurance, estimatedAmount fields to cases
+- Added logo upload and multiple offices to agency profiles
+- Added Vertigogo review notice on case creation form
 - Redesigned with light #f3f4f8 background, white headers/sections, Baskervville font, pill buttons
 - Renamed app from Vertogogo to Vertigogo

@@ -8,8 +8,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Upload, FileText, Loader2, ArrowLeft, Sparkles } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Upload, FileText, Loader2, ArrowLeft, Sparkles, ShieldCheck, CircleDollarSign, Eye } from "lucide-react";
 import { Link } from "wouter";
+
+const AMOUNT_RANGES = [
+  { value: "under-50k", label: "Under 50 000 SEK" },
+  { value: "50k-100k", label: "50 000 - 100 000 SEK" },
+  { value: "100k-250k", label: "100 000 - 250 000 SEK" },
+  { value: "250k-500k", label: "250 000 - 500 000 SEK" },
+  { value: "500k-1m", label: "500 000 - 1 000 000 SEK" },
+  { value: "over-1m", label: "Över 1 000 000 SEK" },
+  { value: "unknown", label: "Osäker / Vet ej" },
+];
 
 export default function NewCasePage() {
   const [, navigate] = useLocation();
@@ -18,6 +30,8 @@ export default function NewCasePage() {
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [hasInsurance, setHasInsurance] = useState(false);
+  const [estimatedAmount, setEstimatedAmount] = useState("");
 
   const uploadMutation = useMutation({
     mutationFn: async () => {
@@ -25,6 +39,8 @@ export default function NewCasePage() {
       formData.append("title", title);
       if (description) formData.append("description", description);
       if (file) formData.append("pdf", file);
+      formData.append("hasInsurance", hasInsurance.toString());
+      if (estimatedAmount) formData.append("estimatedAmount", estimatedAmount);
 
       const res = await fetch("/api/cases", {
         method: "POST",
@@ -65,13 +81,27 @@ export default function NewCasePage() {
         </Link>
         <div>
           <h1 className="text-2xl font-bold font-serif" data-testid="text-new-case-title">Nytt ärende</h1>
-          <p className="text-muted-foreground text-sm">Ladda upp ett dokument och vår AI skapar en anonymiserad ärendesammanfattning.</p>
+          <p className="text-muted-foreground text-sm">Beskriv ditt ärende och ladda upp relevanta dokument.</p>
         </div>
       </div>
 
+      <Card className="p-5 border-primary/20 bg-primary/5">
+        <div className="flex items-start gap-3">
+          <Eye className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold text-sm">Förhandsgranskning av Vertigogo</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Alla uppladdade dokument förhandsgranskas av Vertigogo innan de delas med advokatbyråer.
+              Personlig information anonymiseras automatiskt av vår AI. Du kan känna dig trygg med att
+              dina uppgifter hanteras konfidentiellt.
+            </p>
+          </div>
+        </div>
+      </Card>
+
       <Card className="p-6 space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="title">Ärendetitel</Label>
+          <Label htmlFor="title">Ärendetitel *</Label>
           <Input
             id="title"
             placeholder="t.ex. Arbetsrättstvist, Fastighetstvist"
@@ -134,17 +164,61 @@ export default function NewCasePage() {
                   Dra och släpp en PDF här, eller klicka för att bläddra
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Personlig information anonymiseras automatiskt
+                  Dokumentet förhandsgranskas av Vertigogo innan det delas
                 </p>
               </div>
             )}
           </div>
         </div>
 
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+              <Label htmlFor="insurance">Har du rättsskydd?</Label>
+            </div>
+            <div className="flex items-center gap-3">
+              <Switch
+                id="insurance"
+                checked={hasInsurance}
+                onCheckedChange={setHasInsurance}
+                data-testid="switch-insurance"
+              />
+              <span className="text-sm text-muted-foreground">
+                {hasInsurance ? "Ja, jag har rättsskydd" : "Nej, jag har inte rättsskydd"}
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Rättsskydd ingår ofta i hemförsäkringen och kan täcka juridiska kostnader.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
+              <Label>Ungefärligt belopp</Label>
+            </div>
+            <Select value={estimatedAmount} onValueChange={setEstimatedAmount}>
+              <SelectTrigger data-testid="select-amount">
+                <SelectValue placeholder="Välj beloppsklass" />
+              </SelectTrigger>
+              <SelectContent>
+                {AMOUNT_RANGES.map((range) => (
+                  <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Ange ett ungefärligt tvistebelopp eller värde.
+            </p>
+          </div>
+        </div>
+
         <div className="flex items-center gap-2 p-3 rounded-md bg-primary/5">
           <Sparkles className="h-5 w-5 text-primary flex-shrink-0" />
           <p className="text-sm text-muted-foreground">
-            Vår AI analyserar ditt dokument, anonymiserar personlig information och skapar en ärendebeskrivning som advokatbyråer kan granska.
+            Vår AI analyserar ditt dokument, anonymiserar personlig information och skapar en ärendebeskrivning.
+            Ärendet matchas sedan automatiskt mot advokatbyråer med rätt kompetens.
           </p>
         </div>
 

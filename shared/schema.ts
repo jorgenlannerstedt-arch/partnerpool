@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, serial, integer, boolean, timestamp, doublePrecision, pgEnum } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, serial, integer, boolean, timestamp, doublePrecision, pgEnum, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -29,6 +29,7 @@ export const agencyProfiles = pgTable("agency_profiles", {
   specialties: text("specialties").array(),
   employeeCount: integer("employee_count").default(1),
   logoUrl: text("logo_url"),
+  offices: jsonb("offices").$type<Array<{ city: string; address: string; latitude?: number; longitude?: number }>>(),
   subscriptionActive: boolean("subscription_active").default(false),
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
@@ -40,6 +41,9 @@ export const cases = pgTable("cases", {
   title: text("title").notNull(),
   description: text("description"),
   aiSummary: text("ai_summary"),
+  legalArea: text("legal_area"),
+  hasInsurance: boolean("has_insurance").default(false),
+  estimatedAmount: text("estimated_amount"),
   pdfFilename: text("pdf_filename"),
   status: text("status").notNull().default("open"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -63,6 +67,26 @@ export const directMessages = pgTable("direct_messages", {
   read: boolean("read").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export const LEGAL_AREAS = [
+  "Affärsjuridik",
+  "Arbetsrätt",
+  "Avtalsrätt",
+  "Civilrätt",
+  "Familjerätt",
+  "Fastighetsrätt",
+  "Försäkringsrätt",
+  "GDPR & Dataskydd",
+  "Immaterialrätt",
+  "Konkursrätt",
+  "Migrationsrätt",
+  "Miljörätt",
+  "Personskaderätt",
+  "Sjörätt",
+  "Skatterätt",
+  "Straffrätt",
+  "Tvistemål",
+] as const;
 
 export const insertUserProfileSchema = createInsertSchema(userProfiles).omit({ id: true });
 export const insertAgencyProfileSchema = createInsertSchema(agencyProfiles).omit({ id: true });

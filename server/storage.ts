@@ -8,7 +8,7 @@ import {
 } from "@shared/schema";
 import { users } from "@shared/models/auth";
 import { db } from "./db";
-import { eq, and, or, desc, sql, ne } from "drizzle-orm";
+import { eq, and, or, desc, sql, ne, inArray } from "drizzle-orm";
 
 export interface IStorage {
   getProfile(userId: string): Promise<UserProfile | undefined>;
@@ -23,6 +23,7 @@ export interface IStorage {
   createCase(data: InsertCase): Promise<Case>;
   updateCase(id: number, updates: Partial<InsertCase>): Promise<Case | undefined>;
   getOpenCases(): Promise<Case[]>;
+  getOpenCasesForAgency(specialties: string[]): Promise<Case[]>;
   getInquiriesByCase(caseId: number): Promise<(CaseInquiry & { agency?: AgencyProfile })[]>;
   getInquiryByCaseAndAgency(caseId: number, agencyId: string): Promise<CaseInquiry | undefined>;
   createInquiry(data: InsertCaseInquiry): Promise<CaseInquiry>;
@@ -77,6 +78,8 @@ class DatabaseStorage implements IStorage {
           website: data.website,
           specialties: data.specialties,
           employeeCount: data.employeeCount,
+          logoUrl: data.logoUrl,
+          offices: data.offices,
         },
       })
       .returning();
@@ -108,6 +111,17 @@ class DatabaseStorage implements IStorage {
 
   async getOpenCases() {
     return db.select().from(cases).where(eq(cases.status, "open")).orderBy(desc(cases.createdAt));
+  }
+
+  async getOpenCasesForAgency(specialties: string[]) {
+    if (!specialties || specialties.length === 0) {
+      return [];
+    }
+    const allOpen = await db.select().from(cases).where(eq(cases.status, "open")).orderBy(desc(cases.createdAt));
+    return allOpen.filter((c) => {
+      if (!c.legalArea) return false;
+      return specialties.some((s) => s.toLowerCase() === c.legalArea!.toLowerCase());
+    });
   }
 
   async getInquiriesByCase(caseId: number) {
