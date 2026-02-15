@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -16,10 +16,147 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, Loader2, Save, X, Plus, Upload, MapPin, Trash2, Building2, Shield } from "lucide-react";
+import { ArrowLeft, Loader2, Save, X, Plus, Upload, MapPin, Trash2, Building2, Shield, Search } from "lucide-react";
 import { Link } from "wouter";
 import type { AgencyProfile } from "@shared/schema";
 import { LEGAL_AREAS, PRICE_RANGES, LANGUAGES } from "@shared/schema";
+
+interface NominatimResult {
+  display_name: string;
+  lat: string;
+  lon: string;
+  address?: {
+    city?: string;
+    town?: string;
+    village?: string;
+    municipality?: string;
+    road?: string;
+    house_number?: string;
+    postcode?: string;
+  };
+}
+
+function AddressSearch({
+  onSelect,
+  initialValue,
+  testIdPrefix,
+}: {
+  onSelect: (result: { address: string; city: string; lat: number; lng: number }) => void;
+  initialValue?: string;
+  testIdPrefix: string;
+}) {
+  const [query, setQuery] = useState(initialValue || "");
+  const [results, setResults] = useState<NominatimResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (initialValue && initialValue !== query) {
+      setQuery(initialValue);
+    }
+  }, [initialValue]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShowResults(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const searchAddress = useCallback(async (searchQuery: string) => {
+    if (searchQuery.length < 3) {
+      setResults([]);
+      return;
+    }
+    setIsSearching(true);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&countrycodes=se&limit=5&q=${encodeURIComponent(searchQuery)}`,
+        { headers: { "Accept-Language": "sv" } }
+      );
+      const data: NominatimResult[] = await res.json();
+      setResults(data);
+      setShowResults(true);
+    } catch {
+      setResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  const handleInputChange = (value: string) => {
+    setQuery(value);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => searchAddress(value), 400);
+  };
+
+  const handleSelect = (result: NominatimResult) => {
+    const city =
+      result.address?.city ||
+      result.address?.town ||
+      result.address?.village ||
+      result.address?.municipality ||
+      "";
+    const street = [result.address?.road, result.address?.house_number].filter(Boolean).join(" ");
+    const displayAddress = street || result.display_name.split(",")[0];
+
+    setQuery(result.display_name);
+    setShowResults(false);
+    onSelect({
+      address: displayAddress,
+      city,
+      lat: parseFloat(result.lat),
+      lng: parseFloat(result.lon),
+    });
+  };
+
+  return (
+    <div ref={containerRef} className="relative">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Input
+          value={query}
+          onChange={(e) => handleInputChange(e.target.value)}
+          onFocus={() => results.length > 0 && setShowResults(true)}
+          placeholder="Sök adress i Sverige..."
+          className="pl-9"
+          data-testid={`${testIdPrefix}-search`}
+        />
+        {isSearching && (
+          <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-muted-foreground" />
+        )}
+      </div>
+      {showResults && results.length > 0 && (
+        <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-md">
+          {results.map((r, i) => (
+            <button
+              key={i}
+              type="button"
+              className="w-full text-left px-3 py-2 text-sm hover-elevate cursor-pointer first:rounded-t-md last:rounded-b-md"
+              onClick={() => handleSelect(r)}
+              data-testid={`${testIdPrefix}-result-${i}`}
+            >
+              <div className="flex items-start gap-2">
+                <MapPin className="h-3.5 w-3.5 mt-0.5 flex-shrink-0 text-muted-foreground" />
+                <span className="line-clamp-2">{r.display_name}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+      {showResults && results.length === 0 && query.length >= 3 && !isSearching && (
+        <div className="absolute z-50 mt-1 w-full rounded-md border bg-popover shadow-md p-3 text-sm text-muted-foreground text-center">
+          Inga resultat hittades
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface Office {
   city: string;
@@ -254,21 +391,28 @@ export default function AgencyProfileSetupPage() {
             <Label htmlFor="phone">Telefon</Label>
             <Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+46 8 123 456" data-testid="input-firm-phone" />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="address">Huvudkontor - Adress</Label>
-            <Input id="address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Gatuadress" data-testid="input-firm-address" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="city">Huvudkontor - Stad</Label>
-            <Input id="city" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="Stockholm" data-testid="input-firm-city" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="lat">Latitud</Label>
-            <Input id="lat" type="number" step="any" value={form.latitude} onChange={(e) => setForm({ ...form, latitude: e.target.value })} placeholder="59.3293" data-testid="input-firm-lat" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="lng">Longitud</Label>
-            <Input id="lng" type="number" step="any" value={form.longitude} onChange={(e) => setForm({ ...form, longitude: e.target.value })} placeholder="18.0686" data-testid="input-firm-lng" />
+          <div className="space-y-2 sm:col-span-2">
+            <Label>Huvudkontor - Sök adress</Label>
+            <p className="text-xs text-muted-foreground">Sök efter en adress i Sverige. Stad och koordinater fylls i automatiskt.</p>
+            <AddressSearch
+              testIdPrefix="firm-address"
+              initialValue={form.address && form.city ? `${form.address}, ${form.city}` : ""}
+              onSelect={(result) =>
+                setForm((prev) => ({
+                  ...prev,
+                  address: result.address,
+                  city: result.city,
+                  latitude: result.lat.toString(),
+                  longitude: result.lng.toString(),
+                }))
+              }
+            />
+            {form.city && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+                <MapPin className="h-3 w-3" />
+                <span>{form.address}{form.city ? `, ${form.city}` : ""}</span>
+              </div>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="website">Webbplats</Label>
@@ -377,25 +521,28 @@ export default function AgencyProfileSetupPage() {
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label className="text-xs">Stad *</Label>
-                  <Input
-                    value={office.city}
-                    onChange={(e) => updateOffice(i, "city", e.target.value)}
-                    placeholder="Göteborg"
-                    data-testid={`input-office-city-${i}`}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-xs">Adress</Label>
-                  <Input
-                    value={office.address}
-                    onChange={(e) => updateOffice(i, "address", e.target.value)}
-                    placeholder="Gatuadress"
-                    data-testid={`input-office-address-${i}`}
-                  />
-                </div>
+              <div className="space-y-2">
+                <Label className="text-xs">Sök adress</Label>
+                <AddressSearch
+                  testIdPrefix={`office-${i}`}
+                  initialValue={office.address && office.city ? `${office.address}, ${office.city}` : ""}
+                  onSelect={(result) => {
+                    setForm((prev) => ({
+                      ...prev,
+                      offices: prev.offices.map((o, idx) =>
+                        idx === i
+                          ? { ...o, city: result.city, address: result.address, latitude: result.lat, longitude: result.lng }
+                          : o
+                      ),
+                    }));
+                  }}
+                />
+                {office.city && (
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <MapPin className="h-3 w-3" />
+                    <span>{office.address}{office.city ? `, ${office.city}` : ""}</span>
+                  </div>
+                )}
               </div>
             </Card>
           ))}
