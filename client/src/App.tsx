@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import NotFound from "@/pages/not-found";
 import LandingPage from "@/pages/landing";
 import AgencyRegisterPage from "@/pages/agency-register";
+import ClientLoginPage from "@/pages/client-login";
 import RoleSelectPage from "@/pages/role-select";
 import ClientDashboard from "@/pages/client-dashboard";
 import NewCasePage from "@/pages/new-case";
@@ -83,6 +84,7 @@ function AppRouter() {
     return (
       <Switch>
         <Route path="/register/agency" component={AgencyRegisterPage} />
+        <Route path="/login" component={ClientLoginPage} />
         <Route component={LandingPage} />
       </Switch>
     );

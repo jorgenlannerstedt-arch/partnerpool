@@ -42,10 +42,13 @@ export default function RoleSelectPage() {
 
   useEffect(() => {
     const isAgencyReg = localStorage.getItem("vertigogo_agency_registration");
+    const isClientReg = localStorage.getItem("vertigogo_client_registration");
     const storedEmail = localStorage.getItem("vertigogo_agency_email");
     if (isAgencyReg === "true") {
       setSelected("agency");
       if (storedEmail) setAgencyEmail(storedEmail);
+    } else if (isClientReg === "true") {
+      setSelected("client");
     }
   }, []);
 
@@ -60,6 +63,7 @@ export default function RoleSelectPage() {
     onSuccess: () => {
       localStorage.removeItem("vertigogo_agency_registration");
       localStorage.removeItem("vertigogo_agency_email");
+      localStorage.removeItem("vertigogo_client_registration");
       queryClient.invalidateQueries({ queryKey: ["/api/profile"] });
     },
     onError: (err: Error) => {

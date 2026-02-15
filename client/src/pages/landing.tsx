@@ -49,10 +49,10 @@ export default function LandingPage() {
             </div>
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              <a href="/api/login">
+              <a href="/login">
                 <Button variant="outline" className="rounded-full" data-testid="button-login">Logga in</Button>
               </a>
-              <a href="/api/login">
+              <a href="/login">
                 <Button className="rounded-full" data-testid="button-get-started">
                   Kom igång
                   <ChevronRight className="ml-1 h-4 w-4" />
@@ -76,7 +76,7 @@ export default function LandingPage() {
               Vertigogo kopplar dig samman med kvalificerade advokatbyråer genom AI-driven ärendeanalys. Ladda upp, bli matchad, kommunicera säkert.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
-              <a href="/api/login">
+              <a href="/login">
                 <Button size="lg" className="rounded-full px-8 text-base" data-testid="button-hero-cta">
                   Starta gratis
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -286,7 +286,7 @@ export default function LandingPage() {
             Skapa ett konto idag och ladda upp ditt första ärende. Det är helt gratis och tar bara några minuter.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <a href="/api/login">
+            <a href="/login">
               <Button size="lg" className="rounded-full px-8 text-base" data-testid="button-cta-bottom">
                 Kom igång gratis
                 <ArrowRight className="ml-2 h-4 w-4" />
