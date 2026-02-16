@@ -860,6 +860,12 @@ VIKTIGT:
         return res.status(400).json({ message: "Du har redan lämnat ett omdöme för denna byrå" });
       }
 
+      const clientCases = await storage.getCasesByClient(clientId);
+      const hasSelectedAgency = clientCases.some(c => c.selectedAgencyId === parsed.data.agencyId);
+      if (!hasSelectedAgency) {
+        return res.status(403).json({ message: "Du kan bara lämna omdöme för byråer du har valt för ett ärende" });
+      }
+
       const review = await storage.createReview({
         agencyId: parsed.data.agencyId,
         clientId,

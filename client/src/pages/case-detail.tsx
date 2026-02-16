@@ -25,7 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ArrowLeft, FileText, Clock, Building2, MessageCircle, ShieldCheck, CircleDollarSign, Scale, Trash2, AlertTriangle, Send, CheckCircle, Loader2, Pencil, Trophy, Undo2 } from "lucide-react";
+import { ArrowLeft, FileText, Clock, Building2, MessageCircle, ShieldCheck, CircleDollarSign, Scale, Trash2, AlertTriangle, Send, CheckCircle, Loader2, Pencil, Trophy, Undo2, Star } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
@@ -181,6 +181,7 @@ export default function CaseDetailPage() {
   const params = useParams<{ id: string }>();
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const { user } = useAuth();
   const [editingDescription, setEditingDescription] = useState(false);
   const [draftDescription, setDraftDescription] = useState("");
   const [editingSummary, setEditingSummary] = useState(false);
@@ -274,10 +275,45 @@ export default function CaseDetailPage() {
     },
   });
 
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+
   const isClosed = caseData?.status === "closed";
   const selectedAgencyInquiry = isClosed && caseData?.selectedAgencyId && inquiries
     ? inquiries.find((inq) => inq.agency?.id === caseData.selectedAgencyId)
     : null;
+
+  const { data: existingReviews } = useQuery<any[]>({
+    queryKey: ["/api/agencies", caseData?.selectedAgencyId, "reviews"],
+    queryFn: async () => {
+      const res = await fetch(`/api/agencies/${caseData?.selectedAgencyId}/reviews`);
+      if (!res.ok) return [];
+      return res.json();
+    },
+    enabled: !!caseData?.selectedAgencyId && isClosed,
+  });
+
+  const hasReviewed = existingReviews?.some(r => r.clientId === user?.id);
+
+  const reviewMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/reviews", {
+        agencyId: caseData?.selectedAgencyId,
+        rating: reviewRating,
+        comment: reviewComment || null,
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/agencies", caseData?.selectedAgencyId, "reviews"] });
+      toast({ title: "Tack!", description: "Ditt omdöme har sparats." });
+      setReviewRating(0);
+      setReviewComment("");
+    },
+    onError: (err: Error) => {
+      toast({ title: "Fel", description: err.message, variant: "destructive" });
+    },
+  });
 
   if (isLoading) {
     return (
@@ -562,11 +598,55 @@ export default function CaseDetailPage() {
         <Card className="p-4 border-primary/30 bg-primary/5">
           <div className="flex items-start gap-3">
             <Trophy className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm">Du har valt {selectedAgencyInquiry.agency?.name || "en byrå"}</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Ärendet är stängt. Du kan fortsätta kommunicera med den valda byrån via meddelanden.
-              </p>
+            <div className="flex-1 min-w-0 space-y-3">
+              <div>
+                <p className="font-semibold text-sm">Du har valt {selectedAgencyInquiry.agency?.name || "en byrå"}</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Ärendet är stängt. Du kan fortsätta kommunicera med den valda byrån via meddelanden.
+                </p>
+              </div>
+
+              {hasReviewed ? (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <CheckCircle className="h-3.5 w-3.5" />
+                  <span>Du har lämnat ett omdöme för denna byrå</span>
+                </div>
+              ) : (
+                <div className="space-y-2 border-t pt-3">
+                  <Label className="text-sm">Lämna ett verifierat omdöme</Label>
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <button
+                        key={s}
+                        type="button"
+                        onClick={() => setReviewRating(s)}
+                        className="p-0.5"
+                        data-testid={`button-star-${s}`}
+                      >
+                        <Star
+                          className={`h-5 w-5 ${s <= reviewRating ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/40"}`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                  <Textarea
+                    placeholder="Beskriv din upplevelse (valfritt)..."
+                    value={reviewComment}
+                    onChange={(e) => setReviewComment(e.target.value)}
+                    rows={2}
+                    data-testid="input-review-comment"
+                  />
+                  <Button
+                    onClick={() => reviewMutation.mutate()}
+                    disabled={reviewRating === 0 || reviewMutation.isPending}
+                    size="sm"
+                    className="rounded-full"
+                    data-testid="button-submit-review"
+                  >
+                    {reviewMutation.isPending ? "Skickar..." : "Skicka omdöme"}
+                  </Button>
+                </div>
+              )}
             </div>
             <AlertDialog>
               <AlertDialogTrigger asChild>

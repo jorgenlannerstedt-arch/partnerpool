@@ -1,15 +1,10 @@
-import { useState } from "react";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { ArrowLeft, Building2, MapPin, Users, Globe, Phone, Mail, Star, Clock, Shield, CreditCard, Languages, MessageCircle, Briefcase, Calendar, Trophy } from "lucide-react";
+import { ArrowLeft, Building2, MapPin, Users, Globe, Phone, Mail, Star, Clock, Shield, ShieldCheck, CreditCard, Languages, MessageCircle, Briefcase, Calendar, Trophy } from "lucide-react";
 import type { AgencyProfile, AgencyReview } from "@shared/schema";
 
 interface Office {
@@ -33,37 +28,9 @@ function StarRating({ rating, size = "md" }: { rating: number; size?: "sm" | "md
   );
 }
 
-function InteractiveStarRating({ rating, onRate }: { rating: number; onRate: (r: number) => void }) {
-  const [hover, setHover] = useState(0);
-  return (
-    <div className="flex items-center gap-1">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <button
-          key={star}
-          type="button"
-          onMouseEnter={() => setHover(star)}
-          onMouseLeave={() => setHover(0)}
-          onClick={() => onRate(star)}
-          className="p-0.5"
-          data-testid={`button-star-${star}`}
-        >
-          <Star
-            className={`h-6 w-6 transition-colors ${
-              star <= (hover || rating) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground/30"
-            }`}
-          />
-        </button>
-      ))}
-    </div>
-  );
-}
 
 export default function PartnerDetailPage() {
   const params = useParams<{ id: string }>();
-  const { toast } = useToast();
-  const [reviewRating, setReviewRating] = useState(0);
-  const [reviewComment, setReviewComment] = useState("");
-
   const { data: agency, isLoading } = useQuery<AgencyProfile>({
     queryKey: ["/api/agencies", params.id],
   });
@@ -86,27 +53,6 @@ export default function PartnerDetailPage() {
       return res.json();
     },
     enabled: !!params.id,
-  });
-
-  const reviewMutation = useMutation({
-    mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/reviews", {
-        agencyId: parseInt(params.id!),
-        rating: reviewRating,
-        comment: reviewComment || null,
-      });
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/agencies", params.id, "reviews"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/agencies", params.id, "stats"] });
-      toast({ title: "Tack!", description: "Ditt omdöme har sparats." });
-      setReviewRating(0);
-      setReviewComment("");
-    },
-    onError: (err: Error) => {
-      toast({ title: "Fel", description: err.message, variant: "destructive" });
-    },
   });
 
   if (isLoading) {
@@ -311,32 +257,21 @@ export default function PartnerDetailPage() {
           )}
         </h3>
 
-        <div className="space-y-4 border-b pb-4">
-          <Label>Lämna ett omdöme</Label>
-          <InteractiveStarRating rating={reviewRating} onRate={setReviewRating} />
-          <Textarea
-            placeholder="Beskriv din upplevelse (valfritt)..."
-            value={reviewComment}
-            onChange={(e) => setReviewComment(e.target.value)}
-            rows={3}
-            data-testid="input-review-comment"
-          />
-          <Button
-            onClick={() => reviewMutation.mutate()}
-            disabled={reviewRating === 0 || reviewMutation.isPending}
-            className="rounded-full"
-            data-testid="button-submit-review"
-          >
-            {reviewMutation.isPending ? "Skickar..." : "Skicka omdöme"}
-          </Button>
+        <div className="flex items-center gap-2 text-xs text-muted-foreground border-b pb-4">
+          <ShieldCheck className="h-4 w-4" />
+          <span>Omdömen kan bara lämnas av klienter som har valt byrån för ett ärende via Vertigogo.</span>
         </div>
 
         {reviews && reviews.length > 0 ? (
           <div className="space-y-4">
             {reviews.map((review) => (
               <div key={review.id} className="space-y-1" data-testid={`review-${review.id}`}>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <StarRating rating={review.rating} size="sm" />
+                  <Badge variant="outline" className="text-xs gap-1" data-testid={`badge-verified-${review.id}`}>
+                    <ShieldCheck className="h-3 w-3" />
+                    Verifierat omdöme
+                  </Badge>
                   <span className="text-xs text-muted-foreground">
                     {review.createdAt ? new Date(review.createdAt).toLocaleDateString("sv-SE") : ""}
                   </span>
