@@ -177,6 +177,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             &copy; {new Date().getFullYear()} Vertigo Intel AB
           </p>
           <div className="flex items-center gap-6">
+            <Link href="/support">
+              <span className="text-xs text-muted-foreground transition-colors hover:text-foreground cursor-pointer" data-testid="link-support">Support</span>
+            </Link>
             <Link href="/integritetspolicy">
               <span className="text-xs text-muted-foreground transition-colors hover:text-foreground cursor-pointer" data-testid="link-privacy-policy">Integritetspolicy</span>
             </Link>

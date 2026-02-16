@@ -302,6 +302,7 @@ export default function LandingPage() {
             &copy; {new Date().getFullYear()} Vertigo Intel AB
           </p>
           <div className="flex items-center gap-6">
+            <a href="/support" className="text-xs text-muted-foreground transition-colors hover:text-foreground" data-testid="link-support">Support</a>
             <a href="/integritetspolicy" className="text-xs text-muted-foreground transition-colors hover:text-foreground" data-testid="link-privacy-policy">Integritetspolicy</a>
             <a href="/datapolicy" className="text-xs text-muted-foreground transition-colors hover:text-foreground" data-testid="link-data-policy">Datapolicy</a>
           </div>

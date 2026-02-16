@@ -23,6 +23,7 @@ import AgencyProfileSetupPage from "@/pages/agency-profile-setup";
 import AgencyCaseDetailPage from "@/pages/agency-case-detail";
 import AgencySubscribePage from "@/pages/agency-subscribe";
 import SettingsPage from "@/pages/settings";
+import SupportPage from "@/pages/support";
 import PrivacyPolicyPage from "@/pages/privacy-policy";
 import DataPolicyPage from "@/pages/data-policy";
 import AppLayout from "@/components/app-layout";
@@ -64,6 +65,7 @@ function AuthenticatedRouter() {
         <Route path="/settings" component={SettingsPage} />
         <Route path="/agency/cases/:id" component={AgencyCaseDetailPage} />
         <Route path="/agency/subscribe" component={AgencySubscribePage} />
+        <Route path="/support" component={SupportPage} />
         <Route path="/integritetspolicy" component={PrivacyPolicyPage} />
         <Route path="/datapolicy" component={DataPolicyPage} />
         <Route component={NotFound} />
@@ -91,6 +93,7 @@ function AppRouter() {
       <Switch>
         <Route path="/register/agency" component={AgencyRegisterPage} />
         <Route path="/login" component={ClientLoginPage} />
+        <Route path="/support" component={SupportPage} />
         <Route path="/integritetspolicy" component={PrivacyPolicyPage} />
         <Route path="/datapolicy" component={DataPolicyPage} />
         <Route component={LandingPage} />
