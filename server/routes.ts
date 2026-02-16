@@ -191,6 +191,10 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/config/maps", (_req, res) => {
+    res.json({ apiKey: process.env.GOOGLE_MAPS_API_KEY || "" });
+  });
+
   app.get("/api/profile", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
