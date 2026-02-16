@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, FileText, Send, Loader2, CheckCircle, ShieldCheck, CircleDollarSign, Scale } from "lucide-react";
+import { ArrowLeft, FileText, Send, Loader2, CheckCircle, ShieldCheck, CircleDollarSign, Scale, MessageCircle } from "lucide-react";
 import type { Case, CaseInquiry } from "@shared/schema";
 
 const STATUS_LABELS: Record<string, string> = {
@@ -139,12 +139,17 @@ export default function AgencyCaseDetailPage() {
             <h2 className="font-semibold">Din intresseanmälan</h2>
           </div>
           <p className="text-sm text-muted-foreground">{myInquiry.message}</p>
-          <Badge variant="secondary">{myInquiry.status}</Badge>
-          <Link href={`/messages?client=${caseData.clientId}&case=${caseData.id}`}>
-            <Button variant="outline" size="sm" className="mt-2" data-testid="button-message-client">
-              Meddela klient
-            </Button>
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary">
+              {myInquiry.status === "pending" ? "Skickad" : myInquiry.status === "accepted" ? "Accepterad" : myInquiry.status === "rejected" ? "Avvisad" : myInquiry.status}
+            </Badge>
+            <Link href={`/messages?client=${caseData.clientId}&case=${caseData.id}`}>
+              <Button variant="outline" size="sm" data-testid="button-message-client">
+                <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
+                Öppna konversation
+              </Button>
+            </Link>
+          </div>
         </Card>
       ) : (
         <Card className="p-6 space-y-4">
