@@ -39,7 +39,7 @@ export interface IStorage {
   getReviewsByAgency(agencyId: number): Promise<AgencyReview[]>;
   getReviewByClientAndAgency(clientId: string, agencyId: number): Promise<AgencyReview | undefined>;
   createReview(data: InsertAgencyReview): Promise<AgencyReview>;
-  getAgencyStats(agencyId: number): Promise<{ avgRating: number; reviewCount: number; caseCount: number }>;
+  getAgencyStats(agencyId: number): Promise<{ avgRating: number; reviewCount: number; caseCount: number; selectedCount: number }>;
   dismissCase(agencyUserId: string, caseId: number): Promise<void>;
   getDismissedCaseIds(agencyUserId: string): Promise<number[]>;
   deleteAccount(userId: string): Promise<void>;
@@ -304,7 +304,7 @@ class DatabaseStorage implements IStorage {
 
   async getAgencyStats(agencyId: number) {
     const agency = await this.getAgencyProfileById(agencyId);
-    if (!agency) return { avgRating: 0, reviewCount: 0, caseCount: 0 };
+    if (!agency) return { avgRating: 0, reviewCount: 0, caseCount: 0, selectedCount: 0 };
 
     const reviews = await this.getReviewsByAgency(agencyId);
     const reviewCount = reviews.length;
@@ -314,7 +314,11 @@ class DatabaseStorage implements IStorage {
       .from(caseInquiries)
       .where(eq(caseInquiries.agencyId, agency.userId));
 
-    return { avgRating: Math.round(avgRating * 10) / 10, reviewCount, caseCount: inquiryCount?.count || 0 };
+    const [selectedCountResult] = await db.select({ count: sql<number>`count(*)::int` })
+      .from(cases)
+      .where(eq(cases.selectedAgencyId, agencyId));
+
+    return { avgRating: Math.round(avgRating * 10) / 10, reviewCount, caseCount: inquiryCount?.count || 0, selectedCount: selectedCountResult?.count || 0 };
   }
 
   async dismissCase(agencyUserId: string, caseId: number) {

@@ -45,7 +45,7 @@ export default function PartnerPoolPage() {
     queryKey: ["/api/agencies"],
   });
 
-  const { data: allStats } = useQuery<Record<number, { avgRating: number; reviewCount: number; caseCount: number }>>({
+  const { data: allStats } = useQuery<Record<number, { avgRating: number; reviewCount: number; caseCount: number; selectedCount: number }>>({
     queryKey: ["/api/agencies/all-stats"],
     queryFn: async () => {
       if (!agencies) return {};

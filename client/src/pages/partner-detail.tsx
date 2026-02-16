@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { ArrowLeft, Building2, MapPin, Users, Globe, Phone, Mail, Star, Clock, Shield, CreditCard, Languages, MessageCircle, Briefcase, Calendar } from "lucide-react";
+import { ArrowLeft, Building2, MapPin, Users, Globe, Phone, Mail, Star, Clock, Shield, CreditCard, Languages, MessageCircle, Briefcase, Calendar, Trophy } from "lucide-react";
 import type { AgencyProfile, AgencyReview } from "@shared/schema";
 
 interface Office {
@@ -78,7 +78,7 @@ export default function PartnerDetailPage() {
     enabled: !!params.id,
   });
 
-  const { data: stats } = useQuery<{ avgRating: number; reviewCount: number; caseCount: number }>({
+  const { data: stats } = useQuery<{ avgRating: number; reviewCount: number; caseCount: number; selectedCount: number }>({
     queryKey: ["/api/agencies", params.id, "stats"],
     queryFn: async () => {
       const res = await fetch(`/api/agencies/${params.id}/stats`);
@@ -264,6 +264,12 @@ export default function PartnerDetailPage() {
                 <div className="flex items-center gap-2 text-sm">
                   <Briefcase className="h-4 w-4 text-muted-foreground" />
                   <span>{stats.caseCount} ärenden via Vertigogo</span>
+                </div>
+              )}
+              {stats && stats.selectedCount > 0 && (
+                <div className="flex items-center gap-2 text-sm" data-testid="text-selected-count">
+                  <Trophy className="h-4 w-4 text-muted-foreground" />
+                  <span>Vald {stats.selectedCount} {stats.selectedCount === 1 ? "gång" : "gånger"}</span>
                 </div>
               )}
               {agency.email && (
