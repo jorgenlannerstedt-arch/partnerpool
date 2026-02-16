@@ -86,3 +86,6 @@ Vertigogo connects clients needing legal help with law firms. The platform featu
 - Seeded demo reviews and updated all 12 agencies with new profile fields
 - Added optional contactEmail/contactPhone fields to cases for client notification
 - Integrated Resend for email notifications when agencies inquire on cases (server/email.ts)
+- 2026-02-16: Added settings page (/settings) for clients with profile details view, newsletter opt-in toggle, and account deletion with confirmation dialog
+- Added newsletterOptIn field to user_profiles, API endpoints: GET/PATCH /api/settings, DELETE /api/account
+- Settings link added to client navigation bar and user dropdown menu
