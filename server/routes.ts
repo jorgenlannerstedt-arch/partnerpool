@@ -527,7 +527,13 @@ VIKTIGT:
         return res.json([]);
       }
       const matchingCases = await storage.getOpenCasesForAgency(agencyProfile);
-      res.json(matchingCases);
+      const agencyInquiries = await storage.getInquiriesByAgency(userId);
+      const inquiredCaseIds = new Set(agencyInquiries.map((i) => i.caseId));
+      const casesWithInquiryStatus = matchingCases.map((c) => ({
+        ...c,
+        hasInquired: inquiredCaseIds.has(c.id),
+      }));
+      res.json(casesWithInquiryStatus);
     } catch (error) {
       console.error("Error fetching agency cases:", error);
       res.status(500).json({ message: "Failed to fetch cases" });

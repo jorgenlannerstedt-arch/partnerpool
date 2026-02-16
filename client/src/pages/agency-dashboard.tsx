@@ -4,15 +4,17 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FileText, MessageCircle, Settings, CreditCard, AlertCircle, CheckCircle, Scale, ShieldCheck } from "lucide-react";
+import { FileText, MessageCircle, Settings, CreditCard, AlertCircle, CheckCircle, Scale, ShieldCheck, Check } from "lucide-react";
 import type { Case, AgencyProfile } from "@shared/schema";
+
+type CaseWithInquiry = Case & { hasInquired?: boolean };
 
 export default function AgencyDashboard() {
   const { data: profile, isLoading: profileLoading } = useQuery<AgencyProfile>({
     queryKey: ["/api/agency/profile"],
   });
 
-  const { data: availableCases, isLoading: casesLoading } = useQuery<Case[]>({
+  const { data: availableCases, isLoading: casesLoading } = useQuery<CaseWithInquiry[]>({
     queryKey: ["/api/agency/cases"],
   });
 
@@ -154,7 +156,15 @@ export default function AgencyDashboard() {
                         </span>
                       </div>
                     </div>
-                    <Badge variant="secondary">{c.status}</Badge>
+                    <div className="flex flex-col items-end gap-1">
+                      {c.hasInquired && (
+                        <Badge variant="default" className="text-xs" data-testid={`badge-inquired-${c.id}`}>
+                          <Check className="h-3 w-3 mr-1" />
+                          Besvarad
+                        </Badge>
+                      )}
+                      <Badge variant="secondary">{c.status}</Badge>
+                    </div>
                   </div>
                 </Card>
               </Link>
