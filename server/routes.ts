@@ -359,11 +359,13 @@ export async function registerRoutes(
         pdfFilename = req.file.filename;
 
         try {
-          const pdfParseModule = await import("pdf-parse");
-          const pdfParse = pdfParseModule.default || pdfParseModule;
+          const { PDFParse } = await import("pdf-parse");
           const pdfBuffer = fs.readFileSync(req.file.path);
-          const pdfData = await pdfParse(pdfBuffer);
-          const pdfText = pdfData.text.slice(0, 8000);
+          const uint8 = new Uint8Array(pdfBuffer);
+          const parser = new PDFParse(uint8);
+          await parser.load();
+          const result = await parser.getText();
+          const pdfText = (result.text || "").slice(0, 8000);
 
           const legalAreasList = LEGAL_AREAS.join(", ");
 
