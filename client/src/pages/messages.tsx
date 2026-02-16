@@ -129,7 +129,7 @@ export default function MessagesPage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground truncate">{t.lastMessage}</p>
+                      <p className="text-xs text-muted-foreground line-clamp-2">{t.lastMessage}</p>
                     </div>
                   </button>
                 ))}
