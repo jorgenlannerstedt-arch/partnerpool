@@ -293,21 +293,14 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      <footer className="border-t py-10 px-4 sm:px-6 lg:px-8 bg-white" data-testid="footer">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-2.5">
-              <img src={logoSrc} alt="Vertigogo" className="h-5" />
-            </div>
-            <div className="flex items-center gap-6">
-              <a href="https://www.vertigolaw.se" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Vertigo Law</a>
-              <a href="https://www.vertigointel.se" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Vertigo Intel</a>
-              <a href="/integritetspolicy" className="text-sm text-muted-foreground transition-colors hover:text-foreground" data-testid="link-privacy-policy">Integritetspolicy</a>
-              <a href="/datapolicy" className="text-sm text-muted-foreground transition-colors hover:text-foreground" data-testid="link-data-policy">Datapolicy</a>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              &copy; {new Date().getFullYear()} Vertigo Intel AB. Alla rättigheter förbehållna.
-            </p>
+      <footer className="border-t py-3 px-4 sm:px-6 lg:px-8 bg-white" data-testid="footer">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+          <p className="text-xs text-muted-foreground">
+            &copy; {new Date().getFullYear()} Vertigo Intel AB
+          </p>
+          <div className="flex items-center gap-6">
+            <a href="/integritetspolicy" className="text-xs text-muted-foreground transition-colors hover:text-foreground" data-testid="link-privacy-policy">Integritetspolicy</a>
+            <a href="/datapolicy" className="text-xs text-muted-foreground transition-colors hover:text-foreground" data-testid="link-data-policy">Datapolicy</a>
           </div>
         </div>
       </footer>

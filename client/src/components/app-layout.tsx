@@ -50,7 +50,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const navItems = isAgency ? agencyNavItems : clientNavItems;
 
   return (
-    <div className="min-h-screen bg-[#f3f4f8]">
+    <div className="min-h-screen bg-[#f3f4f8] flex flex-col">
       <header className="sticky top-0 z-50 bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-4 h-14">
@@ -171,17 +171,17 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      <footer className="border-t py-6 px-4 sm:px-6 lg:px-8 bg-white mt-8" data-testid="footer">
+      <footer className="border-t py-3 px-4 sm:px-6 lg:px-8 bg-white mt-auto" data-testid="footer">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             &copy; {new Date().getFullYear()} Vertigo Intel AB
           </p>
           <div className="flex items-center gap-6">
             <Link href="/integritetspolicy">
-              <span className="text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer" data-testid="link-privacy-policy">Integritetspolicy</span>
+              <span className="text-xs text-muted-foreground transition-colors hover:text-foreground cursor-pointer" data-testid="link-privacy-policy">Integritetspolicy</span>
             </Link>
             <Link href="/datapolicy">
-              <span className="text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer" data-testid="link-data-policy">Datapolicy</span>
+              <span className="text-xs text-muted-foreground transition-colors hover:text-foreground cursor-pointer" data-testid="link-data-policy">Datapolicy</span>
             </Link>
           </div>
         </div>
