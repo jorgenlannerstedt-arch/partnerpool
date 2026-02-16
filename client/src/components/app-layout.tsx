@@ -33,6 +33,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     { href: "/", label: "Panel", icon: LayoutDashboard },
     { href: "/partners", label: "Partners", icon: Users },
     { href: "/messages", label: "Meddelanden", icon: MessageCircle },
+    { href: "/settings", label: "Inställningar", icon: Settings },
   ];
 
   const agencyNavItems = [
@@ -92,14 +93,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     <p className="text-xs text-muted-foreground">{user?.email}</p>
                   </div>
                   <DropdownMenuSeparator />
-                  {isAgency && (
-                    <Link href="/agency/profile">
-                      <DropdownMenuItem className="cursor-pointer" data-testid="menu-settings">
-                        <Settings className="h-4 w-4 mr-2" />
-                        Profilinställningar
-                      </DropdownMenuItem>
-                    </Link>
-                  )}
+                  <Link href={isAgency ? "/agency/profile" : "/settings"}>
+                    <DropdownMenuItem className="cursor-pointer" data-testid="menu-settings">
+                      <Settings className="h-4 w-4 mr-2" />
+                      {isAgency ? "Profilinställningar" : "Inställningar"}
+                    </DropdownMenuItem>
+                  </Link>
                   <DropdownMenuItem
                     className="cursor-pointer"
                     onClick={async () => {

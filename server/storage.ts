@@ -38,6 +38,7 @@ export interface IStorage {
   getReviewByClientAndAgency(clientId: string, agencyId: number): Promise<AgencyReview | undefined>;
   createReview(data: InsertAgencyReview): Promise<AgencyReview>;
   getAgencyStats(agencyId: number): Promise<{ avgRating: number; reviewCount: number; caseCount: number }>;
+  deleteAccount(userId: string): Promise<void>;
 }
 
 class DatabaseStorage implements IStorage {
@@ -260,6 +261,24 @@ class DatabaseStorage implements IStorage {
       .where(eq(caseInquiries.agencyId, agency.userId));
 
     return { avgRating: Math.round(avgRating * 10) / 10, reviewCount, caseCount: inquiryCount?.count || 0 };
+  }
+
+  async deleteAccount(userId: string) {
+    await db.delete(directMessages).where(or(eq(directMessages.senderId, userId), eq(directMessages.receiverId, userId)));
+    await db.delete(caseInquiries).where(eq(caseInquiries.agencyId, userId));
+    const userCases = await db.select({ id: cases.id }).from(cases).where(eq(cases.clientId, userId));
+    for (const c of userCases) {
+      await db.delete(caseInquiries).where(eq(caseInquiries.caseId, c.id));
+    }
+    await db.delete(cases).where(eq(cases.clientId, userId));
+    await db.delete(agencyReviews).where(eq(agencyReviews.clientId, userId));
+    const agencyProfile = await this.getAgencyProfile(userId);
+    if (agencyProfile) {
+      await db.delete(agencyReviews).where(eq(agencyReviews.agencyId, agencyProfile.id));
+    }
+    await db.delete(agencyProfiles).where(eq(agencyProfiles.userId, userId));
+    await db.delete(userProfiles).where(eq(userProfiles.userId, userId));
+    await db.delete(users).where(eq(users.id, userId));
   }
 }
 

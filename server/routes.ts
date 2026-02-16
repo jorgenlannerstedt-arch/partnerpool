@@ -833,6 +833,58 @@ VIKTIGT:
     }
   });
 
+  app.get("/api/settings", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const profile = await storage.getProfile(userId);
+      if (!profile) return res.status(404).json({ message: "Profile not found" });
+
+      const { authStorage } = await import("./replit_integrations/auth/storage");
+      const user = await authStorage.getUser(userId);
+
+      res.json({
+        user: user || null,
+        profile,
+      });
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+      res.status(500).json({ message: "Failed to fetch settings" });
+    }
+  });
+
+  app.patch("/api/settings", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const { newsletterOptIn } = req.body;
+
+      const updates: Record<string, any> = {};
+      if (typeof newsletterOptIn === "boolean") {
+        updates.newsletterOptIn = newsletterOptIn;
+      }
+
+      if (Object.keys(updates).length === 0) {
+        return res.status(400).json({ message: "No valid updates provided" });
+      }
+
+      const updated = await storage.updateProfile(userId, updates);
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating settings:", error);
+      res.status(500).json({ message: "Failed to update settings" });
+    }
+  });
+
+  app.delete("/api/account", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      await storage.deleteAccount(userId);
+      res.json({ message: "Account deleted" });
+    } catch (error) {
+      console.error("Error deleting account:", error);
+      res.status(500).json({ message: "Failed to delete account" });
+    }
+  });
+
   app.get("/api/agency/subscription-status", isAuthenticated, requireRole("agency"), async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
