@@ -84,3 +84,5 @@ Vertigogo connects clients needing legal help with law firms. The platform featu
 - Renamed app from Vertogogo to Vertigogo
 - Added 7 partner evaluation features: ratings/reviews, response time, years of experience, languages, case stats, price range, bar association membership
 - Seeded demo reviews and updated all 12 agencies with new profile fields
+- Added optional contactEmail/contactPhone fields to cases for client notification
+- Integrated Resend for email notifications when agencies inquire on cases (server/email.ts)

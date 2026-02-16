@@ -8,6 +8,7 @@ import { storage } from "./storage";
 import { LEGAL_AREAS } from "@shared/schema";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 import Anthropic from "@anthropic-ai/sdk";
+import { sendInquiryNotification } from "./email";
 
 const anthropic = new Anthropic({
   apiKey: process.env.AI_INTEGRATIONS_ANTHROPIC_API_KEY,
@@ -519,6 +520,13 @@ VIKTIGT:
           content: parsed.data.message,
           read: false,
         });
+
+        if (caseData.contactEmail) {
+          const agencyProfile = await storage.getAgencyProfile(agencyId);
+          const agencyName = agencyProfile?.name || "En advokatbyrå";
+          sendInquiryNotification(caseData.contactEmail, caseData.title, agencyName)
+            .catch(err => console.error("Email notification failed:", err));
+        }
       }
 
       res.status(201).json(inquiry);
