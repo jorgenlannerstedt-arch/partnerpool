@@ -480,44 +480,6 @@ export default function AgencyProfileSetupPage() {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label>Språk</Label>
-          <p className="text-xs text-muted-foreground">Vilka språk kan ni erbjuda rådgivning på?</p>
-          <div className="flex flex-wrap gap-1.5">
-            {LANGUAGES.map((lang) => (
-              <Badge
-                key={lang}
-                variant={form.languages.includes(lang) ? "default" : "secondary"}
-                className="cursor-pointer toggle-elevate"
-                onClick={() => toggleLanguage(lang)}
-                data-testid={`badge-lang-${lang.toLowerCase()}`}
-              >
-                {form.languages.includes(lang) ? <X className="h-3 w-3 mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
-                {lang}
-              </Badge>
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Specialiseringar *</Label>
-          <p className="text-xs text-muted-foreground">Välj de rättsområden din byrå arbetar med. Ni kommer bara att se ärenden som matchar era specialiseringar.</p>
-          <div className="flex flex-wrap gap-1.5">
-            {LEGAL_AREAS.map((s) => (
-              <Badge
-                key={s}
-                variant={form.specialties.includes(s) ? "default" : "secondary"}
-                className="cursor-pointer toggle-elevate"
-                onClick={() => toggleSpecialty(s)}
-                data-testid={`badge-specialty-${s.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "")}`}
-              >
-                {form.specialties.includes(s) ? <X className="h-3 w-3 mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
-                {s}
-              </Badge>
-            ))}
-          </div>
-        </div>
-
         <div className="space-y-3">
           <Label>Ärendepreferenser</Label>
           <p className="text-xs text-muted-foreground">Ange vilka typer av ärenden ni vill ta emot. Lämna tomt för att ta emot alla ärenden.</p>
@@ -554,6 +516,44 @@ export default function AgencyProfileSetupPage() {
                 </Badge>
               ))}
             </div>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Specialiseringar *</Label>
+          <p className="text-xs text-muted-foreground">Välj de rättsområden din byrå arbetar med. Ni kommer bara att se ärenden som matchar era specialiseringar.</p>
+          <div className="flex flex-wrap gap-1.5">
+            {LEGAL_AREAS.map((s) => (
+              <Badge
+                key={s}
+                variant={form.specialties.includes(s) ? "default" : "secondary"}
+                className="cursor-pointer toggle-elevate"
+                onClick={() => toggleSpecialty(s)}
+                data-testid={`badge-specialty-${s.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "")}`}
+              >
+                {form.specialties.includes(s) ? <X className="h-3 w-3 mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
+                {s}
+              </Badge>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Språk</Label>
+          <p className="text-xs text-muted-foreground">Vilka språk kan ni erbjuda rådgivning på?</p>
+          <div className="flex flex-wrap gap-1.5">
+            {LANGUAGES.map((lang) => (
+              <Badge
+                key={lang}
+                variant={form.languages.includes(lang) ? "default" : "secondary"}
+                className="cursor-pointer toggle-elevate"
+                onClick={() => toggleLanguage(lang)}
+                data-testid={`badge-lang-${lang.toLowerCase()}`}
+              >
+                {form.languages.includes(lang) ? <X className="h-3 w-3 mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
+                {lang}
+              </Badge>
+            ))}
           </div>
         </div>
 
