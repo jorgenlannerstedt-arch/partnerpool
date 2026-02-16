@@ -156,14 +156,16 @@ export default function AgencyDashboard() {
                         </span>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-1">
+                    <div className="flex items-center gap-2">
                       {c.hasInquired && (
                         <Badge variant="default" className="text-xs" data-testid={`badge-inquired-${c.id}`}>
                           <Check className="h-3 w-3 mr-1" />
                           Besvarad
                         </Badge>
                       )}
-                      <Badge variant="secondary">{c.status}</Badge>
+                      <Badge variant="secondary" data-testid={`badge-status-${c.id}`}>
+                        {c.status === "open" ? "Öppen" : c.status}
+                      </Badge>
                     </div>
                   </div>
                 </Card>
