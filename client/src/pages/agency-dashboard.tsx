@@ -143,10 +143,10 @@ export default function AgencyDashboard() {
                             {c.legalArea}
                           </Badge>
                         )}
-                        {c.hasInsurance && (
+                        {c.insuranceType && !c.insuranceType.startsWith("Nej") && (
                           <Badge variant="secondary" className="text-xs">
                             <ShieldCheck className="h-3 w-3 mr-1" />
-                            Rättsskydd
+                            {c.insuranceType}
                           </Badge>
                         )}
                         <span className="text-xs text-muted-foreground">

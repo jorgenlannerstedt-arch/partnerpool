@@ -77,7 +77,7 @@ Vertigogo connects clients needing legal help with law firms. The platform featu
 - 2026-02-15: Initial build - all core features implemented
 - Seeded 12 Swedish law firms with Swedish specializations and multi-office support
 - AI prompt extracts legalArea for case-agency matching (JSON response format)
-- Added hasInsurance, estimatedAmount fields to cases
+- Added insuranceType (4 options: Hemförsäkring, Företagsförsäkring, Nej har ingen försäkring, Nej jag betalar själv) and estimatedAmount fields to cases
 - Added logo upload and multiple offices to agency profiles
 - Added Vertigogo review notice on case creation form
 - Redesigned with light #f3f4f8 background, white headers/sections, Baskervville font, pill buttons
@@ -89,3 +89,8 @@ Vertigogo connects clients needing legal help with law firms. The platform featu
 - 2026-02-16: Added settings page (/settings) for clients with profile details view, newsletter opt-in toggle, and account deletion with confirmation dialog
 - Added newsletterOptIn field to user_profiles, API endpoints: GET/PATCH /api/settings, DELETE /api/account
 - Settings link added to client navigation bar and user dropdown menu
+- Added agency case preferences: minCaseAmount, maxCaseAmount, acceptedInsuranceTypes fields to agency_profiles
+- Changed case insurance from boolean (hasInsurance) to enum string (insuranceType) with 4 options
+- Agency matching now filters by specialties + amount range + insurance type preferences
+- INSURANCE_TYPES and AMOUNT_RANGES constants defined in shared/schema.ts
+- Agency profile setup includes "Ärendepreferenser" section with amount range inputs and insurance type badges

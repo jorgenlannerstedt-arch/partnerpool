@@ -9,19 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Upload, FileText, Loader2, ArrowLeft, Sparkles, ShieldCheck, CircleDollarSign, Eye, Mail, Phone } from "lucide-react";
 import { Link } from "wouter";
-
-const AMOUNT_RANGES = [
-  { value: "under-50k", label: "Under 50 000 SEK" },
-  { value: "50k-100k", label: "50 000 - 100 000 SEK" },
-  { value: "100k-250k", label: "100 000 - 250 000 SEK" },
-  { value: "250k-500k", label: "250 000 - 500 000 SEK" },
-  { value: "500k-1m", label: "500 000 - 1 000 000 SEK" },
-  { value: "over-1m", label: "Över 1 000 000 SEK" },
-  { value: "unknown", label: "Osäker / Vet ej" },
-];
+import { INSURANCE_TYPES, AMOUNT_RANGES } from "@shared/schema";
 
 export default function NewCasePage() {
   const [, navigate] = useLocation();
@@ -30,7 +21,7 @@ export default function NewCasePage() {
   const [description, setDescription] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
-  const [hasInsurance, setHasInsurance] = useState(false);
+  const [insuranceType, setInsuranceType] = useState("");
   const [estimatedAmount, setEstimatedAmount] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhone, setContactPhone] = useState("");
@@ -41,7 +32,7 @@ export default function NewCasePage() {
       formData.append("title", title);
       if (description) formData.append("description", description);
       if (file) formData.append("pdf", file);
-      formData.append("hasInsurance", hasInsurance.toString());
+      if (insuranceType) formData.append("insuranceType", insuranceType);
       if (estimatedAmount) formData.append("estimatedAmount", estimatedAmount);
       if (contactEmail.trim()) formData.append("contactEmail", contactEmail.trim());
       if (contactPhone.trim()) formData.append("contactPhone", contactPhone.trim());
@@ -175,47 +166,42 @@ export default function NewCasePage() {
           </div>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-              <Label htmlFor="insurance">Har du rättsskydd?</Label>
-            </div>
-            <div className="flex items-center gap-3">
-              <Switch
-                id="insurance"
-                checked={hasInsurance}
-                onCheckedChange={setHasInsurance}
-                data-testid="switch-insurance"
-              />
-              <span className="text-sm text-muted-foreground">
-                {hasInsurance ? "Ja, jag har rättsskydd" : "Nej, jag har inte rättsskydd"}
-              </span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Rättsskydd ingår ofta i hemförsäkringen och kan täcka juridiska kostnader.
-            </p>
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+            <Label>Har du försäkring?</Label>
           </div>
+          <RadioGroup value={insuranceType} onValueChange={setInsuranceType} data-testid="radio-insurance-type">
+            {INSURANCE_TYPES.map((type) => (
+              <div key={type} className="flex items-center space-x-2">
+                <RadioGroupItem value={type} id={`insurance-${type}`} data-testid={`radio-insurance-${type.toLowerCase().replace(/\s+/g, "-")}`} />
+                <Label htmlFor={`insurance-${type}`} className="text-sm font-normal cursor-pointer">{type}</Label>
+              </div>
+            ))}
+          </RadioGroup>
+          <p className="text-xs text-muted-foreground">
+            Rättsskydd ingår ofta i hem- eller företagsförsäkringen och kan täcka juridiska kostnader.
+          </p>
+        </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
-              <Label>Ungefärligt belopp</Label>
-            </div>
-            <Select value={estimatedAmount} onValueChange={setEstimatedAmount}>
-              <SelectTrigger data-testid="select-amount">
-                <SelectValue placeholder="Välj beloppsklass" />
-              </SelectTrigger>
-              <SelectContent>
-                {AMOUNT_RANGES.map((range) => (
-                  <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground">
-              Ange ett ungefärligt tvistebelopp eller värde.
-            </p>
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
+            <Label>Ungefärligt belopp</Label>
           </div>
+          <Select value={estimatedAmount} onValueChange={setEstimatedAmount}>
+            <SelectTrigger data-testid="select-amount">
+              <SelectValue placeholder="Välj beloppsklass" />
+            </SelectTrigger>
+            <SelectContent>
+              {AMOUNT_RANGES.map((range) => (
+                <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            Ange ett ungefärligt tvistebelopp eller värde.
+          </p>
         </div>
 
         <div className="space-y-3">

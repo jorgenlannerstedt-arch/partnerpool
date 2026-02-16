@@ -19,7 +19,7 @@ import {
 import { ArrowLeft, Loader2, Save, X, Plus, Upload, MapPin, Trash2, Building2, Shield, Search } from "lucide-react";
 import { Link } from "wouter";
 import type { AgencyProfile } from "@shared/schema";
-import { LEGAL_AREAS, PRICE_RANGES, LANGUAGES } from "@shared/schema";
+import { LEGAL_AREAS, PRICE_RANGES, LANGUAGES, INSURANCE_TYPES } from "@shared/schema";
 
 interface NominatimResult {
   display_name: string;
@@ -190,6 +190,9 @@ export default function AgencyProfileSetupPage() {
     priceRange: "",
     barAssociationMember: false,
     responseTimeHours: "",
+    minCaseAmount: "",
+    maxCaseAmount: "",
+    acceptedInsuranceTypes: [] as string[],
   });
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -216,6 +219,9 @@ export default function AgencyProfileSetupPage() {
         priceRange: existing.priceRange || "",
         barAssociationMember: existing.barAssociationMember || false,
         responseTimeHours: existing.responseTimeHours?.toString() || "",
+        minCaseAmount: existing.minCaseAmount?.toString() || "",
+        maxCaseAmount: existing.maxCaseAmount?.toString() || "",
+        acceptedInsuranceTypes: existing.acceptedInsuranceTypes || [],
       });
       if (existing.logoUrl) {
         setLogoPreview(existing.logoUrl);
@@ -258,6 +264,9 @@ export default function AgencyProfileSetupPage() {
         languages: form.languages.length > 0 ? form.languages : null,
         priceRange: form.priceRange || null,
         responseTimeHours: form.responseTimeHours ? parseInt(form.responseTimeHours) : null,
+        minCaseAmount: form.minCaseAmount ? parseInt(form.minCaseAmount) : null,
+        maxCaseAmount: form.maxCaseAmount ? parseInt(form.maxCaseAmount) : null,
+        acceptedInsuranceTypes: form.acceptedInsuranceTypes.length > 0 ? form.acceptedInsuranceTypes : null,
       };
       const res = await apiRequest("POST", "/api/agency/profile", data);
       return res.json();
@@ -287,6 +296,15 @@ export default function AgencyProfileSetupPage() {
       languages: prev.languages.includes(lang)
         ? prev.languages.filter((l) => l !== lang)
         : [...prev.languages, lang],
+    }));
+  };
+
+  const toggleInsuranceType = (type: string) => {
+    setForm((prev) => ({
+      ...prev,
+      acceptedInsuranceTypes: prev.acceptedInsuranceTypes.includes(type)
+        ? prev.acceptedInsuranceTypes.filter((t) => t !== type)
+        : [...prev.acceptedInsuranceTypes, type],
     }));
   };
 
@@ -497,6 +515,57 @@ export default function AgencyProfileSetupPage() {
                 {s}
               </Badge>
             ))}
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <Label>Ärendepreferenser</Label>
+          <p className="text-xs text-muted-foreground">Ange vilka typer av ärenden ni vill ta emot. Lämna tomt för att ta emot alla ärenden.</p>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="minAmount" className="text-sm">Minimibelopp (SEK)</Label>
+              <Input
+                id="minAmount"
+                type="number"
+                min="0"
+                value={form.minCaseAmount}
+                onChange={(e) => setForm({ ...form, minCaseAmount: e.target.value })}
+                placeholder="t.ex. 50000"
+                data-testid="input-min-amount"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="maxAmount" className="text-sm">Maxbelopp (SEK)</Label>
+              <Input
+                id="maxAmount"
+                type="number"
+                min="0"
+                value={form.maxCaseAmount}
+                onChange={(e) => setForm({ ...form, maxCaseAmount: e.target.value })}
+                placeholder="t.ex. 1000000"
+                data-testid="input-max-amount"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-sm">Accepterade försäkringstyper</Label>
+            <p className="text-xs text-muted-foreground">Välj vilka försäkringstyper ni accepterar. Om ingen är vald visas alla ärenden.</p>
+            <div className="flex flex-wrap gap-1.5">
+              {INSURANCE_TYPES.map((type) => (
+                <Badge
+                  key={type}
+                  variant={form.acceptedInsuranceTypes.includes(type) ? "default" : "secondary"}
+                  className="cursor-pointer toggle-elevate"
+                  onClick={() => toggleInsuranceType(type)}
+                  data-testid={`badge-insurance-${type.toLowerCase().replace(/\s+/g, "-")}`}
+                >
+                  {form.acceptedInsuranceTypes.includes(type) ? <X className="h-3 w-3 mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
+                  {type}
+                </Badge>
+              ))}
+            </div>
           </div>
         </div>
 

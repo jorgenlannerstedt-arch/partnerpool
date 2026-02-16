@@ -6,6 +6,7 @@ import {
   type DirectMessage, type InsertDirectMessage,
   type AgencyReview, type InsertAgencyReview,
   userProfiles, agencyProfiles, cases, caseInquiries, directMessages, agencyReviews,
+  AMOUNT_RANGES,
 } from "@shared/schema";
 import { users } from "@shared/models/auth";
 import { db } from "./db";
@@ -25,7 +26,7 @@ export interface IStorage {
   updateCase(id: number, updates: Partial<InsertCase>): Promise<Case | undefined>;
   deleteCase(id: number, clientId: string): Promise<boolean>;
   getOpenCases(): Promise<Case[]>;
-  getOpenCasesForAgency(specialties: string[]): Promise<Case[]>;
+  getOpenCasesForAgency(agencyProfile: AgencyProfile): Promise<Case[]>;
   getInquiriesByCase(caseId: number): Promise<(CaseInquiry & { agency?: AgencyProfile })[]>;
   getInquiryByCaseAndAgency(caseId: number, agencyId: string): Promise<CaseInquiry | undefined>;
   createInquiry(data: InsertCaseInquiry): Promise<CaseInquiry>;
@@ -132,14 +133,38 @@ class DatabaseStorage implements IStorage {
     return db.select().from(cases).where(eq(cases.status, "open")).orderBy(desc(cases.createdAt));
   }
 
-  async getOpenCasesForAgency(specialties: string[]) {
+  async getOpenCasesForAgency(agencyProfile: AgencyProfile) {
+    const specialties = agencyProfile.specialties;
     if (!specialties || specialties.length === 0) {
       return [];
     }
     const allOpen = await db.select().from(cases).where(eq(cases.status, "open")).orderBy(desc(cases.createdAt));
     return allOpen.filter((c) => {
       if (!c.legalArea) return false;
-      return specialties.some((s) => s.toLowerCase() === c.legalArea!.toLowerCase());
+      if (!specialties.some((s) => s.toLowerCase() === c.legalArea!.toLowerCase())) {
+        return false;
+      }
+      if (agencyProfile.acceptedInsuranceTypes && agencyProfile.acceptedInsuranceTypes.length > 0) {
+        if (c.insuranceType && !agencyProfile.acceptedInsuranceTypes.includes(c.insuranceType)) {
+          return false;
+        }
+      }
+      if (agencyProfile.minCaseAmount != null || agencyProfile.maxCaseAmount != null) {
+        if (c.estimatedAmount && c.estimatedAmount !== "unknown") {
+          const range = AMOUNT_RANGES.find((r) => r.value === c.estimatedAmount);
+          if (range) {
+            const caseMin = "numericMin" in range ? (range as any).numericMin : 0;
+            const caseMax = "numericMax" in range ? (range as any).numericMax : Infinity;
+            if (agencyProfile.minCaseAmount != null && caseMax < agencyProfile.minCaseAmount) {
+              return false;
+            }
+            if (agencyProfile.maxCaseAmount != null && caseMin > agencyProfile.maxCaseAmount) {
+              return false;
+            }
+          }
+        }
+      }
+      return true;
     });
   }
 

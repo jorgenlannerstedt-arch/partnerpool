@@ -102,12 +102,14 @@ export default function AgencyCaseDetailPage() {
             <Badge variant="default" data-testid="badge-legal-area">{caseData.legalArea}</Badge>
           </div>
         )}
-        <div className="flex items-center gap-1.5">
-          <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-          <Badge variant={caseData.hasInsurance ? "default" : "secondary"} data-testid="badge-insurance">
-            {caseData.hasInsurance ? "Har rättsskydd" : "Inget rättsskydd"}
-          </Badge>
-        </div>
+        {caseData.insuranceType && (
+          <div className="flex items-center gap-1.5">
+            <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+            <Badge variant={caseData.insuranceType.startsWith("Nej") ? "secondary" : "default"} data-testid="badge-insurance">
+              {caseData.insuranceType}
+            </Badge>
+          </div>
+        )}
         {caseData.estimatedAmount && (
           <div className="flex items-center gap-1.5">
             <CircleDollarSign className="h-4 w-4 text-muted-foreground" />

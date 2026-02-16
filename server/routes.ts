@@ -5,7 +5,7 @@ import path from "path";
 import fs from "fs";
 import { z } from "zod";
 import { storage } from "./storage";
-import { LEGAL_AREAS } from "@shared/schema";
+import { LEGAL_AREAS, INSURANCE_TYPES } from "@shared/schema";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 import Anthropic from "@anthropic-ai/sdk";
 import { sendInquiryNotification } from "./email";
@@ -345,7 +345,8 @@ export async function registerRoutes(
       const userId = req.user.claims.sub;
       const title = req.body.title?.trim();
       const description = req.body.description?.trim() || null;
-      const hasInsurance = req.body.hasInsurance === "true";
+      const rawInsuranceType = req.body.insuranceType?.trim() || null;
+      const insuranceType = rawInsuranceType && (INSURANCE_TYPES as readonly string[]).includes(rawInsuranceType) ? rawInsuranceType : null;
       const estimatedAmount = req.body.estimatedAmount?.trim() || null;
       const contactEmail = req.body.contactEmail?.trim() || null;
       const contactPhone = req.body.contactPhone?.trim() || null;
@@ -452,7 +453,7 @@ VIKTIGT:
         description,
         aiSummary,
         legalArea,
-        hasInsurance,
+        insuranceType,
         estimatedAmount,
         contactEmail,
         contactPhone,
@@ -525,7 +526,7 @@ VIKTIGT:
       if (!agencyProfile || !agencyProfile.specialties || agencyProfile.specialties.length === 0) {
         return res.json([]);
       }
-      const matchingCases = await storage.getOpenCasesForAgency(agencyProfile.specialties);
+      const matchingCases = await storage.getOpenCasesForAgency(agencyProfile);
       res.json(matchingCases);
     } catch (error) {
       console.error("Error fetching agency cases:", error);

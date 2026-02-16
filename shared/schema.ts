@@ -37,6 +37,9 @@ export const agencyProfiles = pgTable("agency_profiles", {
   priceRange: text("price_range"),
   barAssociationMember: boolean("bar_association_member").default(false),
   responseTimeHours: integer("response_time_hours"),
+  minCaseAmount: integer("min_case_amount"),
+  maxCaseAmount: integer("max_case_amount"),
+  acceptedInsuranceTypes: text("accepted_insurance_types").array(),
   subscriptionActive: boolean("subscription_active").default(false),
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
@@ -51,6 +54,23 @@ export const agencyReviews = pgTable("agency_reviews", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const INSURANCE_TYPES = [
+  "Hemförsäkring",
+  "Företagsförsäkring",
+  "Nej har ingen försäkring",
+  "Nej jag betalar själv",
+] as const;
+
+export const AMOUNT_RANGES = [
+  { value: "under-50k", label: "Under 50 000 SEK", numericMax: 50000 },
+  { value: "50k-100k", label: "50 000 - 100 000 SEK", numericMin: 50000, numericMax: 100000 },
+  { value: "100k-250k", label: "100 000 - 250 000 SEK", numericMin: 100000, numericMax: 250000 },
+  { value: "250k-500k", label: "250 000 - 500 000 SEK", numericMin: 250000, numericMax: 500000 },
+  { value: "500k-1m", label: "500 000 - 1 000 000 SEK", numericMin: 500000, numericMax: 1000000 },
+  { value: "over-1m", label: "Över 1 000 000 SEK", numericMin: 1000000 },
+  { value: "unknown", label: "Osäker / Vet ej" },
+] as const;
+
 export const cases = pgTable("cases", {
   id: serial("id").primaryKey(),
   clientId: varchar("client_id").notNull(),
@@ -58,7 +78,7 @@ export const cases = pgTable("cases", {
   description: text("description"),
   aiSummary: text("ai_summary"),
   legalArea: text("legal_area"),
-  hasInsurance: boolean("has_insurance").default(false),
+  insuranceType: text("insurance_type"),
   estimatedAmount: text("estimated_amount"),
   contactEmail: text("contact_email"),
   contactPhone: text("contact_phone"),
