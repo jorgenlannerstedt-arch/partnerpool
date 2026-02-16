@@ -275,7 +275,7 @@ export default function NewCasePage() {
           ) : (
             <>
               <Sparkles className="h-4 w-4 mr-2" />
-              Skicka in ärende
+              Analysera ärende
             </>
           )}
         </Button>
