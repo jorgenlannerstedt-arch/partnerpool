@@ -11,6 +11,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, FileText, Send, Loader2, CheckCircle, ShieldCheck, CircleDollarSign, Scale } from "lucide-react";
 import type { Case, CaseInquiry } from "@shared/schema";
 
+const STATUS_LABELS: Record<string, string> = {
+  open: "Öppet",
+  reviewing: "Granskas",
+  matched: "Matchat",
+  closed: "Avslutat",
+};
+
 const AMOUNT_LABELS: Record<string, string> = {
   "under-50k": "Under 50 000 SEK",
   "50k-100k": "50 000 - 100 000 SEK",
@@ -85,7 +92,7 @@ export default function AgencyCaseDetailPage() {
             Publicerad {caseData.createdAt ? new Date(caseData.createdAt).toLocaleDateString("sv-SE") : ""}
           </p>
         </div>
-        <Badge variant="secondary">{caseData.status}</Badge>
+        <Badge variant="secondary">{STATUS_LABELS[caseData.status] || caseData.status}</Badge>
       </div>
 
       <div className="flex flex-wrap gap-3">

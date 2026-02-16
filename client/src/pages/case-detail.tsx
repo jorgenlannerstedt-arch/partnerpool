@@ -23,6 +23,13 @@ import type { Case, CaseInquiry, AgencyProfile } from "@shared/schema";
 
 type InquiryWithAgency = CaseInquiry & { agency?: AgencyProfile };
 
+const STATUS_LABELS: Record<string, string> = {
+  open: "Öppet",
+  reviewing: "Granskas",
+  matched: "Matchat",
+  closed: "Avslutat",
+};
+
 const AMOUNT_LABELS: Record<string, string> = {
   "under-50k": "Under 50 000 SEK",
   "50k-100k": "50 000 - 100 000 SEK",
@@ -100,7 +107,7 @@ export default function CaseDetailPage() {
             Skapad {caseData.createdAt ? new Date(caseData.createdAt).toLocaleDateString("sv-SE") : ""}
           </p>
         </div>
-        <Badge variant="secondary">{caseData.status}</Badge>
+        <Badge variant="secondary">{STATUS_LABELS[caseData.status] || caseData.status}</Badge>
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button variant="ghost" size="icon" data-testid="button-delete-case">
