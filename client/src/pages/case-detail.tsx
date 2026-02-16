@@ -183,6 +183,8 @@ export default function CaseDetailPage() {
   const { toast } = useToast();
   const [editingDescription, setEditingDescription] = useState(false);
   const [draftDescription, setDraftDescription] = useState("");
+  const [editingSummary, setEditingSummary] = useState(false);
+  const [draftSummary, setDraftSummary] = useState("");
   const [selectedInquiry, setSelectedInquiry] = useState<InquiryWithAgency | null>(null);
 
   const { data: caseData, isLoading } = useQuery<Case>({
@@ -211,13 +213,14 @@ export default function CaseDetailPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async (updates: { description?: string; status?: string }) => {
+    mutationFn: async (updates: { description?: string; status?: string; aiSummary?: string }) => {
       const res = await apiRequest("PATCH", `/api/cases/${params.id}`, updates);
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/cases", params.id] });
       setEditingDescription(false);
+      setEditingSummary(false);
     },
     onError: (err: Error) => {
       toast({ title: "Fel", description: err.message, variant: "destructive" });
@@ -358,13 +361,63 @@ export default function CaseDetailPage() {
 
       {caseData.aiSummary && (
         <Card className="p-6 space-y-3">
-          <div className="flex items-center gap-2">
-            <FileText className="h-5 w-5 text-primary" />
-            <h2 className="font-semibold">AI-sammanfattning</h2>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              <h2 className="font-semibold">AI-sammanfattning</h2>
+            </div>
+            {isDraft && !editingSummary && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setDraftSummary(caseData.aiSummary || "");
+                  setEditingSummary(true);
+                }}
+                data-testid="button-edit-summary"
+              >
+                <Pencil className="h-3.5 w-3.5 mr-1.5" />
+                Redigera
+              </Button>
+            )}
           </div>
-          <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap" data-testid="text-ai-summary">
-            {caseData.aiSummary}
-          </p>
+          {editingSummary ? (
+            <div className="space-y-3">
+              <Textarea
+                value={draftSummary}
+                onChange={(e) => setDraftSummary(e.target.value)}
+                rows={6}
+                data-testid="input-edit-summary"
+              />
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  onClick={() => updateMutation.mutate({ aiSummary: draftSummary })}
+                  disabled={updateMutation.isPending}
+                  data-testid="button-save-summary"
+                >
+                  {updateMutation.isPending ? (
+                    <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />
+                  ) : (
+                    <CheckCircle className="h-3.5 w-3.5 mr-1.5" />
+                  )}
+                  Spara
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setEditingSummary(false)}
+                  data-testid="button-cancel-edit-summary"
+                >
+                  Avbryt
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap" data-testid="text-ai-summary">
+              {caseData.aiSummary}
+            </p>
+          )}
         </Card>
       )}
 

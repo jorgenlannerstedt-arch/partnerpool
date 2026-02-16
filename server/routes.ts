@@ -482,6 +482,9 @@ VIKTIGT:
       if (req.body.description !== undefined) {
         updates.description = req.body.description?.trim() || null;
       }
+      if (req.body.aiSummary !== undefined) {
+        updates.aiSummary = req.body.aiSummary?.trim() || null;
+      }
       if (req.body.status === "open" && caseData.status === "draft") {
         updates.status = "open";
       }

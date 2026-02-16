@@ -310,14 +310,3 @@ export async function seedDemoData() {
   console.log("Demo seeding complete!");
 }
 
-async function runSeedCli() {
-  await seedDemoData();
-  process.exit(0);
-}
-
-if (require.main === module) {
-  runSeedCli().catch((err) => {
-    console.error("Seed error:", err);
-    process.exit(1);
-  });
-}
