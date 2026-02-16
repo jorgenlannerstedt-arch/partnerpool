@@ -152,10 +152,10 @@ export default function AgencyDashboard() {
               <Link key={c.id} href={`/agency/cases/${c.id}`}>
                 <Card className="p-4 hover-elevate cursor-pointer" data-testid={`card-agency-case-${c.id}`}>
                   <div className="flex items-start justify-between gap-4">
-                    <div className="space-y-1 flex-1 min-w-0">
+                    <div className="flex-1 min-w-0">
                       <h3 className="font-semibold truncate">{c.title}</h3>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{c.aiSummary || "Ärendesammanfattning väntar..."}</p>
-                      <div className="flex flex-wrap items-center gap-2 mt-8">
+                      <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{c.aiSummary || "Ärendesammanfattning väntar..."}</p>
+                      <div className="flex flex-wrap items-center gap-2 mt-3">
                         {c.legalArea && (
                           <Badge variant="default" className="text-xs">
                             <Scale className="h-3 w-3 mr-1" />
