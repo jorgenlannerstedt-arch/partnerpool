@@ -535,18 +535,6 @@ export default function AgencyProfileSetupPage() {
                 data-testid="input-min-amount"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="maxAmount" className="text-sm">Maxbelopp (SEK)</Label>
-              <Input
-                id="maxAmount"
-                type="number"
-                min="0"
-                value={form.maxCaseAmount}
-                onChange={(e) => setForm({ ...form, maxCaseAmount: e.target.value })}
-                placeholder="t.ex. 1000000"
-                data-testid="input-max-amount"
-              />
-            </div>
           </div>
 
           <div className="space-y-2">
