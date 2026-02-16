@@ -98,3 +98,10 @@ Vertigogo connects clients needing legal help with law firms. The platform featu
 - When cases are published (draft→open), matching agencies receive email notifications at all configured office notification emails
 - Agency case dismiss feature with confirmation dialog (warns if ongoing conversation exists)
 - sendNewCaseNotification function in server/email.ts for notifying agencies about new matching cases
+- Agency selection feature: clients can select a winning agency for their case, closing it
+- selectedAgencyId field on cases table tracks which agency was chosen
+- Case status changes: open→closed when agency selected, closed→open when selection reverted
+- API endpoints: POST /api/cases/:id/select-agency, POST /api/cases/:id/deselect-agency
+- Email notifications: selected agency notified, non-selected agencies notified, all parties notified on revert
+- Agency dashboard shows "Tilldelat" badge on won cases, agency case detail shows won/lost banners
+- Client case detail: "Välj denna byrå" button on each inquiry, confirmation dialog, "Ångra val" button when case closed

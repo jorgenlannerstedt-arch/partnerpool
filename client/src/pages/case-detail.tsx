@@ -25,7 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { ArrowLeft, FileText, Clock, Building2, MessageCircle, ShieldCheck, CircleDollarSign, Scale, Trash2, AlertTriangle, Send, CheckCircle, Loader2, Pencil } from "lucide-react";
+import { ArrowLeft, FileText, Clock, Building2, MessageCircle, ShieldCheck, CircleDollarSign, Scale, Trash2, AlertTriangle, Send, CheckCircle, Loader2, Pencil, Trophy, Undo2 } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
@@ -186,6 +186,7 @@ export default function CaseDetailPage() {
   const [editingSummary, setEditingSummary] = useState(false);
   const [draftSummary, setDraftSummary] = useState("");
   const [selectedInquiry, setSelectedInquiry] = useState<InquiryWithAgency | null>(null);
+  const [selectAgencyTarget, setSelectAgencyTarget] = useState<InquiryWithAgency | null>(null);
 
   const { data: caseData, isLoading } = useQuery<Case>({
     queryKey: ["/api/cases", params.id],
@@ -193,7 +194,7 @@ export default function CaseDetailPage() {
 
   const { data: inquiries, isLoading: inquiriesLoading } = useQuery<InquiryWithAgency[]>({
     queryKey: ["/api/cases", params.id, "inquiries"],
-    enabled: caseData?.status !== "draft",
+    enabled: caseData?.status === "open" || caseData?.status === "closed",
   });
 
   const isDraft = caseData?.status === "draft";
@@ -241,6 +242,42 @@ export default function CaseDetailPage() {
       toast({ title: "Fel", description: err.message, variant: "destructive" });
     },
   });
+
+  const selectAgencyMutation = useMutation({
+    mutationFn: async (agencyId: string) => {
+      const res = await apiRequest("POST", `/api/cases/${params.id}/select-agency`, { agencyId });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/cases", params.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/cases"] });
+      toast({ title: "Byrå vald", description: "Ärendet har stängts och byrån har meddelats." });
+      setSelectAgencyTarget(null);
+    },
+    onError: (err: Error) => {
+      toast({ title: "Fel", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const deselectAgencyMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", `/api/cases/${params.id}/deselect-agency`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/cases", params.id] });
+      queryClient.invalidateQueries({ queryKey: ["/api/cases"] });
+      toast({ title: "Val ångrat", description: "Ärendet är nu öppet igen och alla byråer har meddelats." });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Fel", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const isClosed = caseData?.status === "closed";
+  const selectedAgencyInquiry = isClosed && caseData?.selectedAgencyId && inquiries
+    ? inquiries.find((inq) => inq.agency?.id === caseData.selectedAgencyId)
+    : null;
 
   if (isLoading) {
     return (
@@ -521,6 +558,51 @@ export default function CaseDetailPage() {
         </AlertDialog>
       )}
 
+      {isClosed && selectedAgencyInquiry && (
+        <Card className="p-4 border-primary/30 bg-primary/5">
+          <div className="flex items-start gap-3">
+            <Trophy className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-sm">Du har valt {selectedAgencyInquiry.agency?.name || "en byrå"}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Ärendet är stängt. Du kan fortsätta kommunicera med den valda byrån via meddelanden.
+              </p>
+            </div>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm" data-testid="button-deselect-agency">
+                  <Undo2 className="h-3.5 w-3.5 mr-1.5" />
+                  Ångra val
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Ångra val av byrå?</AlertDialogTitle>
+                  <AlertDialogDescription className="space-y-2">
+                    <span className="block">
+                      Ärendet kommer att öppnas igen och alla byråer som visat intresse kommer att meddelas.
+                    </span>
+                    <span className="block">
+                      Den byrå du valt kommer att informeras om att du ändrat ditt beslut.
+                    </span>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel data-testid="button-cancel-deselect">Avbryt</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => deselectAgencyMutation.mutate()}
+                    disabled={deselectAgencyMutation.isPending}
+                    data-testid="button-confirm-deselect"
+                  >
+                    {deselectAgencyMutation.isPending ? "Ångrar..." : "Ångra val"}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </Card>
+      )}
+
       {!isDraft && (
         <div className="space-y-3">
           <h2 className="text-lg font-semibold flex items-center gap-2">
@@ -543,41 +625,63 @@ export default function CaseDetailPage() {
             </div>
           ) : inquiries && inquiries.length > 0 ? (
             <div className="space-y-3">
-              {inquiries.map((inq) => (
-                <Card
-                  key={inq.id}
-                  className="p-4 hover-elevate cursor-pointer"
-                  onClick={() => setSelectedInquiry(inq)}
-                  data-testid={`card-inquiry-${inq.id}`}
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-primary" />
-                        <span className="font-semibold">{inq.agency?.name || "Advokatbyrå"}</span>
+              {inquiries.map((inq) => {
+                const isSelected = isClosed && inq.agency?.id === caseData?.selectedAgencyId;
+                return (
+                  <Card
+                    key={inq.id}
+                    className={`p-4 hover-elevate cursor-pointer ${isSelected ? "border-primary/40 bg-primary/5" : ""}`}
+                    onClick={() => setSelectedInquiry(inq)}
+                    data-testid={`card-inquiry-${inq.id}`}
+                  >
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-4 w-4 text-primary" />
+                          <span className="font-semibold">{inq.agency?.name || "Advokatbyrå"}</span>
+                          {isSelected && (
+                            <Badge variant="default" className="text-xs" data-testid={`badge-selected-${inq.id}`}>
+                              <Trophy className="h-3 w-3 mr-1" />
+                              Vald byrå
+                            </Badge>
+                          )}
+                        </div>
+                        <Badge variant="secondary" className="text-xs">
+                          {inq.createdAt ? new Date(inq.createdAt).toLocaleDateString("sv-SE") : ""}
+                        </Badge>
                       </div>
-                      <Badge variant="secondary" className="text-xs">
-                        {inq.createdAt ? new Date(inq.createdAt).toLocaleDateString("sv-SE") : ""}
-                      </Badge>
+                      <p className="text-sm text-muted-foreground line-clamp-2">{inq.message}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedInquiry(inq);
+                          }}
+                          data-testid={`button-open-inquiry-${inq.id}`}
+                        >
+                          <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
+                          Öppna & svara
+                        </Button>
+                        {!isClosed && (
+                          <Button
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectAgencyTarget(inq);
+                            }}
+                            data-testid={`button-select-agency-${inq.id}`}
+                          >
+                            <Trophy className="h-3.5 w-3.5 mr-1.5" />
+                            Välj denna byrå
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">{inq.message}</p>
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedInquiry(inq);
-                        }}
-                        data-testid={`button-open-inquiry-${inq.id}`}
-                      >
-                        <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
-                        Öppna & svara
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                );
+              })}
             </div>
           ) : (
             <Card className="p-8 text-center">
@@ -587,6 +691,39 @@ export default function CaseDetailPage() {
           )}
         </div>
       )}
+
+      <AlertDialog open={!!selectAgencyTarget} onOpenChange={(open) => { if (!open) setSelectAgencyTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Välj {selectAgencyTarget?.agency?.name || "denna byrå"}?</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <span className="block">
+                Ärendet kommer att stängas och <strong>{selectAgencyTarget?.agency?.name || "byrån"}</strong> meddelas om att du valt dem.
+              </span>
+              <span className="block">
+                Övriga byråer som visat intresse kommer att informeras om att du gått vidare med en annan byrå.
+              </span>
+              <span className="block text-muted-foreground">
+                Du kan ångra ditt val senare om du ändrar dig.
+              </span>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-select-agency">Avbryt</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (selectAgencyTarget) {
+                  selectAgencyMutation.mutate(selectAgencyTarget.agencyId);
+                }
+              }}
+              disabled={selectAgencyMutation.isPending}
+              data-testid="button-confirm-select-agency"
+            >
+              {selectAgencyMutation.isPending ? "Väljer..." : "Välj byrå"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {selectedInquiry && caseData && (
         <InquiryMessageDialog

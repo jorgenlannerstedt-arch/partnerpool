@@ -8,7 +8,7 @@ import { storage } from "./storage";
 import { LEGAL_AREAS, INSURANCE_TYPES, AMOUNT_RANGES } from "@shared/schema";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 import Anthropic from "@anthropic-ai/sdk";
-import { sendInquiryNotification, sendNewCaseNotification } from "./email";
+import { sendInquiryNotification, sendNewCaseNotification, sendAgencySelectedNotification, sendAgencyNotSelectedNotification, sendSelectionRevertedNotification } from "./email";
 import { seedDemoData } from "./seed";
 
 const anthropic = new Anthropic({
@@ -606,21 +606,130 @@ VIKTIGT:
     }
   });
 
+  app.post("/api/cases/:id/select-agency", isAuthenticated, requireRole("client"), async (req: any, res) => {
+    try {
+      const caseId = parseInt(req.params.id);
+      if (isNaN(caseId)) return res.status(400).json({ message: "Invalid ID" });
+      const userId = req.user.claims.sub;
+
+      const caseData = await storage.getCaseById(caseId);
+      if (!caseData || caseData.clientId !== userId) {
+        return res.status(404).json({ message: "Case not found" });
+      }
+      if (caseData.status !== "open") {
+        return res.status(400).json({ message: "Case is not open" });
+      }
+
+      const { agencyId } = req.body;
+      if (!agencyId) {
+        return res.status(400).json({ message: "agencyId is required" });
+      }
+
+      const inquiry = await storage.getInquiryByCaseAndAgency(caseId, agencyId);
+      if (!inquiry) {
+        return res.status(400).json({ message: "Agency has not sent an inquiry for this case" });
+      }
+
+      const agencyProfile = await storage.getAgencyProfile(agencyId);
+      if (!agencyProfile) {
+        return res.status(400).json({ message: "Agency not found" });
+      }
+
+      const updated = await storage.updateCase(caseId, {
+        status: "closed",
+        selectedAgencyId: agencyProfile.id,
+      });
+
+      const allInquiries = await storage.getInquiriesByCase(caseId);
+
+      if (agencyProfile.email) {
+        sendAgencySelectedNotification(agencyProfile.email, caseData.title, caseData.legalArea || "")
+          .catch(err => console.error("Selected agency notification failed:", err));
+      }
+
+      for (const inq of allInquiries) {
+        if (inq.agencyId === agencyId) continue;
+        const otherAgency = inq.agency;
+        if (otherAgency?.email) {
+          sendAgencyNotSelectedNotification(otherAgency.email, caseData.title, caseData.legalArea || "")
+            .catch(err => console.error("Not selected notification failed:", err));
+        }
+      }
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error selecting agency:", error);
+      res.status(500).json({ message: "Failed to select agency" });
+    }
+  });
+
+  app.post("/api/cases/:id/deselect-agency", isAuthenticated, requireRole("client"), async (req: any, res) => {
+    try {
+      const caseId = parseInt(req.params.id);
+      if (isNaN(caseId)) return res.status(400).json({ message: "Invalid ID" });
+      const userId = req.user.claims.sub;
+
+      const caseData = await storage.getCaseById(caseId);
+      if (!caseData || caseData.clientId !== userId) {
+        return res.status(404).json({ message: "Case not found" });
+      }
+      if (caseData.status !== "closed" || !caseData.selectedAgencyId) {
+        return res.status(400).json({ message: "No agency is selected for this case" });
+      }
+
+      const previousAgencyId = caseData.selectedAgencyId;
+      const previousAgency = await storage.getAgencyProfileById(previousAgencyId);
+
+      const updated = await storage.updateCase(caseId, {
+        status: "open",
+        selectedAgencyId: null,
+      });
+
+      const allInquiries = await storage.getInquiriesByCase(caseId);
+
+      for (const inq of allInquiries) {
+        const agency = inq.agency;
+        if (!agency?.email) continue;
+        const wasSelected = agency.id === previousAgencyId;
+        sendSelectionRevertedNotification(agency.email, caseData.title, caseData.legalArea || "", wasSelected)
+          .catch(err => console.error("Selection reverted notification failed:", err));
+      }
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error deselecting agency:", error);
+      res.status(500).json({ message: "Failed to deselect agency" });
+    }
+  });
+
   app.get("/api/agency/cases", isAuthenticated, requireRole("agency"), async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
       const agencyProfile = await storage.getAgencyProfile(userId);
-      if (!agencyProfile || !agencyProfile.specialties || agencyProfile.specialties.length === 0) {
+      if (!agencyProfile) {
         return res.json([]);
       }
-      const matchingCases = await storage.getOpenCasesForAgency(agencyProfile);
+      const matchingCases = (agencyProfile.specialties && agencyProfile.specialties.length > 0)
+        ? await storage.getOpenCasesForAgency(agencyProfile)
+        : [];
+      const wonCases = await storage.getWonCasesForAgency(agencyProfile);
       const agencyInquiries = await storage.getInquiriesByAgency(userId);
       const inquiredCaseIds = new Set(agencyInquiries.map((i) => i.caseId));
-      const casesWithInquiryStatus = matchingCases.map((c) => ({
+
+      const allCases = [...matchingCases, ...wonCases];
+      const seenIds = new Set<number>();
+      const uniqueCases = allCases.filter(c => {
+        if (seenIds.has(c.id)) return false;
+        seenIds.add(c.id);
+        return true;
+      });
+
+      const casesWithStatus = uniqueCases.map((c) => ({
         ...c,
         hasInquired: inquiredCaseIds.has(c.id),
+        agencyWon: c.status === "closed" && c.selectedAgencyId === agencyProfile.id,
       }));
-      res.json(casesWithInquiryStatus);
+      res.json(casesWithStatus);
     } catch (error) {
       console.error("Error fetching agency cases:", error);
       res.status(500).json({ message: "Failed to fetch cases" });

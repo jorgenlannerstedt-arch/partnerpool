@@ -177,6 +177,22 @@ class DatabaseStorage implements IStorage {
     });
   }
 
+  async getWonCasesForAgency(agencyProfile: AgencyProfile) {
+    return db.select().from(cases).where(
+      and(eq(cases.status, "closed"), eq(cases.selectedAgencyId, agencyProfile.id))
+    ).orderBy(desc(cases.createdAt));
+  }
+
+  async getLostCasesForAgency(agencyProfile: AgencyProfile) {
+    const agencyInquiries = await this.getInquiriesByAgency(agencyProfile.userId);
+    const inquiredCaseIds = agencyInquiries.map(i => i.caseId);
+    if (inquiredCaseIds.length === 0) return [];
+    const closedCases = await db.select().from(cases).where(
+      and(eq(cases.status, "closed"), inArray(cases.id, inquiredCaseIds))
+    ).orderBy(desc(cases.createdAt));
+    return closedCases.filter(c => c.selectedAgencyId !== agencyProfile.id);
+  }
+
   async getInquiriesByCase(caseId: number) {
     const inquiries = await db.select().from(caseInquiries).where(eq(caseInquiries.caseId, caseId)).orderBy(desc(caseInquiries.createdAt));
     const result = [];

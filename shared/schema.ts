@@ -85,6 +85,7 @@ export const cases = pgTable("cases", {
   contactPhone: text("contact_phone"),
   pdfFilename: text("pdf_filename"),
   status: text("status").notNull().default("open"),
+  selectedAgencyId: integer("selected_agency_id"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

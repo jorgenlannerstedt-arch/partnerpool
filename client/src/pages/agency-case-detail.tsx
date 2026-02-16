@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, FileText, Send, Loader2, CheckCircle, ShieldCheck, CircleDollarSign, Scale, MessageCircle } from "lucide-react";
+import { ArrowLeft, FileText, Send, Loader2, CheckCircle, ShieldCheck, CircleDollarSign, Scale, MessageCircle, Trophy, XCircle } from "lucide-react";
 import type { Case, CaseInquiry } from "@shared/schema";
+import { useAuth } from "@/hooks/use-auth";
 
 const STATUS_LABELS: Record<string, string> = {
   open: "Öppet",
@@ -32,6 +33,10 @@ export default function AgencyCaseDetailPage() {
   const params = useParams<{ id: string }>();
   const { toast } = useToast();
   const [inquiryMessage, setInquiryMessage] = useState("");
+
+  const { data: agencyProfile } = useQuery<{ id: number }>({
+    queryKey: ["/api/agency/profile"],
+  });
 
   const { data: caseData, isLoading } = useQuery<Case>({
     queryKey: ["/api/agency/cases", params.id],
@@ -132,6 +137,34 @@ export default function AgencyCaseDetailPage() {
         </Card>
       )}
 
+      {caseData.status === "closed" && caseData.selectedAgencyId === agencyProfile?.id && (
+        <Card className="p-4 border-primary/30 bg-primary/5">
+          <div className="flex items-start gap-3">
+            <Trophy className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-sm">Klienten har valt er byrå</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Ni har tilldelats detta ärende. Fortsätt konversationen med klienten via meddelanden.
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {caseData.status === "closed" && caseData.selectedAgencyId !== agencyProfile?.id && myInquiry && (
+        <Card className="p-4 border-muted bg-muted/30">
+          <div className="flex items-start gap-3">
+            <XCircle className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-sm text-muted-foreground">Klienten har valt en annan byrå</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Ärendet har stängts. Tack för ert intresse.
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
+
       {myInquiry ? (
         <Card className="p-6 space-y-3 border-primary/30 bg-primary/5">
           <div className="flex items-center gap-2">
@@ -151,7 +184,7 @@ export default function AgencyCaseDetailPage() {
             </Link>
           </div>
         </Card>
-      ) : (
+      ) : caseData.status !== "closed" ? (
         <Card className="p-6 space-y-4">
           <h2 className="font-semibold">Visa intresse</h2>
           <p className="text-sm text-muted-foreground">
@@ -160,7 +193,7 @@ export default function AgencyCaseDetailPage() {
           <Textarea
             value={inquiryMessage}
             onChange={(e) => setInquiryMessage(e.target.value)}
-            placeholder="Beskriv din expertis inom detta område och hur du skulle hantera ärendet..."
+            placeholder="Beskriv din expertis inom detta området och hur du skulle hantera ärendet..."
             rows={4}
             data-testid="input-inquiry-message"
           />
@@ -177,7 +210,7 @@ export default function AgencyCaseDetailPage() {
             )}
           </Button>
         </Card>
-      )}
+      ) : null}
     </div>
   );
 }

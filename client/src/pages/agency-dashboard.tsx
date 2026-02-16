@@ -15,12 +15,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { FileText, MessageCircle, Settings, CreditCard, AlertCircle, CheckCircle, Scale, ShieldCheck, Check, X } from "lucide-react";
+import { FileText, MessageCircle, Settings, CreditCard, AlertCircle, CheckCircle, Scale, ShieldCheck, Check, X, Trophy } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { Case, AgencyProfile } from "@shared/schema";
 
-type CaseWithInquiry = Case & { hasInquired?: boolean };
+type CaseWithInquiry = Case & { hasInquired?: boolean; agencyWon?: boolean };
 
 export default function AgencyDashboard() {
   const { toast } = useToast();
@@ -186,27 +186,35 @@ export default function AgencyDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {c.hasInquired && (
+                      {c.agencyWon && (
+                        <Badge variant="default" className="text-xs" data-testid={`badge-won-${c.id}`}>
+                          <Trophy className="h-3 w-3 mr-1" />
+                          Tilldelat
+                        </Badge>
+                      )}
+                      {c.hasInquired && !c.agencyWon && (
                         <Badge variant="default" className="text-xs" data-testid={`badge-inquired-${c.id}`}>
                           <Check className="h-3 w-3 mr-1" />
                           Besvarad
                         </Badge>
                       )}
-                      <Badge variant="secondary" data-testid={`badge-status-${c.id}`}>
-                        {c.status === "open" ? "Öppen" : c.status}
+                      <Badge variant={c.agencyWon ? "secondary" : "secondary"} data-testid={`badge-status-${c.id}`}>
+                        {c.agencyWon ? "Stängt" : c.status === "open" ? "Öppen" : c.status}
                       </Badge>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        data-testid={`button-dismiss-case-${c.id}`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setDismissTarget(c);
-                        }}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
+                      {!c.agencyWon && (
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          data-testid={`button-dismiss-case-${c.id}`}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setDismissTarget(c);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </Card>
