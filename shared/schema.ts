@@ -12,6 +12,7 @@ export const userProfiles = pgTable("user_profiles", {
   userId: varchar("user_id").notNull().unique(),
   role: userRoleEnum("role").notNull().default("client"),
   onboardingComplete: boolean("onboarding_complete").default(false),
+  newsletterOptIn: boolean("newsletter_opt_in").default(false),
 });
 
 export const agencyProfiles = pgTable("agency_profiles", {
