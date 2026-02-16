@@ -7,8 +7,9 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { User, Mail, Shield, Bell, Trash2, AlertTriangle } from "lucide-react";
+import { User, Mail, Shield, Bell, Trash2, AlertTriangle, ArrowLeft } from "lucide-react";
 import { useState } from "react";
+import { Link } from "wouter";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -94,8 +95,15 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-bold font-serif" data-testid="text-settings-title">Inställningar</h1>
-        <p className="text-muted-foreground text-sm">Hantera ditt konto och dina preferenser</p>
+        <div className="flex items-center gap-3">
+          <Link href="/">
+            <Button variant="ghost" size="icon" data-testid="button-back">
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+          </Link>
+          <h1 className="text-2xl font-bold font-serif" data-testid="text-settings-title">Inställningar</h1>
+        </div>
+        <p className="text-muted-foreground text-sm ml-12">Hantera ditt konto och dina preferenser</p>
       </div>
 
       <Card className="p-6">
