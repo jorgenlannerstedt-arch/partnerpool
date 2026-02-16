@@ -109,7 +109,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
             <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">Hur det fungerar</p>
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold">Från dokument till juridisk hjälp</h2>
+            <h2 className="text-3xl sm:text-4xl font-serif font-normal">Från dokument till juridisk hjälp</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               En smidig process från dokumentuppladdning till att hitta rätt juridisk representation.
             </p>
@@ -137,7 +137,7 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-6">
               <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">Vertigogo-plattformen</p>
-              <h2 className="text-3xl sm:text-4xl font-serif font-bold">En komplett lösning för att hitta juridisk hjälp</h2>
+              <h2 className="text-3xl sm:text-4xl font-serif font-normal">En komplett lösning för att hitta juridisk hjälp</h2>
               <p className="text-muted-foreground leading-relaxed">
                 Vertigogo analyserar dina dokument med AI, skapar anonymiserade ärendebeskrivningar och kopplar dig med rätt advokatbyrå. Allt i en säker, lättanvänd plattform.
               </p>
@@ -236,7 +236,7 @@ export default function LandingPage() {
             </div>
             <div className="order-1 lg:order-2 space-y-6">
               <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">För advokatbyråer</p>
-              <h2 className="text-3xl sm:text-4xl font-serif font-bold">Öka lönsamheten med nya klienter till din byrå</h2>
+              <h2 className="text-3xl sm:text-4xl font-serif font-normal">Öka lönsamheten med nya klienter till din byrå</h2>
               <p className="text-muted-foreground leading-relaxed">
                 Sluta leta efter rätt klienter. Via Vertigogo filtrerar vi fram de skarpa casen och slussar dem vidare till er lokala verksamhet. Som partner får ni exklusiv tillgång till försäkringsfinansierade ärenden som är redo för hantering.
               </p>
@@ -261,7 +261,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16 space-y-4">
             <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">Säkerhet</p>
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold">Vi tar din säkerhet på allvar</h2>
+            <h2 className="text-3xl sm:text-4xl font-serif font-normal">Vi tar din säkerhet på allvar</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
               Säkerhet i världsklass för din juridiska data, skyddad med avancerad kryptering och full GDPR-efterlevnad.
             </p>
@@ -281,7 +281,7 @@ export default function LandingPage() {
       </section>
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-3xl mx-auto text-center space-y-8">
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold">Redo att hitta rätt juridisk hjälp?</h2>
+          <h2 className="text-3xl sm:text-4xl font-serif font-normal">Redo att hitta rätt juridisk hjälp?</h2>
           <p className="text-muted-foreground text-lg">
             Skapa ett konto idag och ladda upp ditt första ärende. Det är helt gratis och tar bara några minuter.
           </p>
