@@ -1,9 +1,20 @@
+import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { FileText, MessageCircle, Settings, CreditCard, AlertCircle, CheckCircle, Scale, ShieldCheck, Check, X } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +24,7 @@ type CaseWithInquiry = Case & { hasInquired?: boolean };
 
 export default function AgencyDashboard() {
   const { toast } = useToast();
+  const [dismissTarget, setDismissTarget] = useState<CaseWithInquiry | null>(null);
 
   const { data: profile, isLoading: profileLoading } = useQuery<AgencyProfile>({
     queryKey: ["/api/agency/profile"],
@@ -190,7 +202,7 @@ export default function AgencyDashboard() {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          dismissMutation.mutate(c.id);
+                          setDismissTarget(c);
                         }}
                       >
                         <X className="h-4 w-4" />
@@ -210,6 +222,32 @@ export default function AgencyDashboard() {
           </Card>
         )}
       </div>
+      <AlertDialog open={!!dismissTarget} onOpenChange={(open) => { if (!open) setDismissTarget(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Ta bort ärende?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {dismissTarget?.hasInquired
+                ? "Du har redan skickat en intresseanmälan för detta ärende och har en pågående konversation med klienten. Ärendet försvinner från din lista men konversationen finns kvar under Meddelanden."
+                : "Ärendet kommer att försvinna från din lista och visas inte igen."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid="button-cancel-dismiss">Avbryt</AlertDialogCancel>
+            <AlertDialogAction
+              data-testid="button-confirm-dismiss"
+              onClick={() => {
+                if (dismissTarget) {
+                  dismissMutation.mutate(dismissTarget.id);
+                  setDismissTarget(null);
+                }
+              }}
+            >
+              Ta bort
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
