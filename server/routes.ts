@@ -407,14 +407,28 @@ VIKTIGT:
 
           const textContent = message.content[0];
           if (textContent.type === "text") {
+            let rawText = textContent.text.trim();
+            const jsonMatch = rawText.match(/```(?:json)?\s*([\s\S]*?)```/);
+            if (jsonMatch) {
+              rawText = jsonMatch[1].trim();
+            }
             try {
-              const parsed = JSON.parse(textContent.text);
-              aiSummary = parsed.summary || textContent.text;
+              const parsed = JSON.parse(rawText);
+              aiSummary = parsed.summary || rawText;
               if (parsed.legalArea && LEGAL_AREAS.includes(parsed.legalArea)) {
                 legalArea = parsed.legalArea;
               }
             } catch {
-              aiSummary = textContent.text;
+              const summaryMatch = rawText.match(/"summary"\s*:\s*"([\s\S]*?)(?:"\s*[,}])/);
+              if (summaryMatch) {
+                aiSummary = summaryMatch[1];
+              } else {
+                aiSummary = textContent.text.replace(/```(?:json)?/g, "").replace(/```/g, "").replace(/"legalArea"\s*:\s*"[^"]*"/g, "").replace(/"summary"\s*:\s*/g, "").replace(/[{}]/g, "").trim();
+              }
+              const areaMatch = rawText.match(/"legalArea"\s*:\s*"([^"]*)"/);
+              if (areaMatch && LEGAL_AREAS.includes(areaMatch[1])) {
+                legalArea = areaMatch[1];
+              }
             }
           }
 
