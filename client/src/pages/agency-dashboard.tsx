@@ -80,9 +80,19 @@ export default function AgencyDashboard() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold font-serif" data-testid="text-agency-dashboard-title">Byråpanel</h1>
-          <p className="text-muted-foreground text-sm">Välkommen tillbaka, {profile.name}</p>
+        <div className="flex items-center gap-3">
+          {profile.logoUrl && (
+            <img
+              src={profile.logoUrl}
+              alt={`${profile.name} logotyp`}
+              className="h-10 w-10 rounded-md object-contain"
+              data-testid="img-agency-logo"
+            />
+          )}
+          <div>
+            <h1 className="text-2xl font-bold font-serif" data-testid="text-agency-dashboard-title">Byråpanel</h1>
+            <p className="text-muted-foreground text-sm">Välkommen tillbaka, {profile.name}</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant={profile.subscriptionActive ? "default" : "secondary"}>
