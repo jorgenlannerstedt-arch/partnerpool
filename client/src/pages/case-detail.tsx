@@ -277,9 +277,12 @@ export default function CaseDetailPage() {
         </Link>
         <div className="flex-1 min-w-0">
           <h1 className="text-2xl font-bold font-serif truncate" data-testid="text-case-title">{caseData.title}</h1>
-          <p className="text-sm text-muted-foreground flex items-center gap-2">
+          <p className="text-sm text-muted-foreground flex flex-wrap items-center gap-2">
             <Clock className="h-3.5 w-3.5" />
             Skapad {caseData.createdAt ? new Date(caseData.createdAt).toLocaleDateString("sv-SE") : ""}
+            {caseData.status !== "draft" && (
+              <span>&middot; Publicerad {caseData.createdAt ? new Date(caseData.createdAt).toLocaleDateString("sv-SE") : ""}</span>
+            )}
           </p>
         </div>
         <Badge variant={isDraft ? "outline" : "secondary"} data-testid="badge-case-status">
