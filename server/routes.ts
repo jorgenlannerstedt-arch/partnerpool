@@ -448,6 +448,23 @@ VIKTIGT:
     }
   });
 
+  app.delete("/api/cases/:id", isAuthenticated, requireRole("client"), async (req: any, res) => {
+    try {
+      const caseId = parseInt(req.params.id);
+      if (isNaN(caseId)) return res.status(400).json({ message: "Invalid ID" });
+      const userId = req.user.claims.sub;
+
+      const deleted = await storage.deleteCase(caseId, userId);
+      if (!deleted) {
+        return res.status(404).json({ message: "Case not found or not authorized" });
+      }
+      res.json({ message: "Case deleted" });
+    } catch (error) {
+      console.error("Error deleting case:", error);
+      res.status(500).json({ message: "Failed to delete case" });
+    }
+  });
+
   app.get("/api/agency/cases", isAuthenticated, requireRole("agency"), async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;

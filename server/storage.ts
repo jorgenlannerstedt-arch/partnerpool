@@ -23,6 +23,7 @@ export interface IStorage {
   getCaseById(id: number): Promise<Case | undefined>;
   createCase(data: InsertCase): Promise<Case>;
   updateCase(id: number, updates: Partial<InsertCase>): Promise<Case | undefined>;
+  deleteCase(id: number, clientId: string): Promise<boolean>;
   getOpenCases(): Promise<Case[]>;
   getOpenCasesForAgency(specialties: string[]): Promise<Case[]>;
   getInquiriesByCase(caseId: number): Promise<(CaseInquiry & { agency?: AgencyProfile })[]>;
@@ -117,6 +118,13 @@ class DatabaseStorage implements IStorage {
   async updateCase(id: number, updates: Partial<InsertCase>) {
     const [c] = await db.update(cases).set(updates).where(eq(cases.id, id)).returning();
     return c;
+  }
+
+  async deleteCase(id: number, clientId: string) {
+    await db.delete(caseInquiries).where(eq(caseInquiries.caseId, id));
+    await db.delete(directMessages).where(eq(directMessages.caseId, id));
+    const result = await db.delete(cases).where(and(eq(cases.id, id), eq(cases.clientId, clientId))).returning();
+    return result.length > 0;
   }
 
   async getOpenCases() {

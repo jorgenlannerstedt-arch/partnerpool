@@ -1,10 +1,24 @@
-import { useQuery } from "@tanstack/react-query";
-import { useParams, Link } from "wouter";
+import { useState } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { useParams, Link, useLocation } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, FileText, Clock, Building2, MessageCircle, ShieldCheck, CircleDollarSign, Scale } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { ArrowLeft, FileText, Clock, Building2, MessageCircle, ShieldCheck, CircleDollarSign, Scale, Trash2, AlertTriangle } from "lucide-react";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import type { Case, CaseInquiry, AgencyProfile } from "@shared/schema";
 
 type InquiryWithAgency = CaseInquiry & { agency?: AgencyProfile };
@@ -21,6 +35,8 @@ const AMOUNT_LABELS: Record<string, string> = {
 
 export default function CaseDetailPage() {
   const params = useParams<{ id: string }>();
+  const [, navigate] = useLocation();
+  const { toast } = useToast();
 
   const { data: caseData, isLoading } = useQuery<Case>({
     queryKey: ["/api/cases", params.id],
@@ -28,6 +44,20 @@ export default function CaseDetailPage() {
 
   const { data: inquiries, isLoading: inquiriesLoading } = useQuery<InquiryWithAgency[]>({
     queryKey: ["/api/cases", params.id, "inquiries"],
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      await apiRequest("DELETE", `/api/cases/${params.id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/cases"] });
+      toast({ title: "Ärende borttaget", description: "Ditt ärende har tagits bort permanent." });
+      navigate("/");
+    },
+    onError: (err: Error) => {
+      toast({ title: "Fel", description: err.message, variant: "destructive" });
+    },
   });
 
   if (isLoading) {
@@ -71,6 +101,40 @@ export default function CaseDetailPage() {
           </p>
         </div>
         <Badge variant="secondary">{caseData.status}</Badge>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="ghost" size="icon" data-testid="button-delete-case">
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <div className="flex items-center gap-2 text-destructive mb-2">
+                <AlertTriangle className="h-5 w-5" />
+                <AlertDialogTitle>Ta bort ärende</AlertDialogTitle>
+              </div>
+              <AlertDialogDescription className="space-y-2">
+                <span className="block">
+                  Är du säker på att du vill ta bort ärendet <strong>"{caseData.title}"</strong>?
+                </span>
+                <span className="block font-semibold text-destructive">
+                  Denna åtgärd kan inte ångras. Alla meddelanden och svar från advokatbyråer kopplade till detta ärende kommer också att raderas.
+                </span>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel data-testid="button-cancel-delete">Avbryt</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => deleteMutation.mutate()}
+                className="bg-destructive text-destructive-foreground"
+                disabled={deleteMutation.isPending}
+                data-testid="button-confirm-delete"
+              >
+                {deleteMutation.isPending ? "Tar bort..." : "Ta bort ärende"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       <div className="flex flex-wrap gap-3">
