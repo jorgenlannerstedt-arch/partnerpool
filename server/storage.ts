@@ -39,7 +39,7 @@ export interface IStorage {
   getReviewsByAgency(agencyId: number): Promise<AgencyReview[]>;
   getReviewByClientAndAgency(clientId: string, agencyId: number): Promise<AgencyReview | undefined>;
   createReview(data: InsertAgencyReview): Promise<AgencyReview>;
-  getAgencyStats(agencyId: number): Promise<{ avgRating: number; reviewCount: number; caseCount: number; selectedCount: number }>;
+  getAgencyStats(agencyId: number): Promise<{ avgRating: number; reviewCount: number; caseCount: number; selectedCount: number; avgResponseHours: number | null }>;
   dismissCase(agencyUserId: string, caseId: number): Promise<void>;
   getDismissedCaseIds(agencyUserId: string): Promise<number[]>;
   deleteAccount(userId: string): Promise<void>;
@@ -304,7 +304,7 @@ class DatabaseStorage implements IStorage {
 
   async getAgencyStats(agencyId: number) {
     const agency = await this.getAgencyProfileById(agencyId);
-    if (!agency) return { avgRating: 0, reviewCount: 0, caseCount: 0, selectedCount: 0 };
+    if (!agency) return { avgRating: 0, reviewCount: 0, caseCount: 0, selectedCount: 0, avgResponseHours: null };
 
     const reviews = await this.getReviewsByAgency(agencyId);
     const reviewCount = reviews.length;
@@ -318,7 +318,18 @@ class DatabaseStorage implements IStorage {
       .from(cases)
       .where(eq(cases.selectedAgencyId, agencyId));
 
-    return { avgRating: Math.round(avgRating * 10) / 10, reviewCount, caseCount: inquiryCount?.count || 0, selectedCount: selectedCountResult?.count || 0 };
+    const [avgResponseResult] = await db.select({
+      avgHours: sql<number>`avg(extract(epoch from (${caseInquiries.createdAt} - ${cases.createdAt})) / 3600)::float`
+    })
+      .from(caseInquiries)
+      .innerJoin(cases, eq(caseInquiries.caseId, cases.id))
+      .where(eq(caseInquiries.agencyId, agency.userId));
+
+    const avgResponseHours = avgResponseResult?.avgHours != null
+      ? Math.round(avgResponseResult.avgHours * 10) / 10
+      : null;
+
+    return { avgRating: Math.round(avgRating * 10) / 10, reviewCount, caseCount: inquiryCount?.count || 0, selectedCount: selectedCountResult?.count || 0, avgResponseHours };
   }
 
   async dismissCase(agencyUserId: string, caseId: number) {

@@ -78,7 +78,7 @@ export default function PartnerDetailPage() {
     enabled: !!params.id,
   });
 
-  const { data: stats } = useQuery<{ avgRating: number; reviewCount: number; caseCount: number; selectedCount: number }>({
+  const { data: stats } = useQuery<{ avgRating: number; reviewCount: number; caseCount: number; selectedCount: number; avgResponseHours: number | null }>({
     queryKey: ["/api/agencies", params.id, "stats"],
     queryFn: async () => {
       const res = await fetch(`/api/agencies/${params.id}/stats`);
@@ -248,10 +248,15 @@ export default function PartnerDetailPage() {
                   <span>Grundat {agency.foundedYear} ({yearsActive} år)</span>
                 </div>
               )}
-              {agency.responseTimeHours && (
-                <div className="flex items-center gap-2 text-sm">
+              {(stats?.avgResponseHours != null || agency.responseTimeHours) && (
+                <div className="flex items-center gap-2 text-sm" data-testid="text-response-time">
                   <Clock className="h-4 w-4 text-muted-foreground" />
-                  <span>Svarar: {formatResponseTime(agency.responseTimeHours)}</span>
+                  <span>
+                    {stats?.avgResponseHours != null
+                      ? `Svarar i snitt: ${formatResponseTime(stats.avgResponseHours)}`
+                      : `Svarar: ${formatResponseTime(agency.responseTimeHours)}`
+                    }
+                  </span>
                 </div>
               )}
               {agency.priceRange && (

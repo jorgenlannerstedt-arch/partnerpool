@@ -45,7 +45,7 @@ export default function PartnerPoolPage() {
     queryKey: ["/api/agencies"],
   });
 
-  const { data: allStats } = useQuery<Record<number, { avgRating: number; reviewCount: number; caseCount: number; selectedCount: number }>>({
+  const { data: allStats } = useQuery<Record<number, { avgRating: number; reviewCount: number; caseCount: number; selectedCount: number; avgResponseHours: number | null }>>({
     queryKey: ["/api/agencies/all-stats"],
     queryFn: async () => {
       if (!agencies) return {};
@@ -291,10 +291,13 @@ export default function PartnerPoolPage() {
                           {yearsActive} år
                         </span>
                       )}
-                      {agency.responseTimeHours && (
+                      {(allStats?.[agency.id]?.avgResponseHours != null || agency.responseTimeHours) && (
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          {formatResponseTime(agency.responseTimeHours)}
+                          {allStats?.[agency.id]?.avgResponseHours != null
+                            ? `~${formatResponseTime(allStats[agency.id].avgResponseHours)}`
+                            : formatResponseTime(agency.responseTimeHours)
+                          }
                         </span>
                       )}
                       {agency.priceRange && (
