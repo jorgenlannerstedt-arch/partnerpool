@@ -78,7 +78,7 @@ export default function AgencyRegisterPage() {
             Registrera din advokatbyrå
           </h1>
           <p className="text-muted-foreground text-sm">
-            Ange din byrås e-postadress för att komma igång. Vi accepterar bara företagsmailadresser.
+            Ange din byrås e-postadress för att komma igång.
           </p>
         </div>
 
