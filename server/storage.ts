@@ -96,6 +96,10 @@ class DatabaseStorage implements IStorage {
           priceRange: data.priceRange,
           barAssociationMember: data.barAssociationMember,
           responseTimeHours: data.responseTimeHours,
+          minCaseAmount: data.minCaseAmount,
+          maxCaseAmount: data.maxCaseAmount,
+          acceptedInsuranceTypes: data.acceptedInsuranceTypes,
+          notificationEmail: data.notificationEmail,
         },
       })
       .returning();

@@ -94,3 +94,7 @@ Vertigogo connects clients needing legal help with law firms. The platform featu
 - Agency matching now filters by specialties + amount range + insurance type preferences
 - INSURANCE_TYPES and AMOUNT_RANGES constants defined in shared/schema.ts
 - Agency profile setup includes "Ärendepreferenser" section with amount range inputs and insurance type badges
+- Added notification email per office: notificationEmail field on agency_profiles (primary office) and in offices JSON (additional offices)
+- When cases are published (draft→open), matching agencies receive email notifications at all configured office notification emails
+- Agency case dismiss feature with confirmation dialog (warns if ongoing conversation exists)
+- sendNewCaseNotification function in server/email.ts for notifying agencies about new matching cases

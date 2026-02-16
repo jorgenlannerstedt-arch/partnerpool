@@ -5,10 +5,10 @@ import path from "path";
 import fs from "fs";
 import { z } from "zod";
 import { storage } from "./storage";
-import { LEGAL_AREAS, INSURANCE_TYPES } from "@shared/schema";
+import { LEGAL_AREAS, INSURANCE_TYPES, AMOUNT_RANGES } from "@shared/schema";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 import Anthropic from "@anthropic-ai/sdk";
-import { sendInquiryNotification } from "./email";
+import { sendInquiryNotification, sendNewCaseNotification } from "./email";
 import { seedDemoData } from "./seed";
 
 const anthropic = new Anthropic({
@@ -107,6 +107,7 @@ const officeSchema = z.object({
   address: z.string().optional().default(""),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
+  notificationEmail: z.string().email().nullable().optional().or(z.literal("")),
 });
 
 const agencyProfileSchema = z.object({
@@ -128,6 +129,10 @@ const agencyProfileSchema = z.object({
   priceRange: z.string().nullable().optional(),
   barAssociationMember: z.boolean().optional(),
   responseTimeHours: z.number().int().min(1).max(168).nullable().optional(),
+  minCaseAmount: z.number().int().min(0).nullable().optional(),
+  maxCaseAmount: z.number().int().min(0).nullable().optional(),
+  acceptedInsuranceTypes: z.array(z.string()).nullable().optional(),
+  notificationEmail: z.string().email().nullable().optional().or(z.literal("")),
 });
 
 const reviewSchema = z.object({
@@ -536,6 +541,47 @@ VIKTIGT:
       }
 
       const updated = await storage.updateCase(caseId, updates);
+
+      if (updates.status === "open" && updated && updated.legalArea) {
+        const allAgencies = await storage.getAllAgencies();
+        for (const agency of allAgencies) {
+          if (!agency.subscriptionActive) continue;
+          if (!agency.specialties?.some((s) => s.toLowerCase() === updated.legalArea!.toLowerCase())) continue;
+
+          if (agency.acceptedInsuranceTypes && agency.acceptedInsuranceTypes.length > 0) {
+            if (updated.insuranceType && !agency.acceptedInsuranceTypes.includes(updated.insuranceType)) continue;
+          }
+
+          if (agency.minCaseAmount != null || agency.maxCaseAmount != null) {
+            if (updated.estimatedAmount && updated.estimatedAmount !== "unknown") {
+              const range = AMOUNT_RANGES.find((r: any) => r.value === updated.estimatedAmount);
+              if (range) {
+                const caseMin = "numericMin" in range ? (range as any).numericMin : 0;
+                const caseMax = "numericMax" in range ? (range as any).numericMax : Infinity;
+                if (agency.minCaseAmount != null && caseMax < agency.minCaseAmount) continue;
+                if (agency.maxCaseAmount != null && caseMin > agency.maxCaseAmount) continue;
+              }
+            }
+          }
+
+          const emails: string[] = [];
+          if (agency.notificationEmail) {
+            emails.push(agency.notificationEmail);
+          }
+          if (agency.offices) {
+            for (const office of agency.offices as Array<{ notificationEmail?: string }>) {
+              if (office.notificationEmail && !emails.includes(office.notificationEmail)) {
+                emails.push(office.notificationEmail);
+              }
+            }
+          }
+          for (const email of emails) {
+            sendNewCaseNotification(email, updated.title, updated.legalArea!)
+              .catch(err => console.error("Agency notification failed:", err));
+          }
+        }
+      }
+
       res.json(updated);
     } catch (error) {
       console.error("Error updating case:", error);

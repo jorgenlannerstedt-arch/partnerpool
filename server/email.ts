@@ -47,6 +47,47 @@ export async function getUncachableResendClient() {
   };
 }
 
+export async function sendNewCaseNotification(
+  toEmail: string,
+  caseTitle: string,
+  legalArea: string
+) {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+
+    await client.emails.send({
+      from: fromEmail,
+      to: toEmail,
+      subject: `Nytt ärende inom ${legalArea} – ${caseTitle}`,
+      html: `
+        <div style="font-family: 'Open Sans', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 32px 24px; color: #1a1a2e;">
+          <h2 style="font-family: 'Baskervville', Georgia, serif; color: #1a1a2e; margin-bottom: 8px;">
+            Nytt ärende tillgängligt
+          </h2>
+          <p style="color: #666; margin-bottom: 24px;">
+            Ett nytt ärende som matchar era specialiseringar har publicerats på Vertigogo.
+          </p>
+          <div style="background: #f3f4f8; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+            <p style="margin: 0 0 8px 0;"><strong>Ärende:</strong> ${caseTitle}</p>
+            <p style="margin: 0;"><strong>Rättsområde:</strong> ${legalArea}</p>
+          </div>
+          <p style="color: #666; margin-bottom: 24px;">
+            Logga in på Vertigogo för att granska ärendet och visa intresse.
+          </p>
+          <p style="color: #999; font-size: 12px; margin-top: 32px; border-top: 1px solid #eee; padding-top: 16px;">
+            Detta meddelande skickades av Vertigogo. Du får detta mejl eftersom ditt kontor har en notifikations-e-post konfigurerad i ert partnerkonto.
+          </p>
+        </div>
+      `,
+    });
+    console.log(`New case notification sent to ${toEmail} for case "${caseTitle}"`);
+    return true;
+  } catch (error) {
+    console.error('Failed to send new case notification:', error);
+    return false;
+  }
+}
+
 export async function sendInquiryNotification(
   toEmail: string,
   caseTitle: string,

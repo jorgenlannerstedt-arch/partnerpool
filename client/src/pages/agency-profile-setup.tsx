@@ -163,6 +163,7 @@ interface Office {
   address: string;
   latitude?: number;
   longitude?: number;
+  notificationEmail?: string;
 }
 
 export default function AgencyProfileSetupPage() {
@@ -193,6 +194,7 @@ export default function AgencyProfileSetupPage() {
     minCaseAmount: "",
     maxCaseAmount: "",
     acceptedInsuranceTypes: [] as string[],
+    notificationEmail: "",
   });
 
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -222,6 +224,7 @@ export default function AgencyProfileSetupPage() {
         minCaseAmount: existing.minCaseAmount?.toString() || "",
         maxCaseAmount: existing.maxCaseAmount?.toString() || "",
         acceptedInsuranceTypes: existing.acceptedInsuranceTypes || [],
+        notificationEmail: existing.notificationEmail || "",
       });
       if (existing.logoUrl) {
         setLogoPreview(existing.logoUrl);
@@ -267,6 +270,7 @@ export default function AgencyProfileSetupPage() {
         minCaseAmount: form.minCaseAmount ? parseInt(form.minCaseAmount) : null,
         maxCaseAmount: form.maxCaseAmount ? parseInt(form.maxCaseAmount) : null,
         acceptedInsuranceTypes: form.acceptedInsuranceTypes.length > 0 ? form.acceptedInsuranceTypes : null,
+        notificationEmail: form.notificationEmail || null,
       };
       const res = await apiRequest("POST", "/api/agency/profile", data);
       return res.json();
@@ -408,6 +412,11 @@ export default function AgencyProfileSetupPage() {
           <div className="space-y-2">
             <Label htmlFor="phone">Telefon</Label>
             <Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+46 8 123 456" data-testid="input-firm-phone" />
+          </div>
+          <div className="space-y-2 sm:col-span-2">
+            <Label htmlFor="notificationEmail">Notifikations-e-post (huvudkontor)</Label>
+            <p className="text-xs text-muted-foreground">E-postadress som får notifieringar om nya ärenden för detta kontor.</p>
+            <Input id="notificationEmail" type="email" value={form.notificationEmail} onChange={(e) => setForm({ ...form, notificationEmail: e.target.value })} placeholder="arenden@byra.se" data-testid="input-notification-email" />
           </div>
           <div className="space-y-2 sm:col-span-2">
             <Label>Huvudkontor - Sök adress</Label>
@@ -600,6 +609,17 @@ export default function AgencyProfileSetupPage() {
                     <span>{office.address}{office.city ? `, ${office.city}` : ""}</span>
                   </div>
                 )}
+                <div className="mt-2">
+                  <Label className="text-xs">Notifikations-e-post</Label>
+                  <Input
+                    type="email"
+                    value={office.notificationEmail || ""}
+                    onChange={(e) => updateOffice(i, "notificationEmail", e.target.value)}
+                    placeholder="kontor@byra.se"
+                    className="mt-1"
+                    data-testid={`input-office-notification-email-${i}`}
+                  />
+                </div>
               </div>
             </Card>
           ))}
