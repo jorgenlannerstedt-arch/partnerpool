@@ -9,6 +9,7 @@ import { LEGAL_AREAS } from "@shared/schema";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 import Anthropic from "@anthropic-ai/sdk";
 import { sendInquiryNotification } from "./email";
+import { seedDemoData } from "./seed";
 
 const anthropic = new Anthropic({
   apiKey: process.env.AI_INTEGRATIONS_ANTHROPIC_API_KEY,
@@ -141,6 +142,8 @@ export async function registerRoutes(
 ): Promise<Server> {
   await setupAuth(app);
   registerAuthRoutes(app);
+
+  seedDemoData().catch((err) => console.error("Auto-seed error:", err));
 
   app.use("/uploads/logos", (req, res, next) => {
     const filePath = path.join(logoDir, path.basename(req.url));
