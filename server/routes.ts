@@ -359,7 +359,8 @@ export async function registerRoutes(
         pdfFilename = req.file.filename;
 
         try {
-          const pdfParse = (await import("pdf-parse")).default;
+          const pdfParseModule = await import("pdf-parse");
+          const pdfParse = pdfParseModule.default || pdfParseModule;
           const pdfBuffer = fs.readFileSync(req.file.path);
           const pdfData = await pdfParse(pdfBuffer);
           const pdfText = pdfData.text.slice(0, 8000);
