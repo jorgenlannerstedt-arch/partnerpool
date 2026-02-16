@@ -78,7 +78,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full" data-testid="button-user-menu">
+                  <Button variant="ghost" className="relative rounded-full gap-2 px-2" data-testid="button-user-menu">
+                    <span className="text-sm font-medium hidden sm:inline" data-testid="text-user-name">{user?.firstName}</span>
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={user?.profileImageUrl || undefined} />
                       <AvatarFallback className="text-xs">{initials}</AvatarFallback>
