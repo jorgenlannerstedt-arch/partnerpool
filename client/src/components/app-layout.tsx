@@ -172,6 +172,22 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {children}
       </main>
+
+      <footer className="border-t py-6 px-4 sm:px-6 lg:px-8 bg-white mt-8" data-testid="footer">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+          <p className="text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} Vertigo Intel AB
+          </p>
+          <div className="flex items-center gap-6">
+            <Link href="/integritetspolicy">
+              <span className="text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer" data-testid="link-privacy-policy">Integritetspolicy</span>
+            </Link>
+            <Link href="/datapolicy">
+              <span className="text-sm text-muted-foreground transition-colors hover:text-foreground cursor-pointer" data-testid="link-data-policy">Datapolicy</span>
+            </Link>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

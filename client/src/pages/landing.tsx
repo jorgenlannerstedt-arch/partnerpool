@@ -304,6 +304,8 @@ export default function LandingPage() {
             <div className="flex items-center gap-6">
               <a href="https://www.vertigolaw.se" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Vertigo Law</a>
               <a href="https://www.vertigointel.se" target="_blank" rel="noopener noreferrer" className="text-sm text-muted-foreground transition-colors hover:text-foreground">Vertigo Intel</a>
+              <a href="/integritetspolicy" className="text-sm text-muted-foreground transition-colors hover:text-foreground" data-testid="link-privacy-policy">Integritetspolicy</a>
+              <a href="/datapolicy" className="text-sm text-muted-foreground transition-colors hover:text-foreground" data-testid="link-data-policy">Datapolicy</a>
             </div>
             <p className="text-sm text-muted-foreground">
               &copy; {new Date().getFullYear()} Vertigo Intel AB. Alla rättigheter förbehållna.
