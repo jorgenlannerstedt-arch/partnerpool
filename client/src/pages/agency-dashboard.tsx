@@ -138,7 +138,7 @@ export default function AgencyDashboard() {
                     <div className="space-y-1 flex-1 min-w-0">
                       <h3 className="font-semibold truncate">{c.title}</h3>
                       <p className="text-sm text-muted-foreground line-clamp-2">{c.aiSummary || "Ärendesammanfattning väntar..."}</p>
-                      <div className="flex flex-wrap items-center gap-2 mt-5">
+                      <div className="flex flex-wrap items-center gap-2 mt-8">
                         {c.legalArea && (
                           <Badge variant="default" className="text-xs">
                             <Scale className="h-3 w-3 mr-1" />
