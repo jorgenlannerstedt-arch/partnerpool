@@ -358,142 +358,207 @@ export default function AgencyProfileSetupPage() {
         </div>
       </div>
 
-      <Card className="p-6 space-y-5">
-        <div className="space-y-3">
-          <Label>Logotyp</Label>
-          <div className="flex items-center gap-4">
-            <div className="w-20 h-20 rounded-md border flex items-center justify-center overflow-hidden bg-muted">
-              {logoPreview ? (
-                <img src={logoPreview} alt="Logotyp" className="w-full h-full object-contain" data-testid="img-logo-preview" />
-              ) : (
-                <Building2 className="h-8 w-8 text-muted-foreground" />
-              )}
-            </div>
-            <div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-full"
-                onClick={() => document.getElementById("logo-input")?.click()}
-                disabled={logoMutation.isPending}
-                data-testid="button-upload-logo"
-              >
-                {logoMutation.isPending ? (
-                  <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Laddar upp...</>
+      <div className="grid lg:grid-cols-2 gap-6">
+        <Card className="p-6 space-y-5">
+          <h2 className="font-semibold font-serif text-lg">Grunduppgifter</h2>
+
+          <div className="space-y-3">
+            <Label>Logotyp</Label>
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 rounded-md border flex items-center justify-center overflow-hidden bg-muted">
+                {logoPreview ? (
+                  <img src={logoPreview} alt="Logotyp" className="w-full h-full object-contain" data-testid="img-logo-preview" />
                 ) : (
-                  <><Upload className="h-4 w-4 mr-2" /> Ladda upp logotyp</>
+                  <Building2 className="h-8 w-8 text-muted-foreground" />
                 )}
-              </Button>
-              <input
-                id="logo-input"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleLogoChange}
-              />
-              <p className="text-xs text-muted-foreground mt-1">PNG, JPG eller SVG. Max 5 MB.</p>
+              </div>
+              <div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full"
+                  onClick={() => document.getElementById("logo-input")?.click()}
+                  disabled={logoMutation.isPending}
+                  data-testid="button-upload-logo"
+                >
+                  {logoMutation.isPending ? (
+                    <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Laddar upp...</>
+                  ) : (
+                    <><Upload className="h-4 w-4 mr-2" /> Ladda upp logotyp</>
+                  )}
+                </Button>
+                <input
+                  id="logo-input"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleLogoChange}
+                />
+                <p className="text-xs text-muted-foreground mt-1">PNG, JPG eller SVG. Max 5 MB.</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div className="space-y-2 sm:col-span-2">
+          <div className="space-y-2">
             <Label htmlFor="name">Byrånamn *</Label>
             <Input id="name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="t.ex. Andersson & Partners" data-testid="input-firm-name" />
           </div>
-          <div className="space-y-2 sm:col-span-2">
+          <div className="space-y-2">
             <Label htmlFor="desc">Beskrivning</Label>
             <Textarea id="desc" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Berätta om din byrå för klienter..." rows={3} data-testid="input-firm-description" />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">E-postadress</Label>
-            <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="kontakt@byra.se" data-testid="input-firm-email" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="phone">Telefon</Label>
-            <Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+46 8 123 456" data-testid="input-firm-phone" />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label htmlFor="notificationEmail">Notifikations-e-post (huvudkontor)</Label>
-            <p className="text-xs text-muted-foreground">E-postadress som får notifieringar om nya ärenden för detta kontor.</p>
-            <Input id="notificationEmail" type="email" value={form.notificationEmail} onChange={(e) => setForm({ ...form, notificationEmail: e.target.value })} placeholder="arenden@byra.se" data-testid="input-notification-email" />
-          </div>
-          <div className="space-y-2 sm:col-span-2">
-            <Label>Huvudkontor - Sök adress</Label>
-            <p className="text-xs text-muted-foreground">Sök efter en adress i Sverige. Stad och koordinater fylls i automatiskt.</p>
-            <AddressSearch
-              testIdPrefix="firm-address"
-              initialValue={form.address && form.city ? `${form.address}, ${form.city}` : ""}
-              onSelect={(result) =>
-                setForm((prev) => ({
-                  ...prev,
-                  address: result.address,
-                  city: result.city,
-                  latitude: result.lat.toString(),
-                  longitude: result.lng.toString(),
-                }))
-              }
-            />
-            {form.city && (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
-                <MapPin className="h-3 w-3" />
-                <span>{form.address}{form.city ? `, ${form.city}` : ""}</span>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">E-postadress</Label>
+              <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="kontakt@byra.se" data-testid="input-firm-email" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Telefon</Label>
+              <Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+46 8 123 456" data-testid="input-firm-phone" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="website">Webbplats</Label>
+              <Input id="website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://www.byra.se" data-testid="input-firm-website" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="employees">Antal anställda</Label>
+              <Input id="employees" type="number" min="1" value={form.employeeCount} onChange={(e) => setForm({ ...form, employeeCount: e.target.value })} data-testid="input-firm-employees" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="foundedYear">Grundat år</Label>
+              <Input id="foundedYear" type="number" min="1800" max="2030" value={form.foundedYear} onChange={(e) => setForm({ ...form, foundedYear: e.target.value })} placeholder="t.ex. 1995" data-testid="input-firm-founded-year" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="responseTime">Svarstid (timmar)</Label>
+              <Input id="responseTime" type="number" min="1" max="168" value={form.responseTimeHours} onChange={(e) => setForm({ ...form, responseTimeHours: e.target.value })} placeholder="t.ex. 4" data-testid="input-firm-response-time" />
+            </div>
+            <div className="space-y-2">
+              <Label>Prisintervall</Label>
+              <Select value={form.priceRange} onValueChange={(v) => setForm({ ...form, priceRange: v })}>
+                <SelectTrigger data-testid="select-price-range">
+                  <SelectValue placeholder="Välj prisintervall" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PRICE_RANGES.map((p) => (
+                    <SelectItem key={p} value={p}>{p}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Advokatsamfundet</Label>
+              <div className="flex items-center gap-3 pt-1">
+                <Switch
+                  checked={form.barAssociationMember}
+                  onCheckedChange={(checked) => setForm({ ...form, barAssociationMember: checked })}
+                  data-testid="switch-bar-association"
+                />
+                <span className="text-sm text-muted-foreground flex items-center gap-1.5">
+                  <Shield className="h-3.5 w-3.5" />
+                  {form.barAssociationMember ? "Ja, vi är medlemmar" : "Nej"}
+                </span>
               </div>
-            )}
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="website">Webbplats</Label>
-            <Input id="website" value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} placeholder="https://www.byra.se" data-testid="input-firm-website" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="employees">Antal anställda</Label>
-            <Input id="employees" type="number" min="1" value={form.employeeCount} onChange={(e) => setForm({ ...form, employeeCount: e.target.value })} data-testid="input-firm-employees" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="foundedYear">Grundat år</Label>
-            <Input id="foundedYear" type="number" min="1800" max="2030" value={form.foundedYear} onChange={(e) => setForm({ ...form, foundedYear: e.target.value })} placeholder="t.ex. 1995" data-testid="input-firm-founded-year" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="responseTime">Genomsnittlig svarstid (timmar)</Label>
-            <Input id="responseTime" type="number" min="1" max="168" value={form.responseTimeHours} onChange={(e) => setForm({ ...form, responseTimeHours: e.target.value })} placeholder="t.ex. 4" data-testid="input-firm-response-time" />
-          </div>
-        </div>
-
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>Prisintervall</Label>
-            <Select value={form.priceRange} onValueChange={(v) => setForm({ ...form, priceRange: v })}>
-              <SelectTrigger data-testid="select-price-range">
-                <SelectValue placeholder="Välj prisintervall" />
-              </SelectTrigger>
-              <SelectContent>
-                {PRICE_RANGES.map((p) => (
-                  <SelectItem key={p} value={p}>{p}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-2">
-            <Label>Medlem i Advokatsamfundet</Label>
-            <div className="flex items-center gap-3 pt-1">
-              <Switch
-                checked={form.barAssociationMember}
-                onCheckedChange={(checked) => setForm({ ...form, barAssociationMember: checked })}
-                data-testid="switch-bar-association"
-              />
-              <span className="text-sm text-muted-foreground flex items-center gap-1.5">
-                <Shield className="h-3.5 w-3.5" />
-                {form.barAssociationMember ? "Ja, vi är medlemmar" : "Nej"}
-              </span>
             </div>
           </div>
-        </div>
+        </Card>
 
-        <div className="space-y-3">
-          <Label>Ärendepreferenser</Label>
-          <p className="text-xs text-muted-foreground">Ange vilka typer av ärenden ni vill ta emot. Lämna tomt för att ta emot alla ärenden.</p>
+        <div className="space-y-6">
+          <Card className="p-6 space-y-5">
+            <h2 className="font-semibold font-serif text-lg">Kontor & notifikationer</h2>
 
-          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="notificationEmail">Notifikations-e-post (huvudkontor)</Label>
+              <p className="text-xs text-muted-foreground">E-postadress som får notifieringar om nya ärenden.</p>
+              <Input id="notificationEmail" type="email" value={form.notificationEmail} onChange={(e) => setForm({ ...form, notificationEmail: e.target.value })} placeholder="arenden@byra.se" data-testid="input-notification-email" />
+            </div>
+            <div className="space-y-2">
+              <Label>Huvudkontor - Sök adress</Label>
+              <p className="text-xs text-muted-foreground">Sök efter en adress i Sverige. Stad och koordinater fylls i automatiskt.</p>
+              <AddressSearch
+                testIdPrefix="firm-address"
+                initialValue={form.address && form.city ? `${form.address}, ${form.city}` : ""}
+                onSelect={(result) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    address: result.address,
+                    city: result.city,
+                    latitude: result.lat.toString(),
+                    longitude: result.lng.toString(),
+                  }))
+                }
+              />
+              {form.city && (
+                <div className="flex items-center gap-2 text-xs text-muted-foreground pt-1">
+                  <MapPin className="h-3 w-3" />
+                  <span>{form.address}{form.city ? `, ${form.city}` : ""}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <Label>Ytterligare kontor</Label>
+                  <p className="text-xs text-muted-foreground">Lägg till fler orter där byrån finns</p>
+                </div>
+                <Button variant="outline" size="sm" className="rounded-full" onClick={addOffice} data-testid="button-add-office">
+                  <Plus className="h-4 w-4 mr-1" /> Lägg till
+                </Button>
+              </div>
+              {form.offices.map((office, i) => (
+                <Card key={i} className="p-4">
+                  <div className="flex items-start justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">Kontor {i + 1}</span>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => removeOffice(i)} data-testid={`button-remove-office-${i}`}>
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Sök adress</Label>
+                    <AddressSearch
+                      testIdPrefix={`office-${i}`}
+                      initialValue={office.address && office.city ? `${office.address}, ${office.city}` : ""}
+                      onSelect={(result) => {
+                        setForm((prev) => ({
+                          ...prev,
+                          offices: prev.offices.map((o, idx) =>
+                            idx === i
+                              ? { ...o, city: result.city, address: result.address, latitude: result.lat, longitude: result.lng }
+                              : o
+                          ),
+                        }));
+                      }}
+                    />
+                    {office.city && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <MapPin className="h-3 w-3" />
+                        <span>{office.address}{office.city ? `, ${office.city}` : ""}</span>
+                      </div>
+                    )}
+                    <div className="mt-2">
+                      <Label className="text-xs">Notifikations-e-post</Label>
+                      <Input
+                        type="email"
+                        value={office.notificationEmail || ""}
+                        onChange={(e) => updateOffice(i, "notificationEmail", e.target.value)}
+                        placeholder="kontor@byra.se"
+                        className="mt-1"
+                        data-testid={`input-office-notification-email-${i}`}
+                      />
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </Card>
+
+          <Card className="p-6 space-y-5">
+            <h2 className="font-semibold font-serif text-lg">Ärendepreferenser</h2>
+            <p className="text-xs text-muted-foreground">Ange vilka typer av ärenden ni vill ta emot. Lämna tomt för att ta emot alla.</p>
+
             <div className="space-y-2">
               <Label htmlFor="minAmount" className="text-sm">Minimibelopp (SEK)</Label>
               <Input
@@ -506,141 +571,86 @@ export default function AgencyProfileSetupPage() {
                 data-testid="input-min-amount"
               />
             </div>
+
+            <div className="space-y-2">
+              <Label className="text-sm">Accepterade försäkringstyper</Label>
+              <p className="text-xs text-muted-foreground">Om ingen är vald visas alla ärenden.</p>
+              <div className="flex flex-wrap gap-1.5">
+                {INSURANCE_TYPES.map((type) => (
+                  <Badge
+                    key={type}
+                    variant={form.acceptedInsuranceTypes.includes(type) ? "default" : "secondary"}
+                    className="cursor-pointer toggle-elevate"
+                    onClick={() => toggleInsuranceType(type)}
+                    data-testid={`badge-insurance-${type.toLowerCase().replace(/\s+/g, "-")}`}
+                  >
+                    {form.acceptedInsuranceTypes.includes(type) ? <X className="h-3 w-3 mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
+                    {type}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      <Card className="p-6 space-y-5">
+        <div className="grid lg:grid-cols-2 gap-6">
+          <div className="space-y-2">
+            <Label>Specialiseringar *</Label>
+            <p className="text-xs text-muted-foreground">Välj de rättsområden din byrå arbetar med. Ni kommer bara att se ärenden som matchar era specialiseringar.</p>
+            <div className="flex flex-wrap gap-1.5">
+              {LEGAL_AREAS.map((s) => (
+                <Badge
+                  key={s}
+                  variant={form.specialties.includes(s) ? "default" : "secondary"}
+                  className="cursor-pointer toggle-elevate"
+                  onClick={() => toggleSpecialty(s)}
+                  data-testid={`badge-specialty-${s.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "")}`}
+                >
+                  {form.specialties.includes(s) ? <X className="h-3 w-3 mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
+                  {s}
+                </Badge>
+              ))}
+            </div>
           </div>
 
           <div className="space-y-2">
-            <Label className="text-sm">Accepterade försäkringstyper</Label>
-            <p className="text-xs text-muted-foreground">Välj vilka försäkringstyper ni accepterar. Om ingen är vald visas alla ärenden.</p>
+            <Label>Språk</Label>
+            <p className="text-xs text-muted-foreground">Vilka språk kan ni erbjuda rådgivning på?</p>
             <div className="flex flex-wrap gap-1.5">
-              {INSURANCE_TYPES.map((type) => (
+              {LANGUAGES.map((lang) => (
                 <Badge
-                  key={type}
-                  variant={form.acceptedInsuranceTypes.includes(type) ? "default" : "secondary"}
+                  key={lang}
+                  variant={form.languages.includes(lang) ? "default" : "secondary"}
                   className="cursor-pointer toggle-elevate"
-                  onClick={() => toggleInsuranceType(type)}
-                  data-testid={`badge-insurance-${type.toLowerCase().replace(/\s+/g, "-")}`}
+                  onClick={() => toggleLanguage(lang)}
+                  data-testid={`badge-lang-${lang.toLowerCase()}`}
                 >
-                  {form.acceptedInsuranceTypes.includes(type) ? <X className="h-3 w-3 mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
-                  {type}
+                  {form.languages.includes(lang) ? <X className="h-3 w-3 mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
+                  {lang}
                 </Badge>
               ))}
             </div>
           </div>
         </div>
-
-        <div className="space-y-2">
-          <Label>Specialiseringar *</Label>
-          <p className="text-xs text-muted-foreground">Välj de rättsområden din byrå arbetar med. Ni kommer bara att se ärenden som matchar era specialiseringar.</p>
-          <div className="flex flex-wrap gap-1.5">
-            {LEGAL_AREAS.map((s) => (
-              <Badge
-                key={s}
-                variant={form.specialties.includes(s) ? "default" : "secondary"}
-                className="cursor-pointer toggle-elevate"
-                onClick={() => toggleSpecialty(s)}
-                data-testid={`badge-specialty-${s.toLowerCase().replace(/\s+/g, "-").replace(/&/g, "")}`}
-              >
-                {form.specialties.includes(s) ? <X className="h-3 w-3 mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
-                {s}
-              </Badge>
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label>Språk</Label>
-          <p className="text-xs text-muted-foreground">Vilka språk kan ni erbjuda rådgivning på?</p>
-          <div className="flex flex-wrap gap-1.5">
-            {LANGUAGES.map((lang) => (
-              <Badge
-                key={lang}
-                variant={form.languages.includes(lang) ? "default" : "secondary"}
-                className="cursor-pointer toggle-elevate"
-                onClick={() => toggleLanguage(lang)}
-                data-testid={`badge-lang-${lang.toLowerCase()}`}
-              >
-                {form.languages.includes(lang) ? <X className="h-3 w-3 mr-1" /> : <Plus className="h-3 w-3 mr-1" />}
-                {lang}
-              </Badge>
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <div className="flex items-center justify-between gap-2">
-            <div>
-              <Label>Ytterligare kontor</Label>
-              <p className="text-xs text-muted-foreground">Lägg till fler orter där byrån finns representerad</p>
-            </div>
-            <Button variant="outline" size="sm" className="rounded-full" onClick={addOffice} data-testid="button-add-office">
-              <Plus className="h-4 w-4 mr-1" /> Lägg till kontor
-            </Button>
-          </div>
-          {form.offices.map((office, i) => (
-            <Card key={i} className="p-4">
-              <div className="flex items-start justify-between gap-2 mb-3">
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm font-medium">Kontor {i + 1}</span>
-                </div>
-                <Button variant="ghost" size="icon" onClick={() => removeOffice(i)} data-testid={`button-remove-office-${i}`}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-              <div className="space-y-2">
-                <Label className="text-xs">Sök adress</Label>
-                <AddressSearch
-                  testIdPrefix={`office-${i}`}
-                  initialValue={office.address && office.city ? `${office.address}, ${office.city}` : ""}
-                  onSelect={(result) => {
-                    setForm((prev) => ({
-                      ...prev,
-                      offices: prev.offices.map((o, idx) =>
-                        idx === i
-                          ? { ...o, city: result.city, address: result.address, latitude: result.lat, longitude: result.lng }
-                          : o
-                      ),
-                    }));
-                  }}
-                />
-                {office.city && (
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <MapPin className="h-3 w-3" />
-                    <span>{office.address}{office.city ? `, ${office.city}` : ""}</span>
-                  </div>
-                )}
-                <div className="mt-2">
-                  <Label className="text-xs">Notifikations-e-post</Label>
-                  <Input
-                    type="email"
-                    value={office.notificationEmail || ""}
-                    onChange={(e) => updateOffice(i, "notificationEmail", e.target.value)}
-                    placeholder="kontor@byra.se"
-                    className="mt-1"
-                    data-testid={`input-office-notification-email-${i}`}
-                  />
-                </div>
-              </div>
-            </Card>
-          ))}
-        </div>
-
-        <Button
-          className="w-full rounded-full"
-          disabled={!form.name || form.specialties.length === 0 || mutation.isPending}
-          onClick={() => mutation.mutate()}
-          data-testid="button-save-profile"
-        >
-          {mutation.isPending ? (
-            <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Sparar...</>
-          ) : (
-            <><Save className="h-4 w-4 mr-2" /> Spara profil</>
-          )}
-        </Button>
-        {form.specialties.length === 0 && (
-          <p className="text-xs text-destructive text-center">Välj minst en specialisering för att kunna spara.</p>
-        )}
       </Card>
+
+      <Button
+        className="w-full rounded-full"
+        disabled={!form.name || form.specialties.length === 0 || mutation.isPending}
+        onClick={() => mutation.mutate()}
+        data-testid="button-save-profile"
+      >
+        {mutation.isPending ? (
+          <><Loader2 className="h-4 w-4 mr-2 animate-spin" /> Sparar...</>
+        ) : (
+          <><Save className="h-4 w-4 mr-2" /> Spara profil</>
+        )}
+      </Button>
+      {form.specialties.length === 0 && (
+        <p className="text-xs text-destructive text-center">Välj minst en specialisering för att kunna spara.</p>
+      )}
     </div>
   );
 }
