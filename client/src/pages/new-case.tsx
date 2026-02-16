@@ -280,6 +280,29 @@ export default function NewCasePage() {
           )}
         </Button>
       </Card>
+
+      {uploadMutation.isPending && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm" data-testid="overlay-ai-loading">
+          <Card className="p-8 max-w-sm w-full mx-4 text-center space-y-5">
+            <div className="relative mx-auto w-16 h-16">
+              <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
+              <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+              <Sparkles className="absolute inset-0 m-auto h-6 w-6 text-primary animate-pulse" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-semibold text-lg font-serif">AI analyserar ditt dokument</h3>
+              <p className="text-sm text-muted-foreground">
+                Vår AI läser igenom dokumentet, anonymiserar personuppgifter och skapar en sammanfattning. Det kan ta upp till 30 sekunder.
+              </p>
+            </div>
+            <div className="flex justify-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
+            </div>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
