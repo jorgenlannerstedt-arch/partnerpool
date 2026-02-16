@@ -50,12 +50,17 @@ function updateUserSession(
   user.expires_at = user.claims?.exp;
 }
 
+function sanitizeUtf8(str: string | undefined | null): string | undefined {
+  if (!str) return undefined;
+  return str.replace(/\uFFFD/g, "");
+}
+
 async function upsertUser(claims: any) {
   await authStorage.upsertUser({
     id: claims["sub"],
     email: claims["email"],
-    firstName: claims["first_name"],
-    lastName: claims["last_name"],
+    firstName: sanitizeUtf8(claims["first_name"]),
+    lastName: sanitizeUtf8(claims["last_name"]),
     profileImageUrl: claims["profile_image_url"],
   });
 }
