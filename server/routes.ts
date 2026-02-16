@@ -343,6 +343,8 @@ export async function registerRoutes(
       const description = req.body.description?.trim() || null;
       const hasInsurance = req.body.hasInsurance === "true";
       const estimatedAmount = req.body.estimatedAmount?.trim() || null;
+      const contactEmail = req.body.contactEmail?.trim() || null;
+      const contactPhone = req.body.contactPhone?.trim() || null;
 
       if (!title || title.length > 200) {
         return res.status(400).json({ message: "Title is required and must be under 200 characters" });
@@ -431,6 +433,8 @@ VIKTIGT:
         legalArea,
         hasInsurance,
         estimatedAmount,
+        contactEmail,
+        contactPhone,
         pdfFilename,
         status: "open",
       });

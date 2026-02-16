@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Upload, FileText, Loader2, ArrowLeft, Sparkles, ShieldCheck, CircleDollarSign, Eye } from "lucide-react";
+import { Upload, FileText, Loader2, ArrowLeft, Sparkles, ShieldCheck, CircleDollarSign, Eye, Mail, Phone } from "lucide-react";
 import { Link } from "wouter";
 
 const AMOUNT_RANGES = [
@@ -32,6 +32,8 @@ export default function NewCasePage() {
   const [dragOver, setDragOver] = useState(false);
   const [hasInsurance, setHasInsurance] = useState(false);
   const [estimatedAmount, setEstimatedAmount] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
 
   const uploadMutation = useMutation({
     mutationFn: async () => {
@@ -41,6 +43,8 @@ export default function NewCasePage() {
       if (file) formData.append("pdf", file);
       formData.append("hasInsurance", hasInsurance.toString());
       if (estimatedAmount) formData.append("estimatedAmount", estimatedAmount);
+      if (contactEmail.trim()) formData.append("contactEmail", contactEmail.trim());
+      if (contactPhone.trim()) formData.append("contactPhone", contactPhone.trim());
 
       const res = await fetch("/api/cases", {
         method: "POST",
@@ -211,6 +215,40 @@ export default function NewCasePage() {
             <p className="text-xs text-muted-foreground">
               Ange ett ungefärligt tvistebelopp eller värde.
             </p>
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Mail className="h-4 w-4 text-muted-foreground" />
+            <Label>Kontaktuppgifter (valfritt)</Label>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Ange din e-post och/eller telefonnummer om du vill bli notifierad när en byrå svarar på ditt ärende.
+          </p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="contactEmail" className="text-xs text-muted-foreground">E-postadress</Label>
+              <Input
+                id="contactEmail"
+                type="email"
+                placeholder="din@email.se"
+                value={contactEmail}
+                onChange={(e) => setContactEmail(e.target.value)}
+                data-testid="input-contact-email"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="contactPhone" className="text-xs text-muted-foreground">Telefonnummer</Label>
+              <Input
+                id="contactPhone"
+                type="tel"
+                placeholder="070-123 45 67"
+                value={contactPhone}
+                onChange={(e) => setContactPhone(e.target.value)}
+                data-testid="input-contact-phone"
+              />
+            </div>
           </div>
         </div>
 
