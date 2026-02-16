@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Shield, Users, FileText, MessageCircle, ArrowRight, CheckCircle, Lock, Zap, Building2, ChevronRight } from "lucide-react";
 import logoSrc from "@assets/vertigogo-logo.svg";
 
@@ -48,7 +47,6 @@ export default function LandingPage() {
               <a href="#security" className="text-sm text-muted-foreground transition-colors hover:text-foreground" data-testid="link-security">Säkerhet</a>
             </div>
             <div className="flex items-center gap-3">
-              <ThemeToggle />
               <a href="/login">
                 <Button variant="outline" className="rounded-full" data-testid="button-login">Logga in</Button>
               </a>

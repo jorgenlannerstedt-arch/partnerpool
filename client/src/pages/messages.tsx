@@ -110,7 +110,7 @@ export default function MessagesPage() {
                   <button
                     key={t.partnerId}
                     className={`w-full p-3 rounded-md text-left transition-colors flex items-center gap-3 hover-elevate ${
-                      selectedThread === t.partnerId ? "bg-blue-50 dark:bg-blue-950" : ""
+                      selectedThread === t.partnerId ? "bg-blue-50" : ""
                     }`}
                     onClick={() => setSelectedThread(t.partnerId)}
                     data-testid={`button-thread-${t.partnerId}`}
