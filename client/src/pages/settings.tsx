@@ -111,7 +111,7 @@ export default function SettingsPage() {
     : null;
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-4xl mx-auto">
       <div>
         <div className="flex items-center gap-3">
           <Link href="/">

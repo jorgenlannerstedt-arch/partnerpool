@@ -57,7 +57,7 @@ export default function PartnerDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         <Skeleton className="h-8 w-48" />
         <Card className="p-6 space-y-4">
           <Skeleton className="h-6 w-2/3" />
@@ -70,7 +70,7 @@ export default function PartnerDetailPage() {
 
   if (!agency) {
     return (
-      <div className="max-w-3xl mx-auto text-center py-12">
+      <div className="max-w-4xl mx-auto text-center py-12">
         <p className="text-muted-foreground">Byrån hittades inte.</p>
         <Link href="/partners">
           <Button variant="outline" className="mt-4">Tillbaka till partners</Button>
@@ -91,7 +91,7 @@ export default function PartnerDetailPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
         <Link href="/partners">
           <Button variant="ghost" size="icon" data-testid="button-back-to-partners">
