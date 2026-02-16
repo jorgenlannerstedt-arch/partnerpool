@@ -855,11 +855,14 @@ VIKTIGT:
   app.patch("/api/settings", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
-      const { newsletterOptIn } = req.body;
+      const { newsletterOptIn, phone } = req.body;
 
       const updates: Record<string, any> = {};
       if (typeof newsletterOptIn === "boolean") {
         updates.newsletterOptIn = newsletterOptIn;
+      }
+      if (typeof phone === "string") {
+        updates.phone = phone.trim() || null;
       }
 
       if (Object.keys(updates).length === 0) {

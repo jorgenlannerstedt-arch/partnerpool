@@ -7,7 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { User, Mail, Shield, Bell, Trash2, AlertTriangle, ArrowLeft } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { User, Mail, Shield, Bell, Trash2, AlertTriangle, ArrowLeft, Phone, Check, X } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
 import {
@@ -37,6 +38,7 @@ interface SettingsData {
     role: string;
     onboardingComplete: boolean | null;
     newsletterOptIn: boolean | null;
+    phone: string | null;
   };
 }
 
@@ -44,9 +46,25 @@ export default function SettingsPage() {
   const { logout } = useAuth();
   const { toast } = useToast();
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [editingPhone, setEditingPhone] = useState(false);
+  const [phoneValue, setPhoneValue] = useState("");
 
   const { data, isLoading } = useQuery<SettingsData>({
     queryKey: ["/api/settings"],
+  });
+
+  const phoneMutation = useMutation({
+    mutationFn: async (value: string) => {
+      await apiRequest("PATCH", "/api/settings", { phone: value });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
+      setEditingPhone(false);
+      toast({ title: "Telefonnummer sparat" });
+    },
+    onError: () => {
+      toast({ title: "Kunde inte spara telefonnummer", variant: "destructive" });
+    },
   });
 
   const newsletterMutation = useMutation({
@@ -126,6 +144,58 @@ export default function SettingsPage() {
             <span className="text-sm font-medium" data-testid="text-settings-email">
               {user?.email || "Ingen e-post angiven"}
             </span>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="text-sm text-muted-foreground">
+              <Phone className="h-4 w-4 inline mr-1" />
+              Telefon
+            </span>
+            {editingPhone ? (
+              <div className="flex items-center gap-1">
+                <Input
+                  value={phoneValue}
+                  onChange={(e) => setPhoneValue(e.target.value)}
+                  placeholder="070-123 45 67"
+                  className="h-8 w-40 text-sm"
+                  data-testid="input-phone"
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => phoneMutation.mutate(phoneValue)}
+                  disabled={phoneMutation.isPending}
+                  data-testid="button-save-phone"
+                >
+                  <Check className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setEditingPhone(false)}
+                  data-testid="button-cancel-phone"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium" data-testid="text-settings-phone">
+                  {profile?.phone || "Inget telefonnummer"}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="rounded-full text-xs h-7"
+                  onClick={() => {
+                    setPhoneValue(profile?.phone || "");
+                    setEditingPhone(true);
+                  }}
+                  data-testid="button-edit-phone"
+                >
+                  Ändra
+                </Button>
+              </div>
+            )}
           </div>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="text-sm text-muted-foreground">

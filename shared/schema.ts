@@ -13,6 +13,7 @@ export const userProfiles = pgTable("user_profiles", {
   role: userRoleEnum("role").notNull().default("client"),
   onboardingComplete: boolean("onboarding_complete").default(false),
   newsletterOptIn: boolean("newsletter_opt_in").default(false),
+  phone: text("phone"),
 });
 
 export const agencyProfiles = pgTable("agency_profiles", {
