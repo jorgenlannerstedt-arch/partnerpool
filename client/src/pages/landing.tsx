@@ -47,6 +47,9 @@ export default function LandingPage() {
               <a href="#security" className="text-sm text-muted-foreground transition-colors hover:text-foreground" data-testid="link-security">Säkerhet</a>
             </div>
             <div className="flex items-center gap-3">
+              <a href="/api/demo-login">
+                <Button variant="outline" className="rounded-full" data-testid="button-demo-login">Demo</Button>
+              </a>
               <a href="/login">
                 <Button variant="outline" className="rounded-full" data-testid="button-login">Logga in</Button>
               </a>

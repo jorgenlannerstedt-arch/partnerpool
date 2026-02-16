@@ -145,6 +145,43 @@ export async function registerRoutes(
 
   seedDemoData().catch((err) => console.error("Auto-seed error:", err));
 
+  app.get("/api/demo-login", async (req: any, res) => {
+    try {
+      const demoUserId = "demo_client_user";
+      const { authStorage } = await import("./replit_integrations/auth/storage");
+      const existingUser = await authStorage.getUser(demoUserId);
+      if (!existingUser) {
+        await authStorage.upsertUser({
+          id: demoUserId,
+          email: "demo@vertigogo.se",
+          firstName: "Demo",
+          lastName: "Användare",
+          profileImageUrl: null,
+        });
+        await storage.createProfile({ userId: demoUserId, role: "client" });
+      }
+      const sessionUser = {
+        claims: {
+          sub: demoUserId,
+          email: "demo@vertigogo.se",
+          first_name: "Demo",
+          last_name: "Användare",
+        },
+        expires_at: Math.floor(Date.now() / 1000) + 86400,
+      };
+      req.login(sessionUser, (err: any) => {
+        if (err) {
+          console.error("Demo login error:", err);
+          return res.status(500).json({ message: "Demo login failed" });
+        }
+        res.redirect("/");
+      });
+    } catch (error) {
+      console.error("Demo login error:", error);
+      res.status(500).json({ message: "Demo login failed" });
+    }
+  });
+
   app.use("/uploads/logos", (req, res, next) => {
     const filePath = path.join(logoDir, path.basename(req.url));
     if (fs.existsSync(filePath)) {
