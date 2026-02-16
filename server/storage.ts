@@ -5,7 +5,7 @@ import {
   type CaseInquiry, type InsertCaseInquiry,
   type DirectMessage, type InsertDirectMessage,
   type AgencyReview, type InsertAgencyReview,
-  userProfiles, agencyProfiles, cases, caseInquiries, directMessages, agencyReviews,
+  userProfiles, agencyProfiles, cases, caseInquiries, directMessages, agencyReviews, dismissedCases,
   AMOUNT_RANGES,
 } from "@shared/schema";
 import { users } from "@shared/models/auth";
@@ -40,6 +40,8 @@ export interface IStorage {
   getReviewByClientAndAgency(clientId: string, agencyId: number): Promise<AgencyReview | undefined>;
   createReview(data: InsertAgencyReview): Promise<AgencyReview>;
   getAgencyStats(agencyId: number): Promise<{ avgRating: number; reviewCount: number; caseCount: number }>;
+  dismissCase(agencyUserId: string, caseId: number): Promise<void>;
+  getDismissedCaseIds(agencyUserId: string): Promise<number[]>;
   deleteAccount(userId: string): Promise<void>;
 }
 
@@ -139,8 +141,10 @@ class DatabaseStorage implements IStorage {
     if (!specialties || specialties.length === 0) {
       return [];
     }
+    const dismissedIds = await this.getDismissedCaseIds(agencyProfile.userId);
     const allOpen = await db.select().from(cases).where(eq(cases.status, "open")).orderBy(desc(cases.createdAt));
     return allOpen.filter((c) => {
+      if (dismissedIds.includes(c.id)) return false;
       if (!c.legalArea) return false;
       if (!specialties.some((s) => s.toLowerCase() === c.legalArea!.toLowerCase())) {
         return false;
@@ -293,7 +297,22 @@ class DatabaseStorage implements IStorage {
     return { avgRating: Math.round(avgRating * 10) / 10, reviewCount, caseCount: inquiryCount?.count || 0 };
   }
 
+  async dismissCase(agencyUserId: string, caseId: number) {
+    const existing = await db.select().from(dismissedCases).where(
+      and(eq(dismissedCases.agencyUserId, agencyUserId), eq(dismissedCases.caseId, caseId))
+    );
+    if (existing.length === 0) {
+      await db.insert(dismissedCases).values({ agencyUserId, caseId });
+    }
+  }
+
+  async getDismissedCaseIds(agencyUserId: string) {
+    const rows = await db.select({ caseId: dismissedCases.caseId }).from(dismissedCases).where(eq(dismissedCases.agencyUserId, agencyUserId));
+    return rows.map(r => r.caseId);
+  }
+
   async deleteAccount(userId: string) {
+    await db.delete(dismissedCases).where(eq(dismissedCases.agencyUserId, userId));
     await db.delete(directMessages).where(or(eq(directMessages.senderId, userId), eq(directMessages.receiverId, userId)));
     await db.delete(caseInquiries).where(eq(caseInquiries.agencyId, userId));
     const userCases = await db.select({ id: cases.id }).from(cases).where(eq(cases.clientId, userId));

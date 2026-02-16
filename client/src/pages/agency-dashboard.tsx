@@ -1,15 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FileText, MessageCircle, Settings, CreditCard, AlertCircle, CheckCircle, Scale, ShieldCheck, Check } from "lucide-react";
+import { FileText, MessageCircle, Settings, CreditCard, AlertCircle, CheckCircle, Scale, ShieldCheck, Check, X } from "lucide-react";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import type { Case, AgencyProfile } from "@shared/schema";
 
 type CaseWithInquiry = Case & { hasInquired?: boolean };
 
 export default function AgencyDashboard() {
+  const { toast } = useToast();
+
   const { data: profile, isLoading: profileLoading } = useQuery<AgencyProfile>({
     queryKey: ["/api/agency/profile"],
   });
@@ -20,6 +24,19 @@ export default function AgencyDashboard() {
 
   const { data: unreadCount } = useQuery<{ count: number }>({
     queryKey: ["/api/messages/unread-count"],
+  });
+
+  const dismissMutation = useMutation({
+    mutationFn: async (caseId: number) => {
+      await apiRequest("POST", `/api/agency/cases/${caseId}/dismiss`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/agency/cases"] });
+      toast({ title: "Ärende borttaget", description: "Ärendet visas inte längre i din lista." });
+    },
+    onError: () => {
+      toast({ title: "Fel", description: "Kunde inte ta bort ärendet.", variant: "destructive" });
+    },
   });
 
   if (profileLoading) {
@@ -166,6 +183,18 @@ export default function AgencyDashboard() {
                       <Badge variant="secondary" data-testid={`badge-status-${c.id}`}>
                         {c.status === "open" ? "Öppen" : c.status}
                       </Badge>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        data-testid={`button-dismiss-case-${c.id}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          dismissMutation.mutate(c.id);
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </Card>

@@ -655,6 +655,19 @@ VIKTIGT:
     }
   });
 
+  app.post("/api/agency/cases/:id/dismiss", isAuthenticated, requireRole("agency"), async (req: any, res) => {
+    try {
+      const caseId = parseInt(req.params.id);
+      if (isNaN(caseId)) return res.status(400).json({ message: "Invalid ID" });
+      const userId = req.user.claims.sub;
+      await storage.dismissCase(userId, caseId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error dismissing case:", error);
+      res.status(500).json({ message: "Failed to dismiss case" });
+    }
+  });
+
   app.get("/api/agencies/:id/reviews", async (req, res) => {
     try {
       const id = parseInt(req.params.id);

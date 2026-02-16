@@ -96,6 +96,13 @@ export const caseInquiries = pgTable("case_inquiries", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const dismissedCases = pgTable("dismissed_cases", {
+  id: serial("id").primaryKey(),
+  agencyUserId: varchar("agency_user_id").notNull(),
+  caseId: integer("case_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const directMessages = pgTable("direct_messages", {
   id: serial("id").primaryKey(),
   senderId: varchar("sender_id").notNull(),
