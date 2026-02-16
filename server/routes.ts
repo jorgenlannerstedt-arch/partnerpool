@@ -438,13 +438,44 @@ VIKTIGT:
         contactEmail,
         contactPhone,
         pdfFilename,
-        status: "open",
+        status: "draft",
       });
 
       res.status(201).json(newCase);
     } catch (error) {
       console.error("Error creating case:", error);
       res.status(500).json({ message: "Failed to create case" });
+    }
+  });
+
+  app.patch("/api/cases/:id", isAuthenticated, requireRole("client"), async (req: any, res) => {
+    try {
+      const caseId = parseInt(req.params.id);
+      if (isNaN(caseId)) return res.status(400).json({ message: "Invalid ID" });
+      const userId = req.user.claims.sub;
+
+      const caseData = await storage.getCaseById(caseId);
+      if (!caseData || caseData.clientId !== userId) {
+        return res.status(404).json({ message: "Case not found" });
+      }
+
+      const updates: Record<string, any> = {};
+      if (req.body.description !== undefined) {
+        updates.description = req.body.description?.trim() || null;
+      }
+      if (req.body.status === "open" && caseData.status === "draft") {
+        updates.status = "open";
+      }
+
+      if (Object.keys(updates).length === 0) {
+        return res.status(400).json({ message: "No valid updates provided" });
+      }
+
+      const updated = await storage.updateCase(caseId, updates);
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating case:", error);
+      res.status(500).json({ message: "Failed to update case" });
     }
   });
 

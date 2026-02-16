@@ -4,10 +4,11 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Plus, FileText, MessageCircle, Users, Clock, CheckCircle, AlertCircle, Scale } from "lucide-react";
+import { Plus, FileText, MessageCircle, Users, Clock, CheckCircle, AlertCircle, Scale, Pencil } from "lucide-react";
 import type { Case } from "@shared/schema";
 
 const statusConfig: Record<string, { color: string; icon: typeof Clock; label: string }> = {
+  draft: { color: "bg-orange-500/10 text-orange-600 dark:text-orange-400", icon: Pencil, label: "Utkast" },
   open: { color: "bg-blue-500/10 text-blue-600 dark:text-blue-400", icon: Clock, label: "Öppet" },
   reviewing: { color: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400", icon: AlertCircle, label: "Granskas" },
   matched: { color: "bg-green-500/10 text-green-600 dark:text-green-400", icon: CheckCircle, label: "Matchat" },
