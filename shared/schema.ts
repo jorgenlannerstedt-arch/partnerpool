@@ -58,6 +58,8 @@ export const cases = pgTable("cases", {
   legalArea: text("legal_area"),
   hasInsurance: boolean("has_insurance").default(false),
   estimatedAmount: text("estimated_amount"),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
   pdfFilename: text("pdf_filename"),
   status: text("status").notNull().default("open"),
   createdAt: timestamp("created_at").defaultNow(),
