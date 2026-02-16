@@ -85,7 +85,7 @@ export default function AgencyDashboard() {
             <img
               src={profile.logoUrl}
               alt={`${profile.name} logotyp`}
-              className="h-10 w-10 rounded-md object-contain"
+              className="h-16 w-16 rounded-md object-contain"
               data-testid="img-agency-logo"
             />
           )}
