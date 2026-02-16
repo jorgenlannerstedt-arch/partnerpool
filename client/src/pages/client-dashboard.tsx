@@ -92,7 +92,7 @@ export default function ClientDashboard() {
             ))}
           </div>
         ) : cases && cases.length > 0 ? (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {cases.map((c) => {
               const config = statusConfig[c.status] || statusConfig.open;
               const StatusIcon = config.icon;
