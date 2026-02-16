@@ -317,7 +317,7 @@ export default function CaseDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-3xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         <Skeleton className="h-8 w-48" />
         <Card className="p-6 space-y-4">
           <Skeleton className="h-6 w-2/3" />
@@ -331,7 +331,7 @@ export default function CaseDetailPage() {
 
   if (!caseData) {
     return (
-      <div className="max-w-3xl mx-auto text-center py-12">
+      <div className="max-w-4xl mx-auto text-center py-12">
         <p className="text-muted-foreground">Ärendet hittades inte.</p>
         <Link href="/">
           <Button variant="outline" className="mt-4">Gå tillbaka</Button>
@@ -341,7 +341,7 @@ export default function CaseDetailPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center gap-3">
         <Link href="/">
           <Button variant="ghost" size="icon" data-testid="button-back-to-dashboard">
@@ -438,7 +438,7 @@ export default function CaseDetailPage() {
       </div>
 
       {caseData.aiSummary && (
-        <Card className="p-6 space-y-3">
+        <Card className="p-8 space-y-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <FileText className="h-5 w-5 text-primary" />
