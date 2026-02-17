@@ -18,7 +18,7 @@ import type { AgencyProfile } from "@shared/schema";
 import { LEGAL_AREAS } from "@shared/schema";
 import { PartnerMap } from "@/components/partner-map";
 
-type SortOption = "name-asc" | "name-desc" | "employees-asc" | "employees-desc" | "city" | "rating";
+type SortOption = "name-asc" | "name-desc" | "employees-desc" | "city" | "rating";
 
 function StarRating({ rating, size = "sm" }: { rating: number; size?: "sm" | "md" }) {
   const cls = size === "sm" ? "h-3 w-3" : "h-4 w-4";
@@ -105,9 +105,6 @@ export default function PartnerPoolPage() {
       case "name-desc":
         result.sort((a, b) => b.name.localeCompare(a.name));
         break;
-      case "employees-asc":
-        result.sort((a, b) => (a.employeeCount || 0) - (b.employeeCount || 0));
-        break;
       case "employees-desc":
         result.sort((a, b) => (b.employeeCount || 0) - (a.employeeCount || 0));
         break;
@@ -178,7 +175,6 @@ export default function PartnerPoolPage() {
             <SelectItem value="name-desc">Namn Ö-A</SelectItem>
             <SelectItem value="rating">Högst betyg</SelectItem>
             <SelectItem value="employees-desc">Flest anställda</SelectItem>
-            <SelectItem value="employees-asc">Färst anställda</SelectItem>
             <SelectItem value="city">Stad</SelectItem>
           </SelectContent>
         </Select>
