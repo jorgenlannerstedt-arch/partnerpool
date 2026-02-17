@@ -193,12 +193,24 @@ class DatabaseStorage implements IStorage {
     return closedCases.filter(c => c.selectedAgencyId !== agencyProfile.id);
   }
 
-  async getInquiriesByCase(caseId: number) {
+  async getInquiriesByCase(caseId: number, clientId?: string) {
     const inquiries = await db.select().from(caseInquiries).where(eq(caseInquiries.caseId, caseId)).orderBy(desc(caseInquiries.createdAt));
     const result = [];
     for (const inq of inquiries) {
       const agency = await this.getAgencyProfile(inq.agencyId);
-      result.push({ ...inq, agency: agency || undefined });
+      let messageCount = 0;
+      if (clientId) {
+        const [countResult] = await db.select({ count: sql<number>`count(*)::int` })
+          .from(directMessages)
+          .where(
+            or(
+              and(eq(directMessages.senderId, clientId), eq(directMessages.receiverId, inq.agencyId)),
+              and(eq(directMessages.senderId, inq.agencyId), eq(directMessages.receiverId, clientId))
+            )
+          );
+        messageCount = countResult?.count || 0;
+      }
+      result.push({ ...inq, agency: agency || undefined, messageCount });
     }
     return result;
   }

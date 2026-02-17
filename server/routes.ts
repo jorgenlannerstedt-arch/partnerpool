@@ -378,7 +378,7 @@ export async function registerRoutes(
         return res.status(403).json({ message: "Access denied" });
       }
 
-      const inquiries = await storage.getInquiriesByCase(caseId);
+      const inquiries = await storage.getInquiriesByCase(caseId, userId);
       res.json(inquiries);
     } catch (error) {
       console.error("Error fetching inquiries:", error);

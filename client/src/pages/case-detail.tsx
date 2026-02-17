@@ -744,6 +744,11 @@ export default function CaseDetailPage() {
                           <MessageCircle className="h-3.5 w-3.5 mr-1.5" />
                           Öppna & svara
                         </Button>
+                        {inq.messageCount > 0 && (
+                          <span className="text-xs text-muted-foreground" data-testid={`text-message-count-${inq.id}`}>
+                            {inq.messageCount} {inq.messageCount === 1 ? "meddelande" : "meddelanden"} utväxlade
+                          </span>
+                        )}
                         {!isClosed && (
                           <Button
                             size="sm"
