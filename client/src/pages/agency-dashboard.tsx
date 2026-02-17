@@ -66,7 +66,7 @@ export default function AgencyDashboard() {
 
   if (!profile) {
     return (
-      <div className="max-w-xl mx-auto text-center py-12 space-y-4">
+      <div className="max-w-xl mx-auto text-center py-16 px-6 space-y-4">
         <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto" />
         <h2 className="text-xl font-semibold">Fyll i din profil</h2>
         <p className="text-muted-foreground">Konfigurera din byråprofil för att börja ta emot ärenden.</p>
