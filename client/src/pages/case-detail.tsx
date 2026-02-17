@@ -123,8 +123,8 @@ function InquiryMessageDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="bg-muted/50 rounded-md p-3 mb-2">
-          <p className="text-xs text-muted-foreground mb-1">Intresseanmälan:</p>
+        <div className="bg-primary text-primary-foreground rounded-md p-3 mb-2">
+          <p className="text-xs text-primary-foreground/70 mb-1">Intresseanmälan:</p>
           <p className="text-sm">{inquiry.message}</p>
         </div>
 
