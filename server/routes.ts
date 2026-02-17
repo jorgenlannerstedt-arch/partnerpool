@@ -886,6 +886,32 @@ VIKTIGT:
     }
   });
 
+  app.get("/api/messages/selectable-cases/:partnerId", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const partnerId = req.params.partnerId;
+      const profile = await storage.getProfile(userId);
+      if (!profile || profile.role !== "client") return res.json([]);
+
+      const allCases = await storage.getCasesByClient(userId);
+      const openCases = allCases.filter((c: any) => c.status === "open");
+
+      const results: { id: number; title: string; agencyName: string }[] = [];
+      for (const c of openCases) {
+        const inquiries = await storage.getInquiriesByCase(c.id, userId);
+        const hasInquiry = inquiries.some((inq: any) => inq.agencyId === partnerId);
+        if (hasInquiry) {
+          const agencyProfile = await storage.getAgencyProfile(partnerId);
+          results.push({ id: c.id, title: c.title, agencyName: agencyProfile?.name || "Byrå" });
+        }
+      }
+      res.json(results);
+    } catch (error) {
+      console.error("Error fetching selectable cases:", error);
+      res.status(500).json({ message: "Failed to fetch selectable cases" });
+    }
+  });
+
   app.get("/api/messages/threads", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;

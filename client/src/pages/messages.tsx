@@ -9,8 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, MessageCircle, ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
+import { Send, MessageCircle, ArrowLeft, Trophy } from "lucide-react";
+import { Link, useLocation } from "wouter";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import type { DirectMessage } from "@shared/schema";
 
 type ConversationThread = {
@@ -24,12 +25,18 @@ type ConversationThread = {
 export default function MessagesPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [, navigate] = useLocation();
   const [selectedThread, setSelectedThread] = useState<string | null>(() => {
     const params = new URLSearchParams(window.location.search);
     return params.get("partner");
   });
   const [messageText, setMessageText] = useState("");
+  const [showSelectConfirm, setShowSelectConfirm] = useState<{ caseId: number; caseName: string; agencyName: string } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  const { data: profile } = useQuery<{ role: string }>({
+    queryKey: ["/api/profile"],
+  });
 
   const { data: threads, isLoading: threadsLoading } = useQuery<ConversationThread[]>({
     queryKey: ["/api/messages/threads"],
@@ -39,6 +46,25 @@ export default function MessagesPage() {
     queryKey: ["/api/messages", selectedThread],
     enabled: !!selectedThread,
     refetchInterval: 5000,
+  });
+
+  const { data: selectableCases } = useQuery<{ id: number; title: string; agencyName: string }[]>({
+    queryKey: ["/api/messages/selectable-cases", selectedThread],
+    enabled: !!selectedThread && profile?.role === "client",
+  });
+
+  const selectAgencyMutation = useMutation({
+    mutationFn: async (caseId: number) => {
+      await apiRequest("POST", `/api/cases/${caseId}/select-agency`, { agencyId: selectedThread });
+    },
+    onSuccess: () => {
+      toast({ title: "Byrå vald", description: "Du har valt denna byrå för ditt ärende." });
+      setShowSelectConfirm(null);
+      queryClient.invalidateQueries({ queryKey: ["/api/messages/selectable-cases", selectedThread] });
+    },
+    onError: (err: Error) => {
+      toast({ title: "Fel", description: err.message, variant: "destructive" });
+    },
   });
 
   const sendMutation = useMutation({
@@ -191,6 +217,22 @@ export default function MessagesPage() {
                   </div>
                 )}
               </div>
+              {selectableCases && selectableCases.length > 0 && (
+                <div className="px-3 py-2 border-t flex items-center gap-2 flex-wrap">
+                  {selectableCases.map((c) => (
+                    <Button
+                      key={c.id}
+                      size="sm"
+                      className="rounded-full"
+                      onClick={() => setShowSelectConfirm({ caseId: c.id, caseName: c.title, agencyName: threads?.find((t) => t.partnerId === selectedThread)?.partnerName || "byrån" })}
+                      data-testid={`button-select-agency-msg-${c.id}`}
+                    >
+                      <Trophy className="h-3.5 w-3.5 mr-1.5" />
+                      Välj denna byrå
+                    </Button>
+                  ))}
+                </div>
+              )}
               <div className="p-3 border-t flex items-center gap-2">
                 <Input
                   placeholder="Skriv ett meddelande..."
@@ -219,6 +261,27 @@ export default function MessagesPage() {
           )}
         </Card>
       </div>
+
+      <Dialog open={!!showSelectConfirm} onOpenChange={() => setShowSelectConfirm(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Bekräfta val av byrå</DialogTitle>
+            <DialogDescription>
+              Vill du välja {showSelectConfirm?.agencyName} för ärendet "{showSelectConfirm?.caseName}"? Ärendet stängs för andra byråer.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowSelectConfirm(null)} data-testid="button-cancel-select">Avbryt</Button>
+            <Button
+              onClick={() => showSelectConfirm && selectAgencyMutation.mutate(showSelectConfirm.caseId)}
+              disabled={selectAgencyMutation.isPending}
+              data-testid="button-confirm-select"
+            >
+              Bekräfta
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

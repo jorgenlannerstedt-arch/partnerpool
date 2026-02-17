@@ -184,10 +184,9 @@ function InquiryMessageDialog({
         </div>
 
         {caseStatus === "open" && onSelectAgency && (
-          <div className="pt-2 border-t flex justify-end">
+          <div className="pt-2 border-t flex justify-start">
             <Button
               size="sm"
-              variant="outline"
               className="rounded-full"
               onClick={() => onSelectAgency(inquiry)}
               data-testid="button-select-agency-dialog"
