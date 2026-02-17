@@ -935,6 +935,8 @@ VIKTIGT:
         read: false,
       });
 
+      await storage.markMessagesRead(senderId, parsed.data.receiverId);
+
       res.status(201).json(message);
     } catch (error) {
       console.error("Error sending message:", error);
