@@ -118,7 +118,11 @@ function InquiryMessageDialog({
       <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-8">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-primary" />
+            {inquiry.agency?.logoUrl ? (
+              <img src={inquiry.agency.logoUrl} alt="" className="h-6 w-6 object-contain rounded" />
+            ) : (
+              <Building2 className="h-5 w-5 text-primary" />
+            )}
             {inquiry.agency?.name || "Advokatbyrå"}
           </DialogTitle>
         </DialogHeader>
@@ -763,7 +767,11 @@ export default function CaseDetailPage() {
                     <div className="space-y-3">
                       <div className="flex items-center justify-between gap-4">
                         <div className="flex items-center gap-2">
-                          <Building2 className="h-4 w-4 text-primary" />
+                          {inq.agency?.logoUrl ? (
+                            <img src={inq.agency.logoUrl} alt="" className="h-5 w-5 object-contain rounded" />
+                          ) : (
+                            <Building2 className="h-4 w-4 text-primary" />
+                          )}
                           <span className="font-semibold">{inq.agency?.name || "Advokatbyrå"}</span>
                           {isSelected && (
                             <Badge variant="default" className="text-xs" data-testid={`badge-selected-${inq.id}`}>
