@@ -104,4 +104,10 @@ Vertigogo connects clients needing legal help with law firms. The platform featu
 - API endpoints: POST /api/cases/:id/select-agency, POST /api/cases/:id/deselect-agency
 - Email notifications: selected agency notified, non-selected agencies notified, all parties notified on revert
 - Agency dashboard shows "Tilldelat" badge on won cases, agency case detail shows won/lost banners
-- Client case detail: "Välj denna byrå" button on each inquiry, confirmation dialog, "Ångra val" button when case closed
+- Client case detail: "Välj denna byrå" button in inquiry dialog, confirmation dialog, "Ångra val" button when case closed
+- 2026-02-17: Added legal protection (rättsskydd) fields to cases: legalProtectionApplied (boolean), legalProtectionGranted (yes/no/pending), needsLegalProtectionHelp (boolean)
+- Legal protection questions shown conditionally in case creation when insurance type is Hemförsäkring or Företagsförsäkring
+- If applied=yes → asks if granted (yes/no/pending); if applied=no → asks if needs help writing application
+- Server-side normalization enforces mutual exclusivity of conditional fields
+- Agency case detail shows Rättsskydd card; client case detail shows badge summary
+- Verified review system: only clients who selected an agency can leave reviews, "Verifierat omdöme" badge shown on partner detail
