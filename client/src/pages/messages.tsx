@@ -175,10 +175,24 @@ export default function MessagesPage() {
         <Card className="flex flex-col overflow-hidden">
           {selectedThread ? (
             <>
-              <div className="p-3 border-b">
+              <div className="p-3 border-b flex items-center justify-between gap-2">
                 <h2 className="text-sm font-semibold">
                   {threads?.find((t) => t.partnerId === selectedThread)?.partnerName || "Konversation"}
                 </h2>
+                {selectableCases && selectableCases.length > 0 && (
+                  <Button
+                    size="sm"
+                    className="rounded-full"
+                    onClick={() => {
+                      const c = selectableCases[0];
+                      setShowSelectConfirm({ caseId: c.id, caseName: c.title, agencyName: threads?.find((t) => t.partnerId === selectedThread)?.partnerName || "byrån" });
+                    }}
+                    data-testid="button-select-agency-header"
+                  >
+                    <Trophy className="h-3.5 w-3.5 mr-1.5" />
+                    Välj denna byrå
+                  </Button>
+                )}
               </div>
               <div className="flex-1 overflow-auto p-4 space-y-3" ref={scrollRef}>
                 {messagesLoading ? (
@@ -217,22 +231,6 @@ export default function MessagesPage() {
                   </div>
                 )}
               </div>
-              {selectableCases && selectableCases.length > 0 && (
-                <div className="px-3 py-2 border-t flex items-center gap-2 flex-wrap">
-                  {selectableCases.map((c) => (
-                    <Button
-                      key={c.id}
-                      size="sm"
-                      className="rounded-full"
-                      onClick={() => setShowSelectConfirm({ caseId: c.id, caseName: c.title, agencyName: threads?.find((t) => t.partnerId === selectedThread)?.partnerName || "byrån" })}
-                      data-testid={`button-select-agency-msg-${c.id}`}
-                    >
-                      <Trophy className="h-3.5 w-3.5 mr-1.5" />
-                      Välj denna byrå
-                    </Button>
-                  ))}
-                </div>
-              )}
               <div className="p-3 border-t flex items-center gap-2">
                 <Input
                   placeholder="Skriv ett meddelande..."
