@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, MessageCircle, ArrowLeft, Trophy } from "lucide-react";
 import { Link, useLocation } from "wouter";
@@ -145,6 +145,7 @@ export default function MessagesPage() {
                     data-testid={`button-thread-${t.partnerId}`}
                   >
                     <Avatar className="h-10 w-10">
+                      {t.partnerLogoUrl && <AvatarImage src={t.partnerLogoUrl} alt={t.partnerName} className="object-contain" />}
                       <AvatarFallback className="bg-primary/10 text-primary text-xs">
                         {t.partnerName.slice(0, 2).toUpperCase()}
                       </AvatarFallback>

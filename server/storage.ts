@@ -268,6 +268,7 @@ class DatabaseStorage implements IStorage {
         threadsMap.set(partnerId, {
           partnerId,
           partnerName: partnerAgency?.name || `${partnerUser?.firstName || ""} ${partnerUser?.lastName || ""}`.trim() || "User",
+          partnerLogoUrl: partnerAgency?.logoUrl || null,
           lastMessage: msg.content,
           lastMessageTime: msg.createdAt,
           unreadCount: unreadMessages.length,
