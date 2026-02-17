@@ -266,26 +266,25 @@ class DatabaseStorage implements IStorage {
         );
 
         const relatedCases: { id: number; title: string }[] = [];
-        if (partnerAgency) {
-          const agencyInquiries = await db.select({ caseId: caseInquiries.caseId })
+        const inquiriesAsAgency = await db.select({ caseId: caseInquiries.caseId })
+          .from(caseInquiries)
+          .where(eq(caseInquiries.agencyId, userId));
+        if (inquiriesAsAgency.length > 0) {
+          const caseIds = inquiriesAsAgency.map(i => i.caseId);
+          const relCases = await db.select({ id: cases.id, title: cases.title })
+            .from(cases)
+            .where(and(inArray(cases.id, caseIds), eq(cases.clientId, partnerId)));
+          relatedCases.push(...relCases);
+        }
+        if (relatedCases.length === 0) {
+          const inquiriesAsPartnerAgency = await db.select({ caseId: caseInquiries.caseId })
             .from(caseInquiries)
             .where(eq(caseInquiries.agencyId, partnerId));
-          if (agencyInquiries.length > 0) {
-            const caseIds = agencyInquiries.map(i => i.caseId);
+          if (inquiriesAsPartnerAgency.length > 0) {
+            const caseIds = inquiriesAsPartnerAgency.map(i => i.caseId);
             const relCases = await db.select({ id: cases.id, title: cases.title })
               .from(cases)
               .where(and(inArray(cases.id, caseIds), eq(cases.clientId, userId)));
-            relatedCases.push(...relCases);
-          }
-        } else {
-          const userInquiries = await db.select({ caseId: caseInquiries.caseId, agencyId: caseInquiries.agencyId })
-            .from(caseInquiries)
-            .where(eq(caseInquiries.agencyId, userId));
-          if (userInquiries.length > 0) {
-            const caseIds = userInquiries.map(i => i.caseId);
-            const relCases = await db.select({ id: cases.id, title: cases.title })
-              .from(cases)
-              .where(and(inArray(cases.id, caseIds), eq(cases.clientId, partnerId)));
             relatedCases.push(...relCases);
           }
         }
