@@ -193,10 +193,16 @@ export default function CaseDetailPage() {
     queryKey: ["/api/cases", params.id],
   });
 
-  const { data: inquiries, isLoading: inquiriesLoading } = useQuery<InquiryWithAgency[]>({
+  const { data: inquiries, isLoading: inquiriesLoading, dataUpdatedAt } = useQuery<InquiryWithAgency[]>({
     queryKey: ["/api/cases", params.id, "inquiries"],
     enabled: caseData?.status === "open" || caseData?.status === "closed",
   });
+
+  useEffect(() => {
+    if (dataUpdatedAt) {
+      queryClient.invalidateQueries({ queryKey: ["/api/inquiries/unread-count"] });
+    }
+  }, [dataUpdatedAt]);
 
   const isDraft = caseData?.status === "draft";
 

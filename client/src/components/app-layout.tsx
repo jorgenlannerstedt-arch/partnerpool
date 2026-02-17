@@ -23,13 +23,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     queryKey: ["/api/profile"],
   });
 
+  const isAgency = profile?.role === "agency";
+
   const { data: unreadData } = useQuery<{ count: number }>({
     queryKey: ["/api/messages/unread-count"],
     refetchInterval: 30000,
   });
   const unreadCount = unreadData?.count || 0;
 
-  const isAgency = profile?.role === "agency";
+  const { data: unreadInquiryData } = useQuery<{ count: number }>({
+    queryKey: ["/api/inquiries/unread-count"],
+    refetchInterval: 30000,
+    enabled: !isAgency,
+  });
+  const unreadInquiries = unreadInquiryData?.count || 0;
   const initials = user
     ? `${user.firstName?.charAt(0) || ""}${user.lastName?.charAt(0) || ""}`.toUpperCase() || "U"
     : "U";
@@ -64,6 +71,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 {navItems.map((item) => {
                   const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
                   const isMessages = item.href === "/messages";
+                  const isDashboard = item.href === "/";
+                  const badgeCount = isMessages ? unreadCount : (isDashboard && !isAgency) ? unreadInquiries : 0;
                   return (
                     <Link key={item.href} href={item.href}>
                       <Button
@@ -74,12 +83,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                       >
                         <item.icon className="h-4 w-4 mr-1.5" />
                         {item.label}
-                        {isMessages && unreadCount > 0 && (
+                        {badgeCount > 0 && (
                           <span
                             className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1"
-                            data-testid="badge-unread-count"
+                            data-testid={isMessages ? "badge-unread-count" : "badge-unread-inquiries"}
                           >
-                            {unreadCount > 99 ? "99+" : unreadCount}
+                            {badgeCount > 99 ? "99+" : badgeCount}
                           </span>
                         )}
                       </Button>
@@ -144,6 +153,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               {navItems.map((item) => {
                 const isActive = location === item.href || (item.href !== "/" && location.startsWith(item.href));
                 const isMessages = item.href === "/messages";
+                const isDashboard = item.href === "/";
+                const badgeCount = isMessages ? unreadCount : (isDashboard && !isAgency) ? unreadInquiries : 0;
                 return (
                   <Link key={item.href} href={item.href}>
                     <Button
@@ -153,9 +164,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                     >
                       <item.icon className="h-4 w-4 mr-1.5" />
                       {item.label}
-                      {isMessages && unreadCount > 0 && (
+                      {badgeCount > 0 && (
                         <span className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
-                          {unreadCount > 99 ? "99+" : unreadCount}
+                          {badgeCount > 99 ? "99+" : badgeCount}
                         </span>
                       )}
                     </Button>

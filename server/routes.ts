@@ -908,6 +908,17 @@ VIKTIGT:
     }
   });
 
+  app.get("/api/inquiries/unread-count", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const count = await storage.getUnreadInquiryCount(userId);
+      res.json({ count });
+    } catch (error) {
+      console.error("Error fetching unread inquiry count:", error);
+      res.status(500).json({ message: "Failed to fetch unread inquiry count" });
+    }
+  });
+
   app.get("/api/messages/:partnerId", isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;

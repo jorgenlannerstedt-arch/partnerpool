@@ -32,6 +32,7 @@ export interface IStorage {
   getInquiriesByAgency(agencyId: string): Promise<CaseInquiry[]>;
   createInquiry(data: InsertCaseInquiry): Promise<CaseInquiry>;
   markInquiriesRead(ids: number[]): Promise<void>;
+  getUnreadInquiryCount(clientId: string): Promise<number>;
   getMessageThreads(userId: string): Promise<any[]>;
   getMessagesBetween(userId: string, partnerId: string): Promise<DirectMessage[]>;
   createMessage(data: InsertDirectMessage): Promise<DirectMessage>;
@@ -236,6 +237,16 @@ class DatabaseStorage implements IStorage {
     await db.update(caseInquiries)
       .set({ clientRead: true })
       .where(inArray(caseInquiries.id, ids));
+  }
+
+  async getUnreadInquiryCount(clientId: string) {
+    const clientCases = await db.select({ id: cases.id }).from(cases).where(eq(cases.clientId, clientId));
+    if (clientCases.length === 0) return 0;
+    const caseIds = clientCases.map(c => c.id);
+    const [result] = await db.select({ count: sql<number>`count(*)::int` })
+      .from(caseInquiries)
+      .where(and(inArray(caseInquiries.caseId, caseIds), eq(caseInquiries.clientRead, false)));
+    return result?.count || 0;
   }
 
   async getMessageThreads(userId: string) {
