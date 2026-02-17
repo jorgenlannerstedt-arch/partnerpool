@@ -123,9 +123,11 @@ function InquiryMessageDialog({
           </DialogTitle>
         </DialogHeader>
 
-        <div className="bg-primary text-primary-foreground rounded-md p-3 mb-2">
-          <p className="text-xs text-primary-foreground/70 mb-1">Intresseanmälan:</p>
-          <p className="text-sm">{inquiry.message}</p>
+        <div className="flex justify-end mb-2">
+          <div className="max-w-[80%] bg-primary text-primary-foreground rounded-md p-3">
+            <p className="text-xs text-primary-foreground/70 mb-1">Intresseanmälan:</p>
+            <p className="text-sm">{inquiry.message}</p>
+          </div>
         </div>
 
         <ScrollArea className="flex-1 min-h-[200px] max-h-[400px] pr-3" ref={scrollRef}>
