@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Building2, MapPin, Users, Globe, Phone, Mail, Star, Clock, Shield, ShieldCheck, CreditCard, Languages, MessageCircle, Briefcase, Calendar, Trophy } from "lucide-react";
+import { ArrowLeft, Building2, MapPin, Users, Globe, Star, Clock, Shield, ShieldCheck, CreditCard, Languages, MessageCircle, Briefcase, Calendar, Trophy } from "lucide-react";
 import type { AgencyProfile, AgencyReview } from "@shared/schema";
 
 interface Office {
@@ -221,18 +221,6 @@ export default function PartnerDetailPage() {
                 <div className="flex items-center gap-2 text-sm" data-testid="text-selected-count">
                   <Trophy className="h-4 w-4 text-muted-foreground" />
                   <span>Vald {stats.selectedCount} {stats.selectedCount === 1 ? "gång" : "gånger"}</span>
-                </div>
-              )}
-              {agency.email && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <a href={`mailto:${agency.email}`} className="text-primary">{agency.email}</a>
-                </div>
-              )}
-              {agency.phone && (
-                <div className="flex items-center gap-2 text-sm">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{agency.phone}</span>
                 </div>
               )}
               {agency.website && (
