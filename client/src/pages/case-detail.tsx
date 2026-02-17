@@ -184,13 +184,15 @@ function InquiryMessageDialog({
         </div>
 
         {caseStatus === "open" && onSelectAgency && (
-          <div className="pt-2 border-t">
+          <div className="pt-2 border-t flex justify-end">
             <Button
-              className="w-full rounded-full"
+              size="sm"
+              variant="outline"
+              className="rounded-full"
               onClick={() => onSelectAgency(inquiry)}
               data-testid="button-select-agency-dialog"
             >
-              <Trophy className="h-4 w-4 mr-2" />
+              <Trophy className="h-3.5 w-3.5 mr-1.5" />
               Välj denna byrå
             </Button>
           </div>
