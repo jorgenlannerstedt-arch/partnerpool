@@ -184,7 +184,7 @@ function InquiryMessageDialog({
         </div>
 
         {caseStatus === "open" && onSelectAgency && (
-          <div className="pt-2 border-t flex justify-center">
+          <div className="py-2 border-t flex justify-start">
             <Button
               size="sm"
               variant="outline"
