@@ -137,7 +137,7 @@ function InquiryMessageDialog({
             </div>
           ) : messages && messages.length > 0 ? (
             <div className="space-y-3 p-2">
-              {messages.map((msg) => {
+              {messages.filter((msg) => !(msg.senderId === inquiry.agencyId && msg.content === inquiry.message && msg.id === messages.filter(m => m.senderId === inquiry.agencyId).sort((a, b) => new Date(a.createdAt!).getTime() - new Date(b.createdAt!).getTime())[0]?.id)).map((msg) => {
                 const isMe = msg.senderId === user?.id;
                 return (
                   <div key={msg.id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
