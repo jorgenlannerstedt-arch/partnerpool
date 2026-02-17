@@ -173,9 +173,9 @@ export default function NewCasePage() {
         </div>
 
         <div className="space-y-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 mb-1">
             <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-            <Label>Har du försäkring?</Label>
+            <Label className="text-base font-semibold">Har du försäkring?</Label>
           </div>
           <RadioGroup value={insuranceType} onValueChange={(v) => {
             setInsuranceType(v);
@@ -185,12 +185,15 @@ export default function NewCasePage() {
               setNeedsLegalProtectionHelp("");
             }
           }} data-testid="radio-insurance-type">
-            {INSURANCE_TYPES.map((type) => (
-              <div key={type} className="flex items-center space-x-2">
-                <RadioGroupItem value={type} id={`insurance-${type}`} data-testid={`radio-insurance-${type.toLowerCase().replace(/\s+/g, "-")}`} />
-                <Label htmlFor={`insurance-${type}`} className="text-sm font-normal cursor-pointer">{type}</Label>
-              </div>
-            ))}
+            {INSURANCE_TYPES.map((type) => {
+              const clientLabel = type === "Klient betalar själv" ? "Jag betalar själv" : type === "Ingen försäkring" ? "Nej, jag har ingen försäkring" : type;
+              return (
+                <div key={type} className="flex items-center space-x-2">
+                  <RadioGroupItem value={type} id={`insurance-${type}`} data-testid={`radio-insurance-${type.toLowerCase().replace(/\s+/g, "-")}`} />
+                  <Label htmlFor={`insurance-${type}`} className="text-sm font-normal cursor-pointer">{clientLabel}</Label>
+                </div>
+              );
+            })}
           </RadioGroup>
           <p className="text-xs text-muted-foreground">
             Rättsskydd ingår ofta i hem- eller företagsförsäkringen och kan täcka juridiska kostnader.
