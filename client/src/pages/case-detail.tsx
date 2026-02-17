@@ -56,11 +56,15 @@ function InquiryMessageDialog({
   caseId,
   open,
   onOpenChange,
+  caseStatus,
+  onSelectAgency,
 }: {
   inquiry: InquiryWithAgency;
   caseId: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  caseStatus?: string;
+  onSelectAgency?: (inquiry: InquiryWithAgency) => void;
 }) {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -172,6 +176,19 @@ function InquiryMessageDialog({
             <Send className="h-4 w-4" />
           </Button>
         </div>
+
+        {caseStatus === "open" && onSelectAgency && (
+          <div className="pt-2 border-t">
+            <Button
+              className="w-full rounded-full"
+              onClick={() => onSelectAgency(inquiry)}
+              data-testid="button-select-agency-dialog"
+            >
+              <Trophy className="h-4 w-4 mr-2" />
+              Välj denna byrå
+            </Button>
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );
@@ -755,19 +772,6 @@ export default function CaseDetailPage() {
                             {inq.messageCount} {inq.messageCount === 1 ? "meddelande" : "meddelanden"} utväxlade
                           </span>
                         )}
-                        {!isClosed && (
-                          <Button
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectAgencyTarget(inq);
-                            }}
-                            data-testid={`button-select-agency-${inq.id}`}
-                          >
-                            <Trophy className="h-3.5 w-3.5 mr-1.5" />
-                            Välj denna byrå
-                          </Button>
-                        )}
                       </div>
                     </div>
                   </Card>
@@ -823,6 +827,11 @@ export default function CaseDetailPage() {
           open={!!selectedInquiry}
           onOpenChange={(open) => {
             if (!open) setSelectedInquiry(null);
+          }}
+          caseStatus={caseData.status}
+          onSelectAgency={(inq) => {
+            setSelectedInquiry(null);
+            setSelectAgencyTarget(inq);
           }}
         />
       )}
