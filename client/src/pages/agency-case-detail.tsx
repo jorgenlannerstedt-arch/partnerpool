@@ -125,6 +125,35 @@ export default function AgencyCaseDetailPage() {
         )}
       </div>
 
+      {(caseData.legalProtectionApplied !== null && caseData.legalProtectionApplied !== undefined) && (
+        <Card className="p-4 space-y-2" data-testid="card-legal-protection">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-semibold">Rättsskydd</h3>
+          </div>
+          <div className="space-y-1 text-sm">
+            <p>
+              <span className="text-muted-foreground">Rättsskyddsansökan gjord: </span>
+              <span className="font-medium" data-testid="text-lp-applied">{caseData.legalProtectionApplied ? "Ja" : "Nej"}</span>
+            </p>
+            {caseData.legalProtectionApplied && caseData.legalProtectionGranted && (
+              <p>
+                <span className="text-muted-foreground">Beviljad: </span>
+                <span className="font-medium" data-testid="text-lp-granted">
+                  {caseData.legalProtectionGranted === "yes" ? "Ja" : caseData.legalProtectionGranted === "no" ? "Nej" : "Inväntar svar"}
+                </span>
+              </p>
+            )}
+            {!caseData.legalProtectionApplied && caseData.needsLegalProtectionHelp && (
+              <p>
+                <span className="text-muted-foreground">Behöver hjälp med rättsskyddsansökan: </span>
+                <span className="font-medium text-primary" data-testid="text-lp-help">Ja</span>
+              </p>
+            )}
+          </div>
+        </Card>
+      )}
+
       {caseData.aiSummary && (
         <Card className="p-8 space-y-4">
           <div className="flex items-center gap-2">

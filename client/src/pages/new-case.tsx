@@ -25,6 +25,9 @@ export default function NewCasePage() {
   const [estimatedAmount, setEstimatedAmount] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhone, setContactPhone] = useState("");
+  const [legalProtectionApplied, setLegalProtectionApplied] = useState<string>("");
+  const [legalProtectionGranted, setLegalProtectionGranted] = useState<string>("");
+  const [needsLegalProtectionHelp, setNeedsLegalProtectionHelp] = useState<string>("");
 
   const uploadMutation = useMutation({
     mutationFn: async () => {
@@ -36,6 +39,9 @@ export default function NewCasePage() {
       if (estimatedAmount) formData.append("estimatedAmount", estimatedAmount);
       if (contactEmail.trim()) formData.append("contactEmail", contactEmail.trim());
       if (contactPhone.trim()) formData.append("contactPhone", contactPhone.trim());
+      if (legalProtectionApplied) formData.append("legalProtectionApplied", legalProtectionApplied);
+      if (legalProtectionGranted) formData.append("legalProtectionGranted", legalProtectionGranted);
+      if (needsLegalProtectionHelp) formData.append("needsLegalProtectionHelp", needsLegalProtectionHelp);
 
       const res = await fetch("/api/cases", {
         method: "POST",
@@ -171,7 +177,14 @@ export default function NewCasePage() {
             <ShieldCheck className="h-4 w-4 text-muted-foreground" />
             <Label>Har du försäkring?</Label>
           </div>
-          <RadioGroup value={insuranceType} onValueChange={setInsuranceType} data-testid="radio-insurance-type">
+          <RadioGroup value={insuranceType} onValueChange={(v) => {
+            setInsuranceType(v);
+            if (v !== "Hemförsäkring" && v !== "Företagsförsäkring") {
+              setLegalProtectionApplied("");
+              setLegalProtectionGranted("");
+              setNeedsLegalProtectionHelp("");
+            }
+          }} data-testid="radio-insurance-type">
             {INSURANCE_TYPES.map((type) => (
               <div key={type} className="flex items-center space-x-2">
                 <RadioGroupItem value={type} id={`insurance-${type}`} data-testid={`radio-insurance-${type.toLowerCase().replace(/\s+/g, "-")}`} />
@@ -183,6 +196,67 @@ export default function NewCasePage() {
             Rättsskydd ingår ofta i hem- eller företagsförsäkringen och kan täcka juridiska kostnader.
           </p>
         </div>
+
+        {(insuranceType === "Hemförsäkring" || insuranceType === "Företagsförsäkring") && (
+          <div className="space-y-4 pl-4 border-l-2 border-primary/20">
+            <div className="space-y-3">
+              <Label>Har du gjort en rättsskyddsansökan till ditt försäkringsbolag?</Label>
+              <RadioGroup value={legalProtectionApplied} onValueChange={(v) => {
+                setLegalProtectionApplied(v);
+                if (v === "yes") {
+                  setNeedsLegalProtectionHelp("");
+                } else {
+                  setLegalProtectionGranted("");
+                }
+              }} data-testid="radio-legal-protection-applied">
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="yes" id="lp-yes" data-testid="radio-lp-applied-yes" />
+                  <Label htmlFor="lp-yes" className="text-sm font-normal cursor-pointer">Ja</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="no" id="lp-no" data-testid="radio-lp-applied-no" />
+                  <Label htmlFor="lp-no" className="text-sm font-normal cursor-pointer">Nej</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {legalProtectionApplied === "yes" && (
+              <div className="space-y-3">
+                <Label>Är rättsskyddsansökan beviljad?</Label>
+                <RadioGroup value={legalProtectionGranted} onValueChange={setLegalProtectionGranted} data-testid="radio-legal-protection-granted">
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="yes" id="lpg-yes" data-testid="radio-lp-granted-yes" />
+                    <Label htmlFor="lpg-yes" className="text-sm font-normal cursor-pointer">Ja</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="no" id="lpg-no" data-testid="radio-lp-granted-no" />
+                    <Label htmlFor="lpg-no" className="text-sm font-normal cursor-pointer">Nej</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="pending" id="lpg-pending" data-testid="radio-lp-granted-pending" />
+                    <Label htmlFor="lpg-pending" className="text-sm font-normal cursor-pointer">Inväntar svar</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            )}
+
+            {legalProtectionApplied === "no" && (
+              <div className="space-y-3">
+                <Label>Behöver du hjälp med att skriva en rättsskyddsansökan?</Label>
+                <RadioGroup value={needsLegalProtectionHelp} onValueChange={setNeedsLegalProtectionHelp} data-testid="radio-needs-lp-help">
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="yes" id="lph-yes" data-testid="radio-lp-help-yes" />
+                    <Label htmlFor="lph-yes" className="text-sm font-normal cursor-pointer">Ja, jag behöver hjälp</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="no" id="lph-no" data-testid="radio-lp-help-no" />
+                    <Label htmlFor="lph-no" className="text-sm font-normal cursor-pointer">Nej</Label>
+                  </div>
+                </RadioGroup>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="space-y-2">
           <div className="flex items-center gap-2">

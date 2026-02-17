@@ -402,6 +402,9 @@ export async function registerRoutes(
       const estimatedAmount = req.body.estimatedAmount?.trim() || null;
       const contactEmail = req.body.contactEmail?.trim() || null;
       const contactPhone = req.body.contactPhone?.trim() || null;
+      const legalProtectionApplied = req.body.legalProtectionApplied === "yes" ? true : req.body.legalProtectionApplied === "no" ? false : null;
+      const legalProtectionGranted = legalProtectionApplied === true && ["yes", "no", "pending"].includes(req.body.legalProtectionGranted) ? req.body.legalProtectionGranted : null;
+      const needsLegalProtectionHelp = legalProtectionApplied === false && req.body.needsLegalProtectionHelp === "yes" ? true : legalProtectionApplied === false && req.body.needsLegalProtectionHelp === "no" ? false : null;
 
       if (!title || title.length > 200) {
         return res.status(400).json({ message: "Title is required and must be under 200 characters" });
@@ -510,6 +513,9 @@ VIKTIGT:
         contactEmail,
         contactPhone,
         pdfFilename,
+        legalProtectionApplied,
+        legalProtectionGranted,
+        needsLegalProtectionHelp,
         status: "draft",
       });
 

@@ -458,6 +458,19 @@ export default function CaseDetailPage() {
             </Badge>
           </div>
         )}
+        {caseData.legalProtectionApplied !== null && caseData.legalProtectionApplied !== undefined && (
+          <div className="flex items-center gap-1.5">
+            <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+            <Badge variant={caseData.legalProtectionApplied ? "default" : "secondary"} data-testid="badge-lp-status">
+              {caseData.legalProtectionApplied
+                ? caseData.legalProtectionGranted === "yes" ? "Rättsskydd beviljat"
+                  : caseData.legalProtectionGranted === "pending" ? "Rättsskydd inväntar svar"
+                  : "Rättsskyddsansökan gjord"
+                : caseData.needsLegalProtectionHelp ? "Behöver hjälp med rättsskyddsansökan"
+                : "Ingen rättsskyddsansökan"}
+            </Badge>
+          </div>
+        )}
       </div>
 
       {caseData.aiSummary && (
