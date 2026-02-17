@@ -238,7 +238,7 @@ export default function PartnerDetailPage() {
               {agency.website && (
                 <div className="flex items-center gap-2 text-sm">
                   <Globe className="h-4 w-4 text-muted-foreground" />
-                  <a href={agency.website} target="_blank" rel="noopener noreferrer" className="text-primary">
+                  <a href={agency.website.startsWith("http") ? agency.website : `https://${agency.website}`} target="_blank" rel="noopener noreferrer" className="text-primary">
                     Besök webbplats
                   </a>
                 </div>
