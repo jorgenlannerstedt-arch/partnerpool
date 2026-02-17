@@ -85,6 +85,9 @@ export const cases = pgTable("cases", {
   contactPhone: text("contact_phone"),
   pdfFilename: text("pdf_filename"),
   status: text("status").notNull().default("open"),
+  legalProtectionApplied: boolean("legal_protection_applied"),
+  legalProtectionGranted: text("legal_protection_granted"),
+  needsLegalProtectionHelp: boolean("needs_legal_protection_help"),
   selectedAgencyId: integer("selected_agency_id"),
   createdAt: timestamp("created_at").defaultNow(),
 });
