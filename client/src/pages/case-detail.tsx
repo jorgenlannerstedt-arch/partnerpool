@@ -105,7 +105,13 @@ function InquiryMessageDialog({
     if (open && inquiry.agencyId) {
       apiRequest("POST", `/api/messages/mark-read/${inquiry.agencyId}`).catch(() => {});
     }
-  }, [open, inquiry.agencyId]);
+    if (open && inquiry.id && !inquiry.clientRead) {
+      apiRequest("POST", `/api/inquiries/${inquiry.id}/mark-read`).then(() => {
+        queryClient.invalidateQueries({ queryKey: ["/api/cases", String(caseId), "inquiries"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/inquiries/unread-count"] });
+      }).catch(() => {});
+    }
+  }, [open, inquiry.agencyId, inquiry.id, inquiry.clientRead, caseId]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -746,7 +752,7 @@ export default function CaseDetailPage() {
                 return (
                   <Card
                     key={inq.id}
-                    className={`p-4 hover-elevate cursor-pointer ${isSelected ? "border-primary/40 bg-primary/5" : ""}`}
+                    className={`p-4 hover-elevate cursor-pointer ${isSelected ? "border-primary/40 bg-primary/5" : !inq.clientRead ? "border-foreground/70" : ""}`}
                     onClick={() => setSelectedInquiry(inq)}
                     data-testid={`card-inquiry-${inq.id}`}
                   >

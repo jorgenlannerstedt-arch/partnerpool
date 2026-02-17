@@ -379,12 +379,6 @@ export async function registerRoutes(
       }
 
       const inquiries = await storage.getInquiriesByCase(caseId, userId);
-      
-      const unreadIds = inquiries.filter(inq => !inq.clientRead).map(inq => inq.id);
-      if (unreadIds.length > 0) {
-        await storage.markInquiriesRead(unreadIds);
-      }
-      
       res.json(inquiries);
     } catch (error) {
       console.error("Error fetching inquiries:", error);
@@ -911,6 +905,18 @@ VIKTIGT:
     } catch (error) {
       console.error("Error fetching unread count:", error);
       res.status(500).json({ message: "Failed to fetch unread count" });
+    }
+  });
+
+  app.post("/api/inquiries/:id/mark-read", isAuthenticated, async (req: any, res) => {
+    try {
+      const inquiryId = parseInt(req.params.id);
+      if (isNaN(inquiryId)) return res.status(400).json({ message: "Invalid inquiry ID" });
+      await storage.markInquiriesRead([inquiryId]);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking inquiry as read:", error);
+      res.status(500).json({ message: "Failed to mark inquiry as read" });
     }
   });
 
