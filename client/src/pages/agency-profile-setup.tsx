@@ -426,7 +426,7 @@ export default function AgencyProfileSetupPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="foundedYear">Grundat år</Label>
-              <Input id="foundedYear" type="number" min="1800" max="2030" value={form.foundedYear} onChange={(e) => setForm({ ...form, foundedYear: e.target.value })} placeholder="t.ex. 1995" data-testid="input-firm-founded-year" />
+              <Input id="foundedYear" type="number" min="1800" max="2030" value={form.foundedYear} onChange={(e) => setForm({ ...form, foundedYear: e.target.value })} placeholder="t.ex. 1995" data-testid="input-firm-founded-year" className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="responseTime">Svarstid (timmar)</Label>
@@ -569,6 +569,7 @@ export default function AgencyProfileSetupPage() {
                 onChange={(e) => setForm({ ...form, minCaseAmount: e.target.value })}
                 placeholder="t.ex. 50000"
                 data-testid="input-min-amount"
+                className="[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               />
             </div>
 
