@@ -12,11 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, MapPin, Users, Building2, Globe, ArrowUpDown, Map as MapIcon, List, Star, Clock, Shield, CreditCard, Languages } from "lucide-react";
-import { Link } from "wouter";
+import { Search, MapPin, Users, Building2, Globe, ArrowUpDown, Map as MapIcon, List, Star, Clock, Shield, CreditCard, Languages, MessageCircle } from "lucide-react";
+import { Link, useLocation } from "wouter";
 import type { AgencyProfile } from "@shared/schema";
 import { LEGAL_AREAS } from "@shared/schema";
 import { PartnerMap } from "@/components/partner-map";
+import { useAuth } from "@/hooks/use-auth";
 
 type SortOption = "name-asc" | "name-desc" | "employees-desc" | "city" | "rating";
 
@@ -40,10 +41,22 @@ export default function PartnerPoolPage() {
   const [specialtyFilter, setSpecialtyFilter] = useState("all");
   const [cityFilter, setCityFilter] = useState("all");
   const [viewMode, setViewMode] = useState<"list" | "map">("list");
+  const { user } = useAuth();
+  const [, navigate] = useLocation();
 
   const { data: agencies, isLoading } = useQuery<AgencyProfile[]>({
     queryKey: ["/api/agencies"],
   });
+
+  const { data: threads } = useQuery<Array<{ partnerId: string }>>({
+    queryKey: ["/api/messages/threads"],
+    enabled: !!user,
+  });
+
+  const activeConversationUserIds = useMemo(() => {
+    if (!threads) return new Set<string>();
+    return new Set(threads.map((t) => t.partnerId));
+  }, [threads]);
 
   const { data: allStats } = useQuery<Record<number, { avgRating: number; reviewCount: number; caseCount: number; selectedCount: number; avgResponseHours: number | null }>>({
     queryKey: ["/api/agencies/all-stats"],
@@ -223,10 +236,24 @@ export default function PartnerPoolPage() {
             const allLocations = [agency.city, ...(offices?.map((o) => o.city) || [])].filter(Boolean);
             const stats = allStats?.[agency.id];
             const yearsActive = agency.foundedYear ? new Date().getFullYear() - agency.foundedYear : null;
+            const hasConversation = activeConversationUserIds.has(agency.userId);
 
             return (
               <Link key={agency.id} href={`/partners/${agency.id}`}>
-                <Card className="p-4 hover-elevate cursor-pointer h-full" data-testid={`card-agency-${agency.id}`}>
+                <Card className={`p-4 hover-elevate cursor-pointer h-full relative ${hasConversation ? "border-blue-300" : ""}`} data-testid={`card-agency-${agency.id}`}>
+                  {hasConversation && (
+                    <button
+                      className="absolute top-2 right-2 p-1.5 rounded-full bg-blue-50 text-blue-500 z-10"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        navigate(`/messages?partner=${agency.userId}`);
+                      }}
+                      data-testid={`button-chat-${agency.id}`}
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                    </button>
+                  )}
                   <div className="space-y-3">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2 min-w-0">

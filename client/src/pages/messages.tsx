@@ -24,7 +24,10 @@ type ConversationThread = {
 export default function MessagesPage() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [selectedThread, setSelectedThread] = useState<string | null>(null);
+  const [selectedThread, setSelectedThread] = useState<string | null>(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("partner");
+  });
   const [messageText, setMessageText] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
 
