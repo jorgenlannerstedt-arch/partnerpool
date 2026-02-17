@@ -76,7 +76,7 @@ export default function MessagesPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-8rem)]">
+    <div className="h-[calc(100vh-8rem)] pt-6 px-6">
       <div className="flex items-center gap-3 mb-4">
         <Link href="/">
           <Button variant="ghost" size="icon" data-testid="button-back-messages">
