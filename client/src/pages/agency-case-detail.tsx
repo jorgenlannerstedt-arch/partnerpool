@@ -94,7 +94,7 @@ export default function AgencyCaseDetailPage() {
         <div className="flex-1 min-w-0">
           <h1 className="text-2xl font-bold font-serif truncate" data-testid="text-agency-case-title">{caseData.title}</h1>
           <p className="text-sm text-muted-foreground">
-            Publicerad {caseData.createdAt ? new Date(caseData.createdAt).toLocaleDateString("sv-SE") : ""}
+            Publicerad {caseData.createdAt ? new Date(caseData.createdAt).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : ""}
           </p>
         </div>
         <Badge variant="secondary">{STATUS_LABELS[caseData.status] || caseData.status}</Badge>

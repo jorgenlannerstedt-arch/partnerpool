@@ -352,9 +352,9 @@ export default function CaseDetailPage() {
           <h1 className="text-2xl font-bold font-serif truncate" data-testid="text-case-title">{caseData.title}</h1>
           <p className="text-sm text-muted-foreground flex flex-wrap items-center gap-2">
             <Clock className="h-3.5 w-3.5" />
-            Skapad {caseData.createdAt ? new Date(caseData.createdAt).toLocaleDateString("sv-SE") : ""}
+            Skapad {caseData.createdAt ? new Date(caseData.createdAt).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : ""}
             {caseData.status !== "draft" && (
-              <span>&middot; Publicerad {caseData.createdAt ? new Date(caseData.createdAt).toLocaleDateString("sv-SE") : ""}</span>
+              <span>&middot; Publicerad {caseData.createdAt ? new Date(caseData.createdAt).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : ""}</span>
             )}
           </p>
         </div>
@@ -727,7 +727,7 @@ export default function CaseDetailPage() {
                           )}
                         </div>
                         <Badge variant="secondary" className="text-xs">
-                          {inq.createdAt ? new Date(inq.createdAt).toLocaleDateString("sv-SE") : ""}
+                          {inq.createdAt ? new Date(inq.createdAt).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : ""}
                         </Badge>
                       </div>
                       <p className="text-sm text-muted-foreground line-clamp-2">{inq.message}</p>

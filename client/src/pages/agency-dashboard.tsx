@@ -191,7 +191,7 @@ export default function AgencyDashboard() {
                           </Badge>
                         )}
                         <span className="text-xs text-muted-foreground">
-                          {c.createdAt ? new Date(c.createdAt).toLocaleDateString("sv-SE") : ""}
+                          {c.createdAt ? new Date(c.createdAt).toLocaleString("sv-SE", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : ""}
                         </span>
                       </div>
                     </div>
