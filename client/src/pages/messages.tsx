@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, MessageCircle, ArrowLeft, Trophy } from "lucide-react";
+import { Send, MessageCircle, ArrowLeft, Trophy, FileText } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import type { DirectMessage } from "@shared/schema";
@@ -17,6 +17,8 @@ import type { DirectMessage } from "@shared/schema";
 type ConversationThread = {
   partnerId: string;
   partnerName: string;
+  partnerLogoUrl: string | null;
+  relatedCases: { id: number; title: string }[];
   lastMessage: string;
   lastMessageTime: string;
   unreadCount: number;
@@ -159,7 +161,13 @@ export default function MessagesPage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground line-clamp-2">{t.lastMessage}</p>
+                      {t.relatedCases && t.relatedCases.length > 0 && (
+                        <p className="text-xs text-muted-foreground truncate">
+                          <FileText className="h-3 w-3 inline mr-1" />
+                          {t.relatedCases.map(c => c.title).join(", ")}
+                        </p>
+                      )}
+                      <p className="text-xs text-muted-foreground line-clamp-1">{t.lastMessage}</p>
                     </div>
                   </button>
                 ))}
@@ -177,9 +185,27 @@ export default function MessagesPage() {
           {selectedThread ? (
             <>
               <div className="p-3 border-b flex items-center justify-between gap-2">
-                <h2 className="text-sm font-semibold">
-                  {threads?.find((t) => t.partnerId === selectedThread)?.partnerName || "Konversation"}
-                </h2>
+                <div className="min-w-0">
+                  <h2 className="text-sm font-semibold truncate">
+                    {threads?.find((t) => t.partnerId === selectedThread)?.partnerName || "Konversation"}
+                  </h2>
+                  {(() => {
+                    const currentThread = threads?.find((t) => t.partnerId === selectedThread);
+                    if (!currentThread?.relatedCases?.length) return null;
+                    return (
+                      <div className="flex items-center gap-1 flex-wrap">
+                        {currentThread.relatedCases.map((c) => (
+                          <Link key={c.id} href={profile?.role === "agency" ? `/agency/cases/${c.id}` : `/cases/${c.id}`}>
+                            <span className="text-xs text-primary hover:underline cursor-pointer inline-flex items-center gap-0.5">
+                              <FileText className="h-3 w-3" />
+                              {c.title}
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                    );
+                  })()}
+                </div>
                 {selectableCases && selectableCases.length > 0 && (
                   <Button
                     size="sm"

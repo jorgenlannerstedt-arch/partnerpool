@@ -265,10 +265,36 @@ class DatabaseStorage implements IStorage {
           (m) => m.senderId === partnerId && m.receiverId === userId && !m.read
         );
 
+        const relatedCases: { id: number; title: string }[] = [];
+        if (partnerAgency) {
+          const agencyInquiries = await db.select({ caseId: caseInquiries.caseId })
+            .from(caseInquiries)
+            .where(eq(caseInquiries.agencyId, partnerId));
+          if (agencyInquiries.length > 0) {
+            const caseIds = agencyInquiries.map(i => i.caseId);
+            const relCases = await db.select({ id: cases.id, title: cases.title })
+              .from(cases)
+              .where(and(inArray(cases.id, caseIds), eq(cases.clientId, userId)));
+            relatedCases.push(...relCases);
+          }
+        } else {
+          const userInquiries = await db.select({ caseId: caseInquiries.caseId, agencyId: caseInquiries.agencyId })
+            .from(caseInquiries)
+            .where(eq(caseInquiries.agencyId, userId));
+          if (userInquiries.length > 0) {
+            const caseIds = userInquiries.map(i => i.caseId);
+            const relCases = await db.select({ id: cases.id, title: cases.title })
+              .from(cases)
+              .where(and(inArray(cases.id, caseIds), eq(cases.clientId, partnerId)));
+            relatedCases.push(...relCases);
+          }
+        }
+
         threadsMap.set(partnerId, {
           partnerId,
           partnerName: partnerAgency?.name || `${partnerUser?.firstName || ""} ${partnerUser?.lastName || ""}`.trim() || "User",
           partnerLogoUrl: partnerAgency?.logoUrl || null,
+          relatedCases,
           lastMessage: msg.content,
           lastMessageTime: msg.createdAt,
           unreadCount: unreadMessages.length,
