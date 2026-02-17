@@ -31,6 +31,7 @@ export interface IStorage {
   getInquiryByCaseAndAgency(caseId: number, agencyId: string): Promise<CaseInquiry | undefined>;
   getInquiriesByAgency(agencyId: string): Promise<CaseInquiry[]>;
   createInquiry(data: InsertCaseInquiry): Promise<CaseInquiry>;
+  markInquiriesRead(ids: number[]): Promise<void>;
   getMessageThreads(userId: string): Promise<any[]>;
   getMessagesBetween(userId: string, partnerId: string): Promise<DirectMessage[]>;
   createMessage(data: InsertDirectMessage): Promise<DirectMessage>;
@@ -229,6 +230,12 @@ class DatabaseStorage implements IStorage {
   async createInquiry(data: InsertCaseInquiry) {
     const [inq] = await db.insert(caseInquiries).values(data).returning();
     return inq;
+  }
+
+  async markInquiriesRead(ids: number[]) {
+    await db.update(caseInquiries)
+      .set({ clientRead: true })
+      .where(inArray(caseInquiries.id, ids));
   }
 
   async getMessageThreads(userId: string) {

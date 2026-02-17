@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, FileText, Send, Loader2, CheckCircle, ShieldCheck, CircleDollarSign, Scale, MessageCircle, Trophy, XCircle } from "lucide-react";
+import { ArrowLeft, FileText, Send, Loader2, CheckCircle, ShieldCheck, CircleDollarSign, Scale, MessageCircle, Trophy, XCircle, Eye, EyeOff } from "lucide-react";
 import type { Case, CaseInquiry } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
 
@@ -176,6 +176,17 @@ export default function AgencyCaseDetailPage() {
             <Badge variant="secondary">
               {myInquiry.status === "pending" ? "Skickad" : myInquiry.status === "accepted" ? "Accepterad" : myInquiry.status === "rejected" ? "Avvisad" : myInquiry.status}
             </Badge>
+            {myInquiry.clientRead ? (
+              <span className="flex items-center gap-1 text-xs text-muted-foreground" data-testid="text-client-read">
+                <Eye className="h-3.5 w-3.5" />
+                Läst av klienten
+              </span>
+            ) : (
+              <span className="flex items-center gap-1 text-xs text-muted-foreground" data-testid="text-client-unread">
+                <EyeOff className="h-3.5 w-3.5" />
+                Ej läst av klienten
+              </span>
+            )}
             <Link href={`/messages?client=${caseData.clientId}&case=${caseData.id}`}>
               <Button variant="outline" size="sm" data-testid="button-message-client">
                 <MessageCircle className="h-3.5 w-3.5 mr-1.5" />

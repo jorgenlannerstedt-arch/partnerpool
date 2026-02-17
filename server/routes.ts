@@ -379,6 +379,12 @@ export async function registerRoutes(
       }
 
       const inquiries = await storage.getInquiriesByCase(caseId, userId);
+      
+      const unreadIds = inquiries.filter(inq => !inq.clientRead).map(inq => inq.id);
+      if (unreadIds.length > 0) {
+        await storage.markInquiriesRead(unreadIds);
+      }
+      
       res.json(inquiries);
     } catch (error) {
       console.error("Error fetching inquiries:", error);

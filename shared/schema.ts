@@ -95,6 +95,7 @@ export const caseInquiries = pgTable("case_inquiries", {
   agencyId: varchar("agency_id").notNull(),
   message: text("message").notNull(),
   status: text("status").notNull().default("pending"),
+  clientRead: boolean("client_read").default(false),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
