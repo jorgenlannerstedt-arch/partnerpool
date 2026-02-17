@@ -187,7 +187,8 @@ function InquiryMessageDialog({
           <div className="pt-2 border-t flex justify-start">
             <Button
               size="sm"
-              className="rounded-full"
+              variant="outline"
+              className="rounded-full border-foreground text-foreground hover:bg-foreground hover:text-background"
               onClick={() => onSelectAgency(inquiry)}
               data-testid="button-select-agency-dialog"
             >

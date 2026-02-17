@@ -182,7 +182,8 @@ export default function MessagesPage() {
                 {selectableCases && selectableCases.length > 0 && (
                   <Button
                     size="sm"
-                    className="rounded-full"
+                    variant="outline"
+                    className="rounded-full border-foreground text-foreground hover:bg-foreground hover:text-background"
                     onClick={() => {
                       const c = selectableCases[0];
                       setShowSelectConfirm({ caseId: c.id, caseName: c.title, agencyName: threads?.find((t) => t.partnerId === selectedThread)?.partnerName || "byrån" });
