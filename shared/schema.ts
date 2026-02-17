@@ -58,8 +58,8 @@ export const agencyReviews = pgTable("agency_reviews", {
 export const INSURANCE_TYPES = [
   "Hemförsäkring",
   "Företagsförsäkring",
-  "Nej har ingen försäkring",
-  "Nej jag betalar själv",
+  "Ingen försäkring",
+  "Klient betalar själv",
 ] as const;
 
 export const AMOUNT_RANGES = [
