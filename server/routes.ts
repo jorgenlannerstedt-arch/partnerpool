@@ -44,6 +44,12 @@ const logoUpload = multer({
   },
 });
 
+function stripLogoData(agency: any) {
+  if (!agency) return agency;
+  const { logoData, logoMimeType, ...rest } = agency;
+  return rest;
+}
+
 function requireRole(role: "client" | "agency") {
   return async (req: any, res: Response, next: NextFunction) => {
     try {
@@ -263,7 +269,7 @@ export async function registerRoutes(
   app.get("/api/agencies", async (_req, res) => {
     try {
       const agencies = await storage.getAllAgencies();
-      res.json(agencies);
+      res.json(agencies.map(stripLogoData));
     } catch (error) {
       console.error("Error fetching agencies:", error);
       res.status(500).json({ message: "Failed to fetch agencies" });
@@ -276,7 +282,7 @@ export async function registerRoutes(
       if (isNaN(id)) return res.status(400).json({ message: "Invalid ID" });
       const agency = await storage.getAgencyProfileById(id);
       if (!agency) return res.status(404).json({ message: "Agency not found" });
-      res.json(agency);
+      res.json(stripLogoData(agency));
     } catch (error) {
       console.error("Error fetching agency:", error);
       res.status(500).json({ message: "Failed to fetch agency" });
@@ -287,7 +293,7 @@ export async function registerRoutes(
     try {
       const userId = req.user.claims.sub;
       const profile = await storage.getAgencyProfile(userId);
-      res.json(profile || null);
+      res.json(profile ? stripLogoData(profile) : null);
     } catch (error) {
       console.error("Error fetching agency profile:", error);
       res.status(500).json({ message: "Failed to fetch agency profile" });
@@ -321,16 +327,46 @@ export async function registerRoutes(
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
       }
-      const ext = path.extname(req.file.originalname) || ".png";
-      const newFilename = `${req.file.filename}${ext}`;
-      const newPath = path.join(logoDir, newFilename);
-      fs.renameSync(req.file.path, newPath);
+      const userId = req.user.claims.sub;
+      const fileBuffer = fs.readFileSync(req.file.path);
+      const base64Data = fileBuffer.toString("base64");
+      const mimeType = req.file.mimetype || "image/png";
 
-      const logoUrl = `/uploads/logos/${newFilename}`;
+      const agencyProfile = await storage.getAgencyProfile(userId);
+      if (!agencyProfile) {
+        return res.status(404).json({ message: "Agency profile not found" });
+      }
+
+      await storage.updateAgencyProfileById(agencyProfile.id, {
+        logoData: base64Data,
+        logoMimeType: mimeType,
+        logoUrl: `/api/agency/${agencyProfile.id}/logo`,
+      });
+
+      try { fs.unlinkSync(req.file.path); } catch {}
+
+      const logoUrl = `/api/agency/${agencyProfile.id}/logo`;
       res.json({ logoUrl });
     } catch (error) {
       console.error("Error uploading logo:", error);
       res.status(500).json({ message: "Failed to upload logo" });
+    }
+  });
+
+  app.get("/api/agency/:id/logo", async (req, res) => {
+    try {
+      const agencyId = parseInt(req.params.id);
+      const agency = await storage.getAgencyProfileById(agencyId);
+      if (!agency || !agency.logoData) {
+        return res.status(404).send("Not found");
+      }
+      const mimeType = agency.logoMimeType || "image/png";
+      const buffer = Buffer.from(agency.logoData, "base64");
+      res.set("Content-Type", mimeType);
+      res.set("Cache-Control", "public, max-age=86400");
+      res.send(buffer);
+    } catch (error) {
+      res.status(500).send("Error serving logo");
     }
   });
 

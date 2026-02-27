@@ -19,6 +19,7 @@ export interface IStorage {
   getAgencyProfile(userId: string): Promise<AgencyProfile | undefined>;
   getAgencyProfileById(id: number): Promise<AgencyProfile | undefined>;
   upsertAgencyProfile(data: InsertAgencyProfile): Promise<AgencyProfile>;
+  updateAgencyProfileById(id: number, updates: Partial<AgencyProfile>): Promise<AgencyProfile | undefined>;
   getAllAgencies(): Promise<AgencyProfile[]>;
   getCasesByClient(clientId: string): Promise<Case[]>;
   getCaseById(id: number): Promise<Case | undefined>;
@@ -104,6 +105,15 @@ class DatabaseStorage implements IStorage {
           notificationEmail: data.notificationEmail,
         },
       })
+      .returning();
+    return profile;
+  }
+
+  async updateAgencyProfileById(id: number, updates: Partial<AgencyProfile>) {
+    const [profile] = await db
+      .update(agencyProfiles)
+      .set(updates)
+      .where(eq(agencyProfiles.id, id))
       .returning();
     return profile;
   }

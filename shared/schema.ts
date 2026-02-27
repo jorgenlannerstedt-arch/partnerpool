@@ -31,6 +31,8 @@ export const agencyProfiles = pgTable("agency_profiles", {
   specialties: text("specialties").array(),
   employeeCount: integer("employee_count").default(1),
   logoUrl: text("logo_url"),
+  logoData: text("logo_data"),
+  logoMimeType: text("logo_mime_type"),
   offices: jsonb("offices").$type<Array<{ city: string; address: string; latitude?: number; longitude?: number; notificationEmail?: string }>>(),
   foundedYear: integer("founded_year"),
   languages: text("languages").array(),
