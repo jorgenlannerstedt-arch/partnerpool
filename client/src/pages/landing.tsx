@@ -66,7 +66,7 @@ export default function LandingPage() {
           </div>
         </div>
       </nav>
-      <section className="relative pt-32 pb-28 px-4 sm:px-6 lg:px-8 overflow-hidden" style={{backgroundImage: "url('/dude3.webp')", backgroundSize: "cover", backgroundPosition: "center"}}>
+      <section className="relative pt-32 pb-28 px-4 sm:px-6 lg:px-8 overflow-hidden" style={{backgroundImage: "url('/dude-front.webp')", backgroundSize: "cover", backgroundPosition: "center"}}>
         <div className="absolute inset-0 bg-white/40" />
         <div className="max-w-7xl mx-auto relative">
           <div className="max-w-3xl text-left space-y-8">
@@ -112,10 +112,10 @@ export default function LandingPage() {
       </section>
       <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 space-y-4">
+          <div className="text-left mb-16 space-y-4">
             <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">Hur det fungerar</p>
             <h2 className="text-3xl sm:text-4xl font-serif font-semibold">Från fråga till juridisk hjälp</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground max-w-2xl">
               En smidig och helt kostnadsfri process för dig som klient — från din första fråga till att du hittat rätt juridisk representation.
             </p>
           </div>
@@ -206,12 +206,12 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1 flex items-center justify-center">
               <Card className="p-8 max-w-sm w-full space-y-6">
-                <div className="text-center space-y-4">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+                <div className="text-left space-y-4">
+                  <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
                     <Building2 className="h-8 w-8 text-primary" />
                   </div>
                   <h3 className="text-xl font-serif font-semibold">Vertigogo Professional</h3>
-                  <div className="flex items-baseline justify-center gap-1">
+                  <div className="flex items-baseline justify-start gap-1">
                     <span className="text-4xl font-bold">995</span>
                     <span className="text-muted-foreground">SEK/mån</span>
                   </div>
@@ -264,17 +264,17 @@ export default function LandingPage() {
       </section>
       <section id="security" className="py-24 px-4 sm:px-6 lg:px-8 bg-[#f3f4f8]">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16 space-y-4">
+          <div className="text-left mb-16 space-y-4">
             <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">Säkerhet</p>
             <h2 className="text-3xl sm:text-4xl font-serif font-semibold">Vi tar din säkerhet på allvar</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-muted-foreground max-w-2xl">
               Säkerhet i världsklass för din juridiska data, skyddad med avancerad kryptering och full GDPR-efterlevnad.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {securityFeatures.map((feature) => (
-              <Card key={feature.title} className="text-center space-y-4 p-6">
-                <div className="w-14 h-14 mx-auto rounded-full bg-primary/10 flex items-center justify-center">
+              <Card key={feature.title} className="text-left space-y-4 p-6">
+                <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center">
                   <feature.icon className="h-7 w-7 text-primary" />
                 </div>
                 <h3 className="font-semibold">{feature.title}</h3>
@@ -285,12 +285,12 @@ export default function LandingPage() {
         </div>
       </section>
       <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white">
-        <div className="max-w-3xl mx-auto text-center space-y-8">
+        <div className="max-w-7xl mx-auto text-left space-y-8">
           <h2 className="text-3xl sm:text-4xl font-serif font-semibold">Redo att hitta rätt juridisk hjälp?</h2>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-muted-foreground text-lg max-w-2xl">
             Skapa ett konto idag och ladda upp ditt första ärende. Det är helt gratis och tar bara några minuter.
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
+          <div className="flex flex-wrap items-center justify-start gap-4">
             <a href="/login">
               <Button size="lg" className="rounded-full px-8 text-base" data-testid="button-cta-bottom">
                 Kom igång gratis
