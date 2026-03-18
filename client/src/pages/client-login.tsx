@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Mail } from "lucide-react";
 import { SiGoogle, SiApple } from "react-icons/si";
 import logoSrc from "@assets/vertigogo-logo.svg";
 
