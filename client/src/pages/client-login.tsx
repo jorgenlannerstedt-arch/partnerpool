@@ -71,12 +71,12 @@ export default function ClientLoginPage() {
             Genom att fortsätta godkänner du våra användarvillkor och integritetspolicy.
           </p>
           <div className="border-t pt-4">
-            <p className="text-sm text-muted-foreground mb-2">Är du advokatbyrå?</p>
-            <a href="/register/agency" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors" data-testid="link-register-agency">
-              Registrera din advokatbyrå →
+            <p className="text-sm text-muted-foreground mb-3">Är du advokatbyrå?</p>
+            <a href="/register/agency" className="inline-block text-sm font-medium text-primary border border-primary/40 rounded-full px-5 py-2 hover:bg-primary/5 transition-colors" data-testid="link-register-agency">
+              Registrera din advokatbyrå
             </a>
           </div>
-          <a href="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground" data-testid="link-back-home">
+          <a href="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground mt-4" data-testid="link-back-home">
             <ArrowLeft className="h-3.5 w-3.5" />
             Tillbaka till startsidan
           </a>
