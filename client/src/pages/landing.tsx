@@ -63,7 +63,8 @@ export default function LandingPage() {
           </div>
         </div>
       </nav>
-      <section className="relative pt-32 pb-28 px-4 sm:px-6 lg:px-8 bg-[#f3f4f8] overflow-hidden">
+      <section className="relative pt-32 pb-28 px-4 sm:px-6 lg:px-8 overflow-hidden" style={{backgroundImage: "url('/dude.webp')", backgroundSize: "cover", backgroundPosition: "center"}}>
+        <div className="absolute inset-0 bg-white/70" />
         <div className="max-w-7xl mx-auto relative">
           <div className="max-w-3xl mx-auto text-center space-y-8">
             <Badge variant="secondary" className="rounded-full px-4 py-1.5">
