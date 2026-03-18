@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Mail } from "lucide-react";
-import { SiGoogle, SiApple } from "react-icons/si";
+import { SiGoogle } from "react-icons/si";
 import logoSrc from "@assets/vertigogo-logo.svg";
 
 function handleLogin() {
@@ -34,16 +34,6 @@ export default function ClientLoginPage() {
           >
             <SiGoogle className="h-4 w-4" />
             Fortsätt med Google
-          </Button>
-
-          <Button
-            variant="outline"
-            className="w-full rounded-full justify-center gap-3"
-            onClick={handleLogin}
-            data-testid="button-login-apple"
-          >
-            <SiApple className="h-4 w-4" />
-            Fortsätt med Apple
           </Button>
 
           <div className="relative py-2">
