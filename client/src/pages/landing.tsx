@@ -96,7 +96,7 @@ export default function LandingPage() {
                 Inget kreditkort krävs
               </span>
               <span className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4" />
+                <img src="/icon-ai-matching.svg" className="h-5 w-5" alt="" />
                 AI-driven matchning
               </span>
               <span className="flex items-center gap-1.5">
