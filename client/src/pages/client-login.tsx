@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Mail } from "lucide-react";
 import { SiGoogle } from "react-icons/si";
-import logoSrc from "@assets/vertigogo-logo.svg";
+const logoSrc = "/vertigogo-logo.svg";
 
 function handleLogin() {
   localStorage.setItem("vertigogo_client_registration", "true");

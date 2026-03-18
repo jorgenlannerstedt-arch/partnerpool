@@ -13,7 +13,7 @@ import {
 import { LayoutDashboard, Users, MessageCircle, Settings, LogOut, RefreshCw, Mail } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { UserProfile } from "@shared/schema";
-import logoSrc from "@assets/vertigogo-logo.svg";
+const logoSrc = "/vertigogo-logo.svg";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, logout } = useAuth();

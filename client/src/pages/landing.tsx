@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Shield, Users, FileText, MessageCircle, ArrowRight, CheckCircle, Lock, Zap, Building2, ChevronRight, ShieldCheck, Network, Bot, Mail } from "lucide-react";
-import logoSrc from "@assets/vertigogo-logo.svg";
+const logoSrc = "/vertigogo-logo.svg";
 
 const steps = [
   {

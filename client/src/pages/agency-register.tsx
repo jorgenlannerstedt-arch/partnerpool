@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, ArrowRight, Building2, Mail, AlertCircle } from "lucide-react";
-import logoSrc from "@assets/vertigogo-logo.svg";
+const logoSrc = "/vertigogo-logo.svg";
 
 const BLOCKED_DOMAINS = [
   "gmail.com", "googlemail.com",
