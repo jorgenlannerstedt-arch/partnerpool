@@ -18,6 +18,49 @@ npm install
 
 ---
 
+## Samarbetsregler – läs detta först
+
+Vi är två som jobbar i samma repo: **Replit Agent** (AI på Replit-sidan) och **du** (kodaren lokalt i Claude Code). För att undvika konflikter gäller dessa regler:
+
+### Filer som Replit ALDRIG redigerar – dessa äger du
+
+Dessa filer skrivs av kodaren och ska inte röras av Replit Agent:
+
+- `server/localAuth.ts` — lokal auth-bypass för din dev-miljö
+- `server/productionAuth.ts` — din produktionsauth-lösning
+- `shared/models/auth.ts` — dina auth-modeller
+
+Om Replit råkar ändra dessa av misstag — säg till så rullar vi tillbaka.
+
+### Filer som du ALDRIG redigerar – dessa äger Replit
+
+Dessa filer genereras eller hanteras av Replit och skrivs över vid deploy:
+
+- `server/replit_integrations/` — hela katalogen (Replit Auth, AI-integrationer m.m.)
+- `.replit` och `replit.nix` — Replits miljökonfiguration
+
+Om du behöver ändra auth-beteendet i produktion — kommunicera det till Replit-sidan istället.
+
+### Nya miljövariabler
+
+Om du lägger till en ny integration eller tjänst som kräver en ny env-variabel:
+1. Dokumentera den i `DEVELOPER_SETUP.md` under "Miljövariabler"
+2. Meddela Replit-sidan så den läggs till i Replit Secrets — annars kraschar produktionsappen tyst
+
+Samma gäller omvänt: om Replit-sidan lägger till nya env-variabler uppdateras `DEVELOPER_SETUP.md` och du meddelas.
+
+### Schemaändringar (shared/schema.ts)
+
+Om du ändrar databasschemat:
+1. Ändra `shared/schema.ts`
+2. Kör `npm run db:push` lokalt för att synka din databas
+3. Committa och pusha till GitHub
+4. Meddela Replit-sidan — de kör `npm run db:push` på sin server
+
+Ingen av oss kör manuella SQL-migreringar. Drizzle sköter det via `db:push`.
+
+---
+
 ## Synka med repot
 
 Hämta senaste koden (gör detta varje gång du börjar jobba):
