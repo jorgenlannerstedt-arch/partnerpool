@@ -66,18 +66,18 @@ export default function LandingPage() {
       <section className="relative pt-32 pb-28 px-4 sm:px-6 lg:px-8 overflow-hidden" style={{backgroundImage: "url('/dude.webp')", backgroundSize: "cover", backgroundPosition: "center"}}>
         <div className="absolute inset-0 bg-white/70" />
         <div className="max-w-7xl mx-auto relative">
-          <div className="max-w-3xl mx-auto text-center space-y-8">
+          <div className="max-w-3xl text-left space-y-8">
             <Badge variant="secondary" className="rounded-full px-4 py-1.5">
               <Shield className="h-3.5 w-3.5 mr-1.5" />
               Alltid gratis för klienter
             </Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-normal leading-[1.85] tracking-tight" data-testid="text-hero-heading">
-              Hitta rätt juridisk {" "}<br />partner för ditt ärende
+              Hitta rätt juridisk <br />partner för ditt ärende
             </h1>
-            <p className="text-[17px] text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-[17px] text-muted-foreground max-w-2xl">
               Vertigogo kopplar dig samman med kvalificerade advokatbyråer genom AI-driven ärendeanalys. Ladda upp, bli matchad, kommunicera säkert.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-2">
+            <div className="flex flex-wrap items-center justify-start gap-4 pt-2">
               <a href="/login">
                 <Button size="lg" className="rounded-full px-8 text-base" data-testid="button-hero-cta">
                   Starta gratis
@@ -90,7 +90,7 @@ export default function LandingPage() {
                 </Button>
               </a>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-6 pt-4 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center justify-start gap-6 pt-4 text-sm text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4" />
                 Inget kreditkort krävs
