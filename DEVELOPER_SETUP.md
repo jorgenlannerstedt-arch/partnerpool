@@ -24,19 +24,17 @@ Vi är två som jobbar i samma repo: **Replit Agent** (AI på Replit-sidan) och 
 
 ### Filer som Replit ALDRIG redigerar – dessa äger du
 
-Dessa filer skrivs av kodaren och ska inte röras av Replit Agent:
+Dessa filer skrivs av kodaren och ska inte röras av Replit Agent. Om Replit råkar ändra dem av misstag — säg till så rullar vi tillbaka:
 
 - `server/localAuth.ts` — lokal auth-bypass för din dev-miljö
 - `server/productionAuth.ts` — din produktionsauth-lösning
 - `shared/models/auth.ts` — dina auth-modeller
 
-Om Replit råkar ändra dessa av misstag — säg till så rullar vi tillbaka.
-
 ### Filer som du ALDRIG redigerar – dessa äger Replit
 
-Dessa filer genereras eller hanteras av Replit och skrivs över vid deploy:
+Dessa filer genereras eller hanteras av Replit och skrivs över automatiskt vid deploy. Redigera dem aldrig direkt:
 
-- `server/replit_integrations/` — hela katalogen (Replit Auth, AI-integrationer m.m.)
+- `server/replit_integrations/` — hela katalogen, inklusive `server/replit_integrations/auth/index.ts` och alla auth-filer
 - `.replit` och `replit.nix` — Replits miljökonfiguration
 
 Om du behöver ändra auth-beteendet i produktion — kommunicera det till Replit-sidan istället.
