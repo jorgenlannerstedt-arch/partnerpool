@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Users, FileText, MessageCircle, ArrowRight, CheckCircle, Lock, Zap, Building2, ChevronRight, ShieldCheck, Network, Bot } from "lucide-react";
+import { Shield, Users, FileText, MessageCircle, ArrowRight, CheckCircle, Lock, Zap, Building2, ChevronRight, ShieldCheck, Network, Bot, Mail } from "lucide-react";
 import logoSrc from "@assets/vertigogo-logo.svg";
 
 const steps = [
@@ -306,6 +306,10 @@ export default function LandingPage() {
             &copy; {new Date().getFullYear()} Vertigo Intel AB
           </p>
           <div className="flex items-center gap-6">
+            <a href="mailto:info@vertigolaw.se" className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground" data-testid="link-email">
+              <Mail className="h-3.5 w-3.5" />
+              info@vertigolaw.se
+            </a>
             <a href="/support" className="text-xs text-muted-foreground transition-colors hover:text-foreground" data-testid="link-support">Support</a>
             <a href="/integritetspolicy" className="text-xs text-muted-foreground transition-colors hover:text-foreground" data-testid="link-privacy-policy">Integritetspolicy</a>
             <a href="/datapolicy" className="text-xs text-muted-foreground transition-colors hover:text-foreground" data-testid="link-data-policy">Datapolicy</a>

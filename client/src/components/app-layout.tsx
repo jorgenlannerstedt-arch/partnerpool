@@ -10,7 +10,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LayoutDashboard, Users, MessageCircle, Settings, LogOut, RefreshCw } from "lucide-react";
+import { LayoutDashboard, Users, MessageCircle, Settings, LogOut, RefreshCw, Mail } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { UserProfile } from "@shared/schema";
 import logoSrc from "@assets/vertigogo-logo.svg";
@@ -188,6 +188,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             &copy; {new Date().getFullYear()} Vertigo Intel AB
           </p>
           <div className="flex items-center gap-6">
+            <a href="mailto:info@vertigolaw.se" className="flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground" data-testid="link-email">
+              <Mail className="h-3.5 w-3.5" />
+              info@vertigolaw.se
+            </a>
             <Link href="/support">
               <span className="text-xs text-muted-foreground transition-colors hover:text-foreground cursor-pointer" data-testid="link-support">Support</span>
             </Link>
