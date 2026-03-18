@@ -92,7 +92,7 @@ export default function LandingPage() {
             </div>
             <div className="flex flex-wrap items-center justify-start gap-6 pt-4 text-sm text-foreground/80">
               <span className="flex items-center gap-1.5">
-                <CheckCircle className="h-4 w-4" />
+                <img src="/icon-no-credit-card.svg" className="h-5 w-5" alt="" />
                 Inget kreditkort krävs
               </span>
               <span className="flex items-center gap-1.5">
