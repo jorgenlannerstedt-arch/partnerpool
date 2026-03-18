@@ -70,6 +70,12 @@ export default function ClientLoginPage() {
           <p className="text-xs text-muted-foreground leading-relaxed">
             Genom att fortsätta godkänner du våra användarvillkor och integritetspolicy.
           </p>
+          <div className="border-t pt-4">
+            <p className="text-sm text-muted-foreground mb-2">Är du advokatbyrå?</p>
+            <a href="/register/agency" className="text-sm font-medium text-primary hover:text-primary/80 transition-colors" data-testid="link-register-agency">
+              Registrera din advokatbyrå →
+            </a>
+          </div>
           <a href="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground" data-testid="link-back-home">
             <ArrowLeft className="h-3.5 w-3.5" />
             Tillbaka till startsidan
