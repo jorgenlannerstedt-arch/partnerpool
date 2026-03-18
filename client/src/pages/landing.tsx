@@ -116,7 +116,7 @@ export default function LandingPage() {
             <p className="text-sm font-medium text-muted-foreground tracking-widest uppercase">Hur det fungerar</p>
             <h2 className="text-3xl sm:text-4xl font-serif font-semibold">Från dokument till juridisk hjälp</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              En smidig process från dokumentuppladdning till att hitta rätt juridisk representation.
+              En smidig och helt kostnadsfri process för dig som klient — från din första fråga till att du hittat rätt juridisk representation.
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
