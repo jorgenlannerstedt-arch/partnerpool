@@ -10,7 +10,6 @@ const steps = [
     title: "Dokument laddas upp och analyseras",
     desc: <>Ladda upp ditt juridiska dokument från <a href="https://www.vertigogo.se" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">www.vertigogo.se</a>. Vår AI extraherar automatiskt nyckelfakta och anonymiserar all personlig information.</>,
     icon: FileText,
-    imgSrc: "/icon-upload.svg",
   },
   {
     num: "2",
@@ -128,10 +127,7 @@ export default function LandingPage() {
                     <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
                       {step.num}
                     </div>
-                    {"imgSrc" in step && step.imgSrc
-                      ? <img src={step.imgSrc} className="h-6 w-6" alt="" />
-                      : <step.icon className="h-6 w-6 text-muted-foreground" />
-                    }
+                    <step.icon className="h-6 w-6 text-muted-foreground" />
                   </div>
                   <h3 className="text-lg font-semibold">{step.title}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">{step.desc}</p>
