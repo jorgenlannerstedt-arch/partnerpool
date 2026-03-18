@@ -16,6 +16,7 @@ export function setupGoogleAuth(app: Express) {
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL: "/api/auth/google/callback",
         proxy: true,
+        passReqToCallback: false,
       },
       async (_accessToken, _refreshToken, profile, done) => {
         try {
@@ -36,13 +37,7 @@ export function setupGoogleAuth(app: Express) {
           const expiresAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
 
           const user = {
-            claims: {
-              sub: googleId,
-              email,
-              first_name: firstName,
-              last_name: lastName,
-              profile_image_url: profileImageUrl,
-            },
+            claims: { sub: googleId, email },
             expires_at: expiresAt,
           };
 
@@ -56,14 +51,24 @@ export function setupGoogleAuth(app: Express) {
 
   app.get(
     "/api/auth/google",
-    passport.authenticate("google", { scope: ["openid", "email", "profile"] })
+    (req, res, next) => {
+      const callbackURL = `https://${req.hostname}/api/auth/google/callback`;
+      passport.authenticate("google", {
+        scope: ["openid", "email", "profile"],
+        callbackURL,
+      } as any)(req, res, next);
+    }
   );
 
   app.get(
     "/api/auth/google/callback",
-    passport.authenticate("google", {
-      failureRedirect: "/login",
-    }),
+    (req, res, next) => {
+      const callbackURL = `https://${req.hostname}/api/auth/google/callback`;
+      passport.authenticate("google", {
+        failureRedirect: "/login",
+        callbackURL,
+      } as any)(req, res, next);
+    },
     (_req, res) => {
       res.redirect("/");
     }
