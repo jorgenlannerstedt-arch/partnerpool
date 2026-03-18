@@ -75,7 +75,7 @@ export default function LandingPage() {
               Alltid gratis för klienter
             </Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-normal leading-[1.85] tracking-tight" data-testid="text-hero-heading">
-              Hitta rätt juridisk <br />partner för ditt ärende
+              Hitta rätt juridisk <br />partner för ditt ärende<sup>1</sup>
             </h1>
             <p className="text-[17px] text-foreground/80 max-w-2xl">
               Vertigogo kopplar dig samman med kvalificerade advokatbyråer genom AI-driven ärendeanalys. Ladda upp, bli matchad, kommunicera säkert.
