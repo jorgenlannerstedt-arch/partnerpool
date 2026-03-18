@@ -74,7 +74,7 @@ export default function LandingPage() {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-normal leading-[1.85] tracking-tight" data-testid="text-hero-heading">
               Hitta rätt juridisk <br />partner för ditt ärende
             </h1>
-            <p className="text-[17px] text-muted-foreground max-w-2xl">
+            <p className="text-[17px] text-foreground/80 max-w-2xl">
               Vertigogo kopplar dig samman med kvalificerade advokatbyråer genom AI-driven ärendeanalys. Ladda upp, bli matchad, kommunicera säkert.
             </p>
             <div className="flex flex-wrap items-center justify-start gap-4 pt-2">
@@ -90,7 +90,7 @@ export default function LandingPage() {
                 </Button>
               </a>
             </div>
-            <div className="flex flex-wrap items-center justify-start gap-6 pt-4 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center justify-start gap-6 pt-4 text-sm text-foreground/80">
               <span className="flex items-center gap-1.5">
                 <CheckCircle className="h-4 w-4" />
                 Inget kreditkort krävs
