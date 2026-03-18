@@ -8,7 +8,7 @@ const steps = [
   {
     num: "1",
     title: "Ställ din juridiska fråga",
-    desc: <>Beskriv ditt ärende och ladda upp relevanta dokument på <a href="https://www.vertigogo.se" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">www.vertigogo.se</a>. Vår AI anonymiserar all personlig information och skapar en professionell ärendebeskrivning.</>,
+    desc: <>Beskriv ditt ärende på <a href="https://www.vertigogo.se" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">www.vertigogo.se</a>. Vår AI anonymiserar all personlig information och skapar en professionell ärendebeskrivning som advokatbyråer kan granska.</>,
     icon: FileText,
   },
   {
