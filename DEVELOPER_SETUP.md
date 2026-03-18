@@ -110,96 +110,29 @@ npm run db:push
 
 ## Autentisering – viktig läsning
 
-Produktionen (Replit) använder **Replit Auth** – ett OpenID Connect-system som är knutet till Replitkontot. Det är alltså inloggning på **webbplatsen** (inte GitHub-access). Det funkar inte lokalt eftersom det kräver Replits servrar och ett `REPL_ID`.
+Produktionen (Replit) använder **Replit Auth** – ett OpenID Connect-system knutet till Replitkontot. Det är inloggning på **webbplatsen** (inte GitHub-access) och funkar inte lokalt.
 
-**Du behöver alltså ersätta auth-lagret för lokal utveckling.** Här är det enklaste sättet:
+**Replit Auth ägs av Replit-sidan.** Redigera aldrig filerna i `server/replit_integrations/` — se Samarbetsreglerna ovan.
 
-### Lösning: Dev-bypass i auth-middleware
+### Din lokala auth-lösning
 
-I `server/replit_integrations/auth/replitAuth.ts` exporteras `isAuthenticated` och `setupAuth`. För lokal dev kan du skapa en mock-version.
+Du behöver implementera `server/localAuth.ts` och `server/productionAuth.ts` — dessa filer äger du helt. Replit rör dem aldrig.
 
-Skapa filen `server/localAuth.ts`:
+`server/localAuth.ts` ska exportera samma interface som Replit Auth:
+- `setupAuth(app: Express): Promise<void>`
+- `isAuthenticated: RequestHandler`
+- `getSession(): RequestHandler`
+- `registerAuthRoutes(app: Express): void`
 
-```typescript
-import type { Express, RequestHandler } from "express";
-import session from "express-session";
-import { storage } from "./storage";
-
-// Hårdkodad testanvändare – ändra till din smak
-const DEV_USER = {
-  id: "dev-user-1",
-  email: "dev@example.com",
-  firstName: "Dev",
-  lastName: "User",
-  profileImageUrl: null,
-};
-
-export async function setupAuth(app: Express) {
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET || "dev-secret",
-      resave: false,
-      saveUninitialized: false,
-    })
-  );
-
-  // Sätt in dev-användaren i databasen vid start
-  await storage.upsertUser(DEV_USER);
-
-  // Fejkad login-route
-  app.get("/api/login", async (req: any, res) => {
-    req.session.userId = DEV_USER.id;
-    res.redirect("/");
-  });
-
-  app.get("/api/logout", (req: any, res) => {
-    req.session.destroy(() => res.redirect("/"));
-  });
-
-  app.get("/api/callback", (_req, res) => res.redirect("/"));
-}
-
-export const isAuthenticated: RequestHandler = (req: any, res, next) => {
-  if (req.session?.userId) {
-    req.user = {
-      claims: { sub: req.session.userId },
-      expires_at: Math.floor(Date.now() / 1000) + 3600,
-    };
-    return next();
-  }
-  return res.status(401).json({ message: "Unauthorized" });
-};
-
-export function getSession() {
-  return session({
-    secret: process.env.SESSION_SECRET || "dev-secret",
-    resave: false,
-    saveUninitialized: false,
-  });
-}
-
-export function registerAuthRoutes(_app: Express) {}
-```
-
-Sedan i `server/routes.ts`, byt ut importen längst upp:
+Styr vilken auth som används via env-variabeln `USE_LOCAL_AUTH`:
 
 ```typescript
-// Ändra detta:
-import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
-
-// Till detta (bara i lokal dev):
-import { setupAuth, registerAuthRoutes, isAuthenticated } from "./localAuth";
+const auth = process.env.USE_LOCAL_AUTH === "true"
+  ? await import("./localAuth")
+  : await import("./productionAuth");
 ```
 
-> Tips: Använd en env-variabel för att styra vilken auth som används, t.ex.:
-> ```typescript
-> const auth = process.env.NODE_ENV === "development" && process.env.USE_LOCAL_AUTH === "true"
->   ? await import("./localAuth")
->   : await import("./replit_integrations/auth");
-> ```
-> Då slipper du ändra imports manuellt.
-
-Du behöver också se till att `storage.upsertUser` finns – kolla `server/replit_integrations/auth/storage.ts` för hur den fungerar.
+Se `server/replit_integrations/auth/storage.ts` som referens för hur `upsertUser` fungerar — du behöver samma anrop i din lokala auth.
 
 ---
 
