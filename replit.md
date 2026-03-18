@@ -73,6 +73,12 @@ Vertigogo connects clients needing legal help with law firms. The platform featu
 - GET /api/agencies/:id/stats - Agency stats (avgRating, reviewCount, caseCount)
 - POST /api/reviews - Submit a review (client only)
 
+## Asset Management Rules
+- **ALWAYS** place image/media files directly in `client/public/` — never use `@assets/` imports from `attached_assets/`
+- Reference public assets with `/filename.ext` (e.g. `src="/vertigogo-logo.svg"`) or `const x = "/filename.ext"`
+- `attached_assets/` is gitignored and only for reference screenshots shared in chat — never for app assets
+- This ensures all assets are included in GitHub pushes automatically
+
 ## Recent Changes
 - 2026-02-15: Initial build - all core features implemented
 - Seeded 12 Swedish law firms with Swedish specializations and multi-office support
