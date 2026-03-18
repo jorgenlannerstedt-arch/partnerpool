@@ -1217,5 +1217,46 @@ VIKTIGT:
     }
   });
 
+  app.post("/api/support/chat", async (req, res) => {
+    try {
+      const { messages } = req.body;
+      if (!Array.isArray(messages)) {
+        return res.status(400).json({ message: "messages must be an array" });
+      }
+
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-5",
+        max_tokens: 1024,
+        system: `Du är en vänlig och kunnig supportagent för Vertigogo — en svensk juridisk tjänsteplattform som kopplar samman privatpersoner med kvalificerade advokatbyråer.
+
+Om Vertigogo:
+- Helt gratis för klienter (privatpersoner med juridiska ärenden)
+- Advokatbyråer betalar 995 SEK/månad för att få tillgång till ärenden
+- Klienter laddar upp juridiska dokument (PDF) som AI analyserar och anonymiserar
+- AI extraherar ärendetyp, skapar en professionell beskrivning utan personuppgifter
+- Byråer kan sedan ta kontakt via plattformens meddelandesystem
+- All kommunikation sker inom plattformen — inga e-postadresser eller telefonnummer delas direkt
+- Klienter kan välja vilken byrå de vill anlita, varpå ärendet stängs
+- Klienter kan lämna omdömen (1–5 stjärnor) om byråer de anlitat
+
+Ärendetyper som stöds (17 rättsområden): familjerätt, arvsrätt, bostadsrätt/fastighetsrätt, arbetsrätt, bolagsrätt/affärsjuridik, skatterätt, migrationsrätt, brottmål, personskaderätt, konsumenträtt, socialrätt, förvaltningsrätt, fordonsrätt, hyresrätt, marknadsrätt, immaterialrätt, allmän civilrätt
+
+Försäkringstyper: Hemförsäkring, Företagsförsäkring, Nej har ingen försäkring, Nej jag betalar själv
+
+Svara alltid på svenska. Var kortfattad, hjälpsam och professionell. Om du inte vet svaret på en specifik fråga, hänvisa till support@vertigogo.se.`,
+        messages: messages.map((m: { role: string; content: string }) => ({
+          role: m.role as "user" | "assistant",
+          content: m.content,
+        })),
+      });
+
+      const text = response.content[0].type === "text" ? response.content[0].text : "";
+      res.json({ message: text });
+    } catch (error) {
+      console.error("Support chat error:", error);
+      res.status(500).json({ message: "Kunde inte kontakta supportagenten. Försök igen." });
+    }
+  });
+
   return httpServer;
 }
