@@ -7,20 +7,20 @@ import logoSrc from "@assets/vertigogo-logo.svg";
 const steps = [
   {
     num: "1",
-    title: "Dokument laddas upp och analyseras",
-    desc: <>Ladda upp ditt juridiska dokument från <a href="https://www.vertigogo.se" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">www.vertigogo.se</a>. Vår AI extraherar automatiskt nyckelfakta och anonymiserar all personlig information.</>,
+    title: "Ställ din juridiska fråga",
+    desc: <>Beskriv ditt ärende och ladda upp relevanta dokument på <a href="https://www.vertigogo.se" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:text-primary/80">www.vertigogo.se</a>. Vår AI anonymiserar all personlig information och skapar en professionell ärendebeskrivning.</>,
     icon: FileText,
   },
   {
     num: "2",
-    title: "Matchas med rätt byrå",
-    desc: "Bläddra bland kvalificerade advokatbyråer eller låt vår matchning hitta rätt specialisering för ditt ärende.",
+    title: "Välj rätt byrå",
+    desc: "Kvalificerade advokatbyråer med rätt specialisering får ta del av ditt ärende och kan höra av sig. Du väljer sedan vilken byrå du vill anlita.",
     icon: Users,
   },
   {
     num: "3",
     title: "Kommunicera säkert",
-    desc: "Kommunicera direkt med intresserade advokatbyråer genom vårt krypterade meddelandesystem.",
+    desc: "Kommunicera direkt med din valda advokatbyrå genom vårt krypterade meddelandesystem. All kontakt sker inom plattformen.",
     icon: MessageCircle,
   },
 ];
