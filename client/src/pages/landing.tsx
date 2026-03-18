@@ -14,7 +14,7 @@ const steps = [
   {
     num: "2",
     title: "Välj rätt byrå",
-    desc: "Kvalificerade advokatbyråer med rätt specialisering får ta del av ditt ärende och kan höra av sig. Du väljer sedan vilken byrå du vill anlita.",
+    desc: "Matchande advokatbyråer granskar ditt ärende och hör av sig om de kan hjälpa dig. Du jämför deras profiler och väljer själv vem du vill gå vidare med.",
     icon: Users,
   },
   {
