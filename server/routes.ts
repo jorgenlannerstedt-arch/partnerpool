@@ -7,6 +7,7 @@ import { z } from "zod";
 import { storage } from "./storage";
 import { LEGAL_AREAS, INSURANCE_TYPES, AMOUNT_RANGES } from "@shared/schema";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
+import { setupGoogleAuth } from "./googleAuth";
 import Anthropic from "@anthropic-ai/sdk";
 import { sendInquiryNotification, sendNewCaseNotification, sendAgencySelectedNotification, sendAgencyNotSelectedNotification, sendSelectionRevertedNotification } from "./email";
 import { seedDemoData } from "./seed";
@@ -152,6 +153,7 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   await setupAuth(app);
+  setupGoogleAuth(app);
   registerAuthRoutes(app);
 
   seedDemoData().catch((err) => console.error("Auto-seed error:", err));

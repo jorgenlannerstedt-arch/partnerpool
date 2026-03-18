@@ -9,6 +9,11 @@ function handleLogin() {
   window.location.href = "/api/login";
 }
 
+function handleGoogleLogin() {
+  localStorage.setItem("vertigogo_client_registration", "true");
+  window.location.href = "/api/auth/google";
+}
+
 export default function ClientLoginPage() {
   return (
     <div className="min-h-screen bg-[#f3f4f8] flex items-center justify-center p-4">
@@ -29,7 +34,7 @@ export default function ClientLoginPage() {
           <Button
             variant="outline"
             className="w-full rounded-full justify-center gap-3"
-            onClick={handleLogin}
+            onClick={handleGoogleLogin}
             data-testid="button-login-google"
           >
             <SiGoogle className="h-4 w-4" />
