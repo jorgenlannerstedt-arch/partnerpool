@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Users, FileText, MessageCircle, ArrowRight, CheckCircle, Lock, Zap, Building2, ChevronRight } from "lucide-react";
+import { Shield, Users, FileText, MessageCircle, ArrowRight, CheckCircle, Lock, Zap, Building2, ChevronRight, ShieldCheck, Network, Bot } from "lucide-react";
 import logoSrc from "@assets/vertigogo-logo.svg";
 
 const steps = [
@@ -28,7 +28,10 @@ const steps = [
 const securityFeatures = [
   { icon: Lock, title: "Ingen datalagring", desc: "Vi sparar inga konversationer eller historik från våra användare" },
   { icon: Shield, title: "Ingen AI-träning", desc: "Vi tränar aldrig våra AI-modeller på användardata eller innehåll" },
-  { icon: Zap, title: "HTTPS-kryptering", desc: "All kommunikation är säkert krypterad med modern TLS" },
+  { icon: Zap, title: "HTTPS-kryptering", desc: "All kommunikation mellan användare och våra tjänster är säkert krypterad" },
+  { icon: ShieldCheck, title: "Säkerhetsrubriker klass A", desc: "Vi följer moderna säkerhetsstandarder och best practices" },
+  { icon: Network, title: "Vertigo AI RAG", desc: "Vår RAG-teknologi tränar inte på data som skickas via API" },
+  { icon: Bot, title: "Claude API", desc: "Anthropic tränar inte sina modeller på data som skickas via API" },
 ];
 
 export default function LandingPage() {
