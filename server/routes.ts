@@ -201,13 +201,12 @@ export async function registerRoutes(
   app.get("/api/demo-seed-porsche", async (req: any, res) => {
     try {
       const demoUserId = "demo_client_user";
-      const existing = await db.select().from(cases).where(
-        and(eq(cases.clientId, demoUserId), eq(cases.title, "Köp av begagnad Porsche Turbo"))
-      ).limit(1);
-      if (existing.length > 0) {
-        return res.json({ message: "Demo-ärendet finns redan", id: existing[0].id });
+      const existingCases = await storage.getCasesByClient(demoUserId);
+      const already = existingCases.find(c => c.title === "Köp av begagnad Porsche Turbo");
+      if (already) {
+        return res.json({ message: "Demo-ärendet finns redan", id: already.id });
       }
-      const [newCase] = await db.insert(cases).values({
+      const newCase = await storage.createCase({
         clientId: demoUserId,
         title: "Köp av begagnad Porsche Turbo",
         description: "Jag köpte en begagnad Porsche 911 Turbo för 850 000 kr av en privatperson. Vid köpet försäkrade säljaren att bilen var i utmärkt skick och nyservad. Inom 53 dagar från köpet upptäckte jag allvarliga dolda fel – omfattande motorproblem och ett skadat växellådshus. En expertundersökning bekräftade att felen måste ha funnits vid köptillfället. Säljaren nekar ansvar och hävdar att reklamationen kom för sent. Jag vill häva köpet och få tillbaka pengarna.",
@@ -218,7 +217,7 @@ export async function registerRoutes(
         estimatedAmount: "500k-1m",
         legalProtectionApplied: true,
         legalProtectionGranted: "pending",
-      }).returning();
+      });
       res.json({ message: "Demo-ärende skapat!", id: newCase.id });
     } catch (error) {
       console.error("Demo seed error:", error);
