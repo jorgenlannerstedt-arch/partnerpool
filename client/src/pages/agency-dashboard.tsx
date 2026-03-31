@@ -169,7 +169,7 @@ export default function AgencyDashboard() {
             ))}
           </div>
         ) : availableCases && availableCases.length > 0 ? (
-          <div className="space-y-3">
+          <div className="space-y-5">
             {availableCases.map((c) => (
               <Link key={c.id} href={`/agency/cases/${c.id}`}>
                 <Card
