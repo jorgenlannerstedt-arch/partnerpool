@@ -198,6 +198,21 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/demo-activate-subscription", async (req: any, res) => {
+    try {
+      const demoUserId = "demo_client_user";
+      const agencyProfile = await storage.getAgencyProfile(demoUserId);
+      if (!agencyProfile) {
+        return res.status(404).json({ message: "Byråprofil hittades inte" });
+      }
+      await storage.updateAgencyProfileById(agencyProfile.id, { subscriptionActive: true });
+      res.json({ message: "Prenumeration aktiverad!", agencyId: agencyProfile.id });
+    } catch (error) {
+      console.error("Demo activate subscription error:", error);
+      res.status(500).json({ message: "Kunde inte aktivera prenumerationen" });
+    }
+  });
+
   app.get("/api/demo-seed-porsche", async (req: any, res) => {
     try {
       const demoUserId = "demo_client_user";

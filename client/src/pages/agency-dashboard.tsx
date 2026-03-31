@@ -169,11 +169,11 @@ export default function AgencyDashboard() {
             ))}
           </div>
         ) : availableCases && availableCases.length > 0 ? (
-          <div className="space-y-5">
+          <div className="space-y-6">
             {availableCases.map((c) => (
               <Link key={c.id} href={`/agency/cases/${c.id}`}>
                 <Card
-                  className={`p-4 hover-elevate cursor-pointer ${c.createdAt && (Date.now() - new Date(c.createdAt).getTime()) < 24 * 60 * 60 * 1000 && !c.hasInquired && !c.agencyWon ? "border-l-4 border-l-green-500" : ""}`}
+                  className={`p-6 hover-elevate cursor-pointer ${c.createdAt && (Date.now() - new Date(c.createdAt).getTime()) < 24 * 60 * 60 * 1000 && !c.hasInquired && !c.agencyWon ? "border-l-4 border-l-green-500" : ""}`}
                   data-testid={`card-agency-case-${c.id}`}
                 >
                   <div className="flex items-start justify-between gap-4">
