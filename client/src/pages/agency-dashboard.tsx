@@ -15,7 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { FileText, MessageCircle, Settings, CreditCard, AlertCircle, CheckCircle, Scale, ShieldCheck, Check, X, Trophy } from "lucide-react";
+import { FileText, MessageCircle, Settings, CreditCard, AlertCircle, CheckCircle, Scale, ShieldCheck, Check, X, Trophy, Sparkles } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { Case, AgencyProfile } from "@shared/schema";
@@ -172,7 +172,10 @@ export default function AgencyDashboard() {
           <div className="space-y-3">
             {availableCases.map((c) => (
               <Link key={c.id} href={`/agency/cases/${c.id}`}>
-                <Card className="p-4 hover-elevate cursor-pointer" data-testid={`card-agency-case-${c.id}`}>
+                <Card
+                  className={`p-4 hover-elevate cursor-pointer ${c.createdAt && (Date.now() - new Date(c.createdAt).getTime()) < 24 * 60 * 60 * 1000 && !c.hasInquired && !c.agencyWon ? "border-l-4 border-l-green-500" : ""}`}
+                  data-testid={`card-agency-case-${c.id}`}
+                >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold truncate">{c.title}</h3>
@@ -196,6 +199,12 @@ export default function AgencyDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
+                      {c.createdAt && (Date.now() - new Date(c.createdAt).getTime()) < 24 * 60 * 60 * 1000 && !c.hasInquired && !c.agencyWon && (
+                        <Badge className="text-xs bg-green-500 hover:bg-green-500 text-white border-0" data-testid={`badge-new-${c.id}`}>
+                          <Sparkles className="h-3 w-3 mr-1" />
+                          Ny
+                        </Badge>
+                      )}
                       {c.agencyWon && (
                         <Badge variant="default" className="text-xs" data-testid={`badge-won-${c.id}`}>
                           <Trophy className="h-3 w-3 mr-1" />
