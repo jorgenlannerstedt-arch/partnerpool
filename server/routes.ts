@@ -198,6 +198,34 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/demo-seed-porsche", async (req: any, res) => {
+    try {
+      const demoUserId = "demo_client_user";
+      const existing = await db.select().from(cases).where(
+        and(eq(cases.clientId, demoUserId), eq(cases.title, "Köp av begagnad Porsche Turbo"))
+      ).limit(1);
+      if (existing.length > 0) {
+        return res.json({ message: "Demo-ärendet finns redan", id: existing[0].id });
+      }
+      const [newCase] = await db.insert(cases).values({
+        clientId: demoUserId,
+        title: "Köp av begagnad Porsche Turbo",
+        description: "Jag köpte en begagnad Porsche 911 Turbo för 850 000 kr av en privatperson. Vid köpet försäkrade säljaren att bilen var i utmärkt skick och nyservad. Inom 53 dagar från köpet upptäckte jag allvarliga dolda fel – omfattande motorproblem och ett skadat växellådshus. En expertundersökning bekräftade att felen måste ha funnits vid köptillfället. Säljaren nekar ansvar och hävdar att reklamationen kom för sent. Jag vill häva köpet och få tillbaka pengarna.",
+        aiSummary: "En privatperson har förvärvat en begagnad Porsche 911 Turbo för 850 000 kr. Säljaren försäkrade att fordonet var i utmärkt skick. Inom 53 dagar upptäckte köparen allvarliga dolda fel i motor och växellåda, bekräftade av extern expert. Säljaren nekar ansvar. Köparen önskar häva köpet med stöd av köplagen. Reklamationen bedöms ha skett inom skälig tid med hänsyn till felens dolda karaktär.",
+        legalArea: "Avtalsrätt",
+        status: "open",
+        insuranceType: "Hemförsäkring",
+        estimatedAmount: "500k-1m",
+        legalProtectionApplied: true,
+        legalProtectionGranted: "pending",
+      }).returning();
+      res.json({ message: "Demo-ärende skapat!", id: newCase.id });
+    } catch (error) {
+      console.error("Demo seed error:", error);
+      res.status(500).json({ message: "Kunde inte skapa demo-ärendet" });
+    }
+  });
+
   app.use("/uploads/logos", (req, res, next) => {
     const filePath = path.join(logoDir, path.basename(req.url));
     if (fs.existsSync(filePath)) {
