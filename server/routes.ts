@@ -48,6 +48,9 @@ const logoUpload = multer({
 function stripLogoData(agency: any) {
   if (!agency) return agency;
   const { logoData, logoMimeType, ...rest } = agency;
+  if (!logoData) {
+    rest.logoUrl = null;
+  }
   return rest;
 }
 
