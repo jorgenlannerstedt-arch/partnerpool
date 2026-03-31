@@ -272,6 +272,12 @@ const seedReviews = [
 ];
 
 export async function seedDemoData() {
+  // Always ensure demo agency has active subscription
+  await db
+    .update(agencyProfiles)
+    .set({ subscriptionActive: true })
+    .where(eq(agencyProfiles.userId, "demo_client_user"));
+
   const existing = await db.select({ count: sql<number>`count(*)` }).from(agencyProfiles);
   const count = Number(existing[0]?.count ?? 0);
   if (count > 0) {
