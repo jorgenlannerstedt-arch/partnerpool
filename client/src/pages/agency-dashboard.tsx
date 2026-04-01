@@ -173,7 +173,7 @@ export default function AgencyDashboard() {
             {availableCases.map((c) => (
               <Link key={c.id} href={`/agency/cases/${c.id}`}>
                 <Card
-                  className={`p-6 hover-elevate cursor-pointer ${c.createdAt && (Date.now() - new Date(c.createdAt).getTime()) < 24 * 60 * 60 * 1000 && !c.hasInquired && !c.agencyWon ? "border-l-4 border-l-green-500" : ""}`}
+                  className={`p-6 hover-elevate cursor-pointer ${c.createdAt && (Date.now() - new Date(c.createdAt).getTime()) < 7 * 24 * 60 * 60 * 1000 && !c.hasInquired && !c.agencyWon ? "border-l-4 border-l-green-500" : ""}`}
                   data-testid={`card-agency-case-${c.id}`}
                 >
                   <div className="flex items-start justify-between gap-4">
@@ -199,7 +199,7 @@ export default function AgencyDashboard() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {c.createdAt && (Date.now() - new Date(c.createdAt).getTime()) < 24 * 60 * 60 * 1000 && !c.hasInquired && !c.agencyWon && (
+                      {c.createdAt && (Date.now() - new Date(c.createdAt).getTime()) < 7 * 24 * 60 * 60 * 1000 && !c.hasInquired && !c.agencyWon && (
                         <Badge className="text-xs bg-green-500 hover:bg-green-500 text-white border-0" data-testid={`badge-new-${c.id}`}>
                           <Sparkles className="h-3 w-3 mr-1" />
                           Ny
