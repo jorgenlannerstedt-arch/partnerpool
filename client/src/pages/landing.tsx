@@ -70,11 +70,8 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-white/40" />
         <div className="max-w-7xl mx-auto relative">
           <div className="max-w-3xl text-left space-y-8">
-            <Badge variant="secondary" className="rounded-full px-4 py-1.5">
-              <Shield className="h-3.5 w-3.5 mr-1.5" />
-              Alltid gratis för klienter
-            </Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-serif font-normal leading-[1.85] tracking-tight" data-testid="text-hero-heading">
+              <span className="block text-xl sm:text-2xl font-sans font-medium text-foreground/70 mb-2">Alltid gratis för klienter</span>
               Hitta rätt juridisk <br />partner för ditt ärende
             </h1>
             <p className="text-[17px] text-foreground/80 max-w-2xl">
